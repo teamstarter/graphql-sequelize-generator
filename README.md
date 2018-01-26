@@ -1,4 +1,4 @@
-# Puppeteer 
+# Graphql Sequelize Generator 
 
 <!-- [START badges] -->
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
@@ -20,6 +20,8 @@ The tools provided by this library will allow you to:
 * Easily create custom mutations.
 * Apply ACLs.
 * Get an integrated interface to test your Graphql API: Graphqli is available by default.
+* Counts for each model can also be generated
+* Subscriptions will soon be available for all auto-generated mutations
 <!-- [END usecases] -->
 
 <!-- [START getstarted] -->

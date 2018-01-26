@@ -1,0 +1,32 @@
+# The Node.js version will be the one defined in nvmrc
+language: node_js
+
+# Disable all emails
+notifications:
+  email: false
+
+# https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
+# TLDR: To compile native modules for Node.js 4+, a C++11 standard-compliant compiler is required.
+# The following lines do that.
+# We need to re-compile sqlite3.
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+
+cache:
+  yarn: true
+  directories:
+    - "node_modules"
+
+# # We need to re-compile sqlite3 otherwise we get an error.
+before_script:
+  - npm rebuild
+
+script:
+  - yarn lint-check
+  - yarn test

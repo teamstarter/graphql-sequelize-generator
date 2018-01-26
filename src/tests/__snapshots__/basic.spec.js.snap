@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the API queries Check that you can query a model and an association: All companies 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "users": Array [
+      Object {
+        "id": 1,
+        "name": "User 1",
+      },
+    ],
+  },
+  Object {
+    "id": 2,
+    "name": "Company 2",
+    "users": Array [
+      Object {
+        "id": 2,
+        "name": "User 2",
+      },
+    ],
+  },
+]
+`;
