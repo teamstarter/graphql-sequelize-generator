@@ -1,7 +1,7 @@
 const models = require('./models')
 const graphqlHTTP = require('express-graphql')
 const { generateModelTypes, generateSchema } = require('./../index.js')
-const { GraphQLSchema } = require('graphql')
+const { GraphQLObjectType, GraphQLString } = require('graphql')
 
 const graphqlSchemaDeclaration = {}
 const modelTypes = generateModelTypes(models)
@@ -51,14 +51,37 @@ graphqlSchemaDeclaration.department = {
   }
 }
 
-const schema = generateSchema(modelTypes, graphqlSchemaDeclaration)
+graphqlSchemaDeclaration.serverStatistics = {
+  type: new GraphQLObjectType({
+    name: 'serverStatistics',
+    description: 'Statistics about the server',
+    fields: {
+      serverBootDate: { type: GraphQLString }
+    }
+  }),
+  // Example of args
+  // args: {
+  //   id: {
+  //     name: 'id',
+  //     type: new GraphQLNonNull(GraphQLID)
+  //   }
+  // },
+  resolve: async (source, args, context, info) => {
+    return {
+      serverBootDate: context.bootDate
+    }
+  }
+}
 
-const graphqlSchemaInstance = new GraphQLSchema(schema)
+const schema = generateSchema(graphqlSchemaDeclaration, modelTypes)
 
 module.exports = {
   graphqlHttpServer: graphqlHTTP(req => ({
-    schema: graphqlSchemaInstance,
-    graphiql: true
+    schema,
+    graphiql: true,
+    context: {
+      bootDate: new Date()
+    }
   })),
-  schema: graphqlSchemaInstance
+  schema
 }

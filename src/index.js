@@ -2,7 +2,8 @@ const {
   GraphQLObjectType,
   GraphQLInputObjectType,
   GraphQLList,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLSchema
 } = require('graphql')
 const {
   resolver,
@@ -214,46 +215,55 @@ const injectAssociations = (
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
 const generateQueryRootType = (graphqlSchemaDeclaration, outputTypes) => {
+  let fields = Object.keys(outputTypes).reduce((fields, modelTypeName) => {
+    const modelType = outputTypes[modelTypeName]
+    const dec = graphqlSchemaDeclaration[modelType.name]
+    if (typeof dec === 'undefined') {
+      throw new Error(`The model type ${modelType.name} is not defined`)
+    }
+
+    const listBefore = dec.list && dec.list.before ? dec.list.before : undefined
+
+    const ApiFields = Object.assign(fields, {
+      [modelType.name]: {
+        type: new GraphQLList(
+          injectAssociations(modelType, graphqlSchemaDeclaration, outputTypes)
+        ),
+        args: Object.assign(
+          Object.assign(defaultArgs(dec.model), defaultListArgs()),
+          dec.list && dec.list.extraArg ? dec.list.extraArg : {}
+        ),
+        resolve: createResolver(dec)
+      }
+    })
+
+    // Count uses the same before function as the list, except if specified otherwise
+    const countBefore = dec.count && dec.count.before ? dec.before : listBefore
+
+    // @todo counts should only be added if configured in the schema declaration
+    return Object.assign(ApiFields, {
+      [`${modelType.name}Count`]: {
+        type: GraphQLInt,
+        args: Object.assign(defaultArgs(dec.model), defaultListArgs()),
+        resolve: countResolver(dec.model, {
+          before: countBefore
+        })
+      }
+    })
+  }, {})
+
+  // Any field that is not related to aa model name is inject "as-it" in the fields.
+  fields = Object.keys(graphqlSchemaDeclaration)
+    .filter(key => typeof outputTypes[key] === 'undefined')
+    .reduce((fields, customFieldName) => {
+      return Object.assign(fields, {
+        [customFieldName]: graphqlSchemaDeclaration[customFieldName]
+      })
+    }, fields)
+
   return new GraphQLObjectType({
     name: 'Root_Query',
-    fields: Object.keys(outputTypes).reduce((fields, modelTypeName) => {
-      const modelType = outputTypes[modelTypeName]
-      const dec = graphqlSchemaDeclaration[modelType.name]
-      if (typeof dec === 'undefined') {
-        throw new Error(`The model type ${modelType.name} is not defined`)
-      }
-
-      const listBefore =
-        dec.list && dec.list.before ? dec.list.before : undefined
-
-      const ApiFields = Object.assign(fields, {
-        [modelType.name]: {
-          type: new GraphQLList(
-            injectAssociations(modelType, graphqlSchemaDeclaration, outputTypes)
-          ),
-          args: Object.assign(
-            Object.assign(defaultArgs(dec.model), defaultListArgs()),
-            dec.list && dec.list.extraArg ? dec.list.extraArg : {}
-          ),
-          resolve: createResolver(dec)
-        }
-      })
-
-      // Count uses the same before function as the list, except if specified otherwise
-      const countBefore =
-        dec.count && dec.count.before ? dec.before : listBefore
-
-      // @todo counts should only be added if configured in the schema declaration
-      return Object.assign(ApiFields, {
-        [`${modelType.name}Count`]: {
-          type: GraphQLInt,
-          args: Object.assign(defaultArgs(dec.model), defaultListArgs()),
-          resolve: countResolver(dec.model, {
-            before: countBefore
-          })
-        }
-      })
-    }, {})
+    fields
   })
 }
 
@@ -328,15 +338,15 @@ const generateMutationRootType = (
 }
 
 // This function is exported
-const generateSchema = (types, graphqlSchemaDeclaration) => {
-  return {
+const generateSchema = (graphqlSchemaDeclaration, types) => {
+  return new GraphQLSchema({
     query: generateQueryRootType(graphqlSchemaDeclaration, types.outputTypes),
     mutation: generateMutationRootType(
       graphqlSchemaDeclaration,
       types.inputTypes,
       types.outputTypes
     )
-  }
+  })
 }
 
 module.exports = {
