@@ -5,7 +5,7 @@ const {
   deleteTables
 } = require('./testDatabase.js')
 const express = require('express')
-const { graphqlHttpServer } = require('./schema')
+const { graphqlExpressMiddleware } = require('./schema')
 const http = require('spdy')
 
 let app = null
@@ -23,7 +23,7 @@ var options = {
 describe('Test the API queries', () => {
   beforeAll(async () => {
     app = express()
-    app.use('/graphql', graphqlHttpServer)
+    app.use('/graphql', graphqlExpressMiddleware)
     server = await new Promise((resolve, reject) => {
       const newServer = http
         .createServer(options, app)
@@ -58,7 +58,7 @@ describe('Test the API queries', () => {
       .get(
         `/graphql?query=
           query getCompanies {
-            organizations: company {
+            companies: company {
               id
               name
               users {
@@ -70,7 +70,33 @@ describe('Test the API queries', () => {
           &operationName=getCompanies`
       )
       .set('userId', 1)
-    const organizations = response.body.data.organizations
-    expect(organizations).toMatchSnapshot('All companies')
+    const companies = response.body.data.companies
+    expect(companies).toMatchSnapshot('All companies')
+  })
+
+  it('Check that you can query sub associations', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getCompanies {
+            companies: company {
+              id
+              name
+              users {
+                id
+                name
+                department {
+                  id
+                }
+              }
+            }
+          }
+          &operationName=getCompanies`
+      )
+      .set('userId', 1)
+    const companies = response.body.data.companies
+    expect(companies).toMatchSnapshot(
+      'All companies with users and their department'
+    )
   })
 })

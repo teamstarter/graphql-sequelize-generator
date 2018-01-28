@@ -1,3 +1,4 @@
+const graphqlHTTP = require('express-graphql')
 const {
   GraphQLObjectType,
   GraphQLInputObjectType,
@@ -349,8 +350,24 @@ const generateSchema = (graphqlSchemaDeclaration, types) => {
   })
 }
 
+const generateGraphqlExpressMiddleware = (
+  graphqlSchemaDeclaration,
+  modelTypes
+) => {
+  const schema = generateSchema(graphqlSchemaDeclaration, modelTypes)
+
+  return graphqlHTTP(req => ({
+    schema,
+    graphiql: true,
+    context: {
+      bootDate: new Date()
+    }
+  }))
+}
+
 module.exports = {
   generateModelTypes,
   generateSchema,
-  generateMutationRootType
+  generateMutationRootType,
+  generateGraphqlExpressMiddleware
 }

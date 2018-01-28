@@ -1,6 +1,8 @@
 const models = require('./models')
-const graphqlHTTP = require('express-graphql')
-const { generateModelTypes, generateSchema } = require('./../index.js')
+const {
+  generateModelTypes,
+  generateGraphqlExpressMiddleware
+} = require('./../index.js')
 const { GraphQLObjectType, GraphQLString } = require('graphql')
 
 const graphqlSchemaDeclaration = {}
@@ -73,15 +75,9 @@ graphqlSchemaDeclaration.serverStatistics = {
   }
 }
 
-const schema = generateSchema(graphqlSchemaDeclaration, modelTypes)
-
 module.exports = {
-  graphqlHttpServer: graphqlHTTP(req => ({
-    schema,
-    graphiql: true,
-    context: {
-      bootDate: new Date()
-    }
-  })),
-  schema
+  graphqlExpressMiddleware: generateGraphqlExpressMiddleware(
+    graphqlSchemaDeclaration,
+    modelTypes
+  )
 }

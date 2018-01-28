@@ -47,19 +47,71 @@ Caution: GSG requires at least Node v7.6.0 or greater as it is using async/await
 **Example** - adding a graphql API to my express:
 
 ```js
-const example1 = "test";
+const models = require("./models");
+const {
+  generateModelTypes,
+  generateGraphqlExpressMiddleware
+} = require("./../index.js");
+
+const modelTypes = generateModelTypes(models);
+
+graphqlSchemaDeclaration.user = {
+  model: models.user
+};
+
+app.use(
+  "/graphql",
+  generateGraphqlExpressMiddleware(graphqlSchemaDeclaration, modelTypes)
+);
 ```
 
 **Example** - Custom mutation.
 
 ```js
-const example2 = "test";
+graphqlSchemaDeclaration.serverStatistics = {
+  type: new GraphQLObjectType({
+    name: "serverStatistics",
+    description: "Statistics about the server",
+    fields: {
+      serverBootDate: { type: GraphQLString }
+    }
+  }),
+  resolve: async (source, args, context, info) => {
+    return {
+      serverBootDate: context.bootDate
+    };
+  }
+};
 ```
 
-**Example** - Apply ACLs
+**Example** - Select only
 
 ```js
-const example2 = "test";
+graphqlSchemaDeclaration.user = {
+  model: models.user,
+  actions: ["list"] // ['list', 'create', 'update', 'delete', 'count'] available
+};
+```
+
+**Example queries** - Query associations
+
+```graphql
+{
+  company(order: "reverse:name", limit: 50) {
+    id
+    name
+    departments {
+      id
+      users {
+        id
+        name
+      }
+    }
+  }
+  serverStatistics {
+    serverBootDate
+  }
+}
 ```
 
 <!-- [END getstarted] -->
