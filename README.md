@@ -124,9 +124,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/i
 
 One thing that makes this library possible is [dataloader sequelize](https://github.com/mickhansen/dataloader-sequelize). Those limitations are so inherited:
 
-```
-Only plain requests are batched, meaning requests with includes and transactions are skipped. The batching does handle limit, and where; but different limits and wheres are placed in different batches. Currently this module only leverages the batching functionality from dataloader, caching is disabled.
-```
+> Only plain requests are batched, meaning requests with includes and transactions are skipped. The batching does handle limit, and where but different limits and wheres are placed in different batches. Currently this module only leverages the batching functionality from dataloader, caching is disabled.
 
 It will mostly impact you if you try to inject tables in the include property through the before hook.
 
