@@ -54,8 +54,9 @@ describe('Test the API queries', () => {
   })
 
   it('Check that you can query a model and an association', async () => {
-    const response = await request(server).get(
-      `/graphql?query=
+    const response = await request(server)
+      .get(
+        `/graphql?query=
           query getCompanies {
             organizations: company {
               id
@@ -67,7 +68,8 @@ describe('Test the API queries', () => {
             }
           }
           &operationName=getCompanies`
-    )
+      )
+      .set('userId', 1)
     const organizations = response.body.data.organizations
     expect(organizations).toMatchSnapshot('All companies')
   })

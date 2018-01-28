@@ -16,6 +16,7 @@ module.exports = function (sequelize, DataTypes) {
 
   Company.associate = function (models) {
     models.company.hasMany(models.user)
+    models.company.hasMany(models.department)
   }
   return Company
 }

@@ -1,7 +1,7 @@
 'use strict'
 module.exports = function (sequelize, DataTypes) {
-  var User = sequelize.define(
-    'user',
+  var Department = sequelize.define(
+    'department',
     {
       name: {
         type: DataTypes.STRING,
@@ -11,10 +11,6 @@ module.exports = function (sequelize, DataTypes) {
       companyId: {
         type: DataTypes.INTEGER,
         allowNull: false
-      },
-      departmentId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
       }
     },
     {
@@ -22,10 +18,9 @@ module.exports = function (sequelize, DataTypes) {
     }
   )
 
-  User.associate = function (models) {
-    // associations can be defined here
-    models.user.belongsTo(models.company)
-    models.user.belongsTo(models.department)
+  Department.associate = function (models) {
+    models.department.belongsTo(models.company)
+    models.department.hasMany(models.user)
   }
-  return User
+  return Department
 }

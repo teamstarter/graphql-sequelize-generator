@@ -7,16 +7,10 @@ const timestamp = entry =>
 
 module.exports = {
   up: function (queryInterface, Sequelize) {
-    let companies = [
-      {
-        id: 1,
-        name: 'Company 1'
-      },
-      {
-        id: 2,
-        name: 'Company 2'
-      }
-    ]
+    let companies = [...Array(50)].map((u, index) => ({
+      id: index + 1,
+      name: `Company ${index + 1}`
+    }))
 
     companies = companies.map(timestamp) // Add timestamps
 
