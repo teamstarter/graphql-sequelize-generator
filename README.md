@@ -17,14 +17,14 @@
 
 The tools provided by this library will allow you to:
 
-* Query any model defined in your app through Graphql.
-* Auto-generate create/update/delete mutations.
-* Define before/after hooks and all resolvers, including the mutations.
-* Easily create custom mutations.
-* Apply ACLs.
-* Get an integrated interface to test your Graphql API: Graphqli is available by default.
-* Counts for each model can also be generated
-* Subscriptions will soon be available for all auto-generated mutations
+* [x] Query any model defined in your app through Graphql.
+* [x] Auto-generate create/update/delete mutations.
+* [x] Define before/after hooks and all resolvers, including the mutations.
+* [x] Easily create custom mutations.
+* [x] Get an integrated interface to test your Graphql API: Graphqli is available by default.
+* [x] Counts for each model can also be generated
+* [x] Subscriptions auto-generated for mutations
+* [ ] Add custom fields/resolvers on auto-generated types
   <!-- [END usecases] -->
 
 <!-- [START getstarted] -->
