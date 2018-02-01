@@ -16,7 +16,7 @@ const {
 const generateMutationCreate = require('./generate/mutationCreate')
 const generateMutationDelete = require('./generate/mutationDelete')
 const generateMutationUpdate = require('./generate/mutationUpdate')
-
+const generateSubscriptions = require('./generate/subscriptions')
 /**
  * Returns the association fields of an entity.
  *
@@ -339,13 +339,22 @@ const generateMutationRootType = (
 }
 
 // This function is exported
-const generateSchema = (graphqlSchemaDeclaration, types) => {
+const generateSchema = (
+  graphqlSchemaDeclaration,
+  types,
+  pubSubInstance = null
+) => {
   return new GraphQLSchema({
     query: generateQueryRootType(graphqlSchemaDeclaration, types.outputTypes),
     mutation: generateMutationRootType(
       graphqlSchemaDeclaration,
       types.inputTypes,
       types.outputTypes
+    ),
+    subscription: generateSubscriptions(
+      graphqlSchemaDeclaration,
+      types,
+      pubSubInstance
     )
   })
 }

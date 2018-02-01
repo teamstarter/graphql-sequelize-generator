@@ -1,12 +1,15 @@
 const models = require('./models')
 const {
   generateModelTypes,
-  generateGraphqlExpressMiddleware
+  generateGraphqlExpressMiddleware,
+  generateSchema
 } = require('./../index.js')
 const { GraphQLObjectType, GraphQLString } = require('graphql')
+const { PubSub } = require('graphql-subscriptions')
 
 const graphqlSchemaDeclaration = {}
 const modelTypes = generateModelTypes(models)
+const pubSubInstance = new PubSub()
 
 graphqlSchemaDeclaration.user = {
   model: models.user,
@@ -78,6 +81,8 @@ graphqlSchemaDeclaration.serverStatistics = {
 module.exports = {
   graphqlExpressMiddleware: generateGraphqlExpressMiddleware(
     graphqlSchemaDeclaration,
-    modelTypes
-  )
+    modelTypes,
+    pubSubInstance
+  ),
+  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, pubSubInstance)
 }
