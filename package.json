@@ -25,7 +25,8 @@
     "umzug": "^2.1.0"
   },
   "scripts": {
-    "test": "DEBUG=-* PORT=8282 jest",
+    "test": "DEBUG=-* PORT=8282 jest -i",
+    "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
     "start": "rm ./src/tests/data/main.db && node ./src/tests/testServer.js"
   },

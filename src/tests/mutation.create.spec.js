@@ -54,23 +54,27 @@ describe('Test the API queries', () => {
   })
 
   it('Check that you can query a model and an association', async () => {
-    const response = await request(server)
-      .get(
-        `/graphql?query=
-          query getCompanies {
-            companies: company {
-              id
-              name
-            }
+    const responseMutation = await request(server)
+      .post('/graphql')
+      .set('userid', 1)
+      .send({
+        query: `mutation companyCreate($company: companyInput) {
+              company : companyCreate(company: $company) {
+                id
+                name
+                __typename
+              }
+            }`,
+        variables: {
+          company: {
+            name: 'test',
+            companyTypeId: 1
           }
-          &operationName=getCompanies`
-      )
-      .set('userId', 1)
-    const companies = response.body.data.companies
-    expect(companies).toMatchSnapshot('All companies')
-  })
+        },
+        operationName: 'companyCreate'
+      })
+    expect(responseMutation.body.data.company).toMatchSnapshot()
 
-  it('Check that you can query sub associations', async () => {
     const response = await request(server)
       .get(
         `/graphql?query=
