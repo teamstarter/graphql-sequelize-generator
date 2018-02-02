@@ -11,6 +11,11 @@ const graphqlSchemaDeclaration = {}
 const modelTypes = generateModelTypes(models)
 const pubSubInstance = new PubSub()
 
+graphqlSchemaDeclaration.companyType = {
+  model: models.companyType,
+  actions: ['list']
+}
+
 graphqlSchemaDeclaration.user = {
   model: models.user,
   actions: ['list', 'create'],

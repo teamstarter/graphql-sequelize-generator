@@ -12,7 +12,7 @@ const {
   defaultListArgs,
   defaultArgs
 } = require('graphql-sequelize')
-
+const debug = require('debug')('gsg')
 const generateMutationCreate = require('./generate/mutationCreate')
 const generateMutationDelete = require('./generate/mutationDelete')
 const generateMutationUpdate = require('./generate/mutationUpdate')
@@ -158,7 +158,9 @@ const argsAdvancedProcessing = (
 
 const createResolver = (graphqlTypeDeclaration, relation = null) => {
   const listBefore =
-    graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.before
+    graphqlTypeDeclaration &&
+    graphqlTypeDeclaration.list &&
+    graphqlTypeDeclaration.list.before
       ? graphqlTypeDeclaration.list.before
       : undefined
   return resolver(relation || graphqlTypeDeclaration.model, {
@@ -186,6 +188,13 @@ const injectAssociations = (
   }
   let fields = {}
   for (let associationName in associations) {
+    if (!graphqlSchemaDeclaration[associations[associationName].target.name]) {
+      debug(
+        `Could not find a declaration of the model ${
+          associations[associationName].target.name
+        } of the association ${associationName}, will generate a generic reducer.`
+      )
+    }
     fields[associationName] = generateAssociationField(
       associations[associationName],
       outputTypes,

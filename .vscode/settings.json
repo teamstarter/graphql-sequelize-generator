@@ -7,5 +7,6 @@
     },
     // Flow related settings
     "javascript.validate.enable": false,
-    "flow.useNPMPackagedFlow": true
+    "flow.useNPMPackagedFlow": true,
+    "eslint.packageManager": "yarn"
   }
