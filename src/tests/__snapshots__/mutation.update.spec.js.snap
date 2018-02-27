@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the create mutation Check that you can create a new instance of one entity: Updated user 1`] = `
+Object {
+  "__typename": "user",
+  "id": 5,
+  "name": "edited name",
+}
+`;
+
+exports[`Test the create mutation Check that you can create a new instance of one entity: User 5 before update 1`] = `
+Array [
+  Object {
+    "company": Object {
+      "id": 1,
+      "name": "Company 1",
+    },
+    "id": 5,
+    "name": "Test 5 c 2",
+  },
+]
+`;
+
+exports[`Test the create mutation Check that you can create a new instance of one entity: User 5 post update 1`] = `
+Array [
+  Object {
+    "company": Object {
+      "id": 1,
+      "name": "Company 1",
+    },
+    "id": 5,
+    "name": "edited name",
+  },
+]
+`;

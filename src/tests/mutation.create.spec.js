@@ -20,7 +20,7 @@ var options = {
 /**
  * Starting the tests
  */
-describe('Test the API queries', () => {
+describe('Test the create mutation', () => {
   beforeAll(async () => {
     app = express()
     app.use('/graphql', graphqlExpressMiddleware)
@@ -53,50 +53,65 @@ describe('Test the API queries', () => {
     await deleteTables()
   })
 
-  it('Check that you can query a model and an association', async () => {
-    const responseMutation = await request(server)
+  it('Check that you can create a new instance of one entity', async () => {
+    const responseNoUser = await request(server)
+      .get(
+        `/graphql?query=
+        query getUsers {
+          user: user(id: 12501) {
+            id
+            name
+            company {
+              id
+              name
+            }
+          }
+        }
+        &operationName=getUsers`
+      )
+      .set('userId', 1)
+    expect(responseNoUser.body.data.user).toMatchSnapshot(
+      'User 12501 does not exists yet.'
+    )
+
+    const responseUserCreate = await request(server)
       .post('/graphql')
       .set('userid', 1)
       .send({
-        query: `mutation companyCreate($company: companyInput) {
-              company : companyCreate(company: $company) {
+        query: `mutation userCreate($user: userInput) {
+              user : userCreate(user: $user) {
                 id
                 name
                 __typename
               }
             }`,
         variables: {
-          company: {
-            name: 'test',
-            companyTypeId: 1
+          user: {
+            name: 'new user',
+            departmentId: 1,
+            companyId: 1
           }
         },
-        operationName: 'companyCreate'
+        operationName: 'userCreate'
       })
-    expect(responseMutation.body.data.company).toMatchSnapshot()
+    expect(responseUserCreate.body.data.user).toMatchSnapshot('Created user')
 
     const response = await request(server)
       .get(
         `/graphql?query=
-          query getCompanies {
-            companies: company {
+          query getUsers {
+            user: user(id: 12501) {
               id
               name
-              users {
+              company {
                 id
                 name
-                department {
-                  id
-                }
               }
             }
           }
-          &operationName=getCompanies`
+          &operationName=getUsers`
       )
       .set('userId', 1)
-    const companies = response.body.data.companies
-    expect(companies).toMatchSnapshot(
-      'All companies with users and their department'
-    )
+    expect(response.body.data.user).toMatchSnapshot('The new user')
   })
 })

@@ -44,7 +44,7 @@ yarn add graphql-sequelize-generator
 
 Caution: GSG requires at least Node v7.6.0 or greater as it is using async/await.
 
-**Example** - adding a graphql API to my express:
+**Example** - adding a GraphQL API to my express:
 
 ```js
 const models = require("./models");
@@ -170,6 +170,22 @@ list: {
 ## Contributing to GSG
 
 Check out [contributing guide](https://github.com/inovia-team/graphql-sequelize-generator/blob/master/CONTRIBUTING.md) to get an overview of open-source development at Matters.
+
+###
+
+Tests can be run with:
+
+```bash
+yarn test
+```
+
+A test server can be started with generated seeds with:
+
+```bash
+yarn start
+```
+
+It will make available a Graphiql interface at this [url](http://localhost:8080/graphql)
 
 <!-- [START faq] -->
 

@@ -18,7 +18,7 @@ graphqlSchemaDeclaration.companyType = {
 
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ['list', 'create'],
+  actions: ['list', 'create', 'delete', 'update'],
   list: {
     before: (findOptions, args, context, info) => {
       if (typeof findOptions.where === 'undefined') {
@@ -52,11 +52,17 @@ graphqlSchemaDeclaration.department = {
   model: models.department,
   actions: ['list', 'create'],
   list: {
-    before: (findOptions, args, context, info) => {
-      findOptions.where = {
-        id: [1, 2, 3, 4, 5, 6, 7, 8]
-      }
-      return findOptions
+    resolver: (source, args, context, info) => {
+      // Making custom resolvers on the list query can be useful
+      // but keep in mind that it will impact the recursivity of the graph.
+      // Here, defining our own resolver without taking into account the args
+      // and the context will make that "departments" will never be returned
+      // when queried outside a simple query like {department{id}}
+      return models.department.findAll({
+        where: {
+          id: [1, 2, 3, 4, 5, 6, 7, 8]
+        }
+      })
     }
   }
 }

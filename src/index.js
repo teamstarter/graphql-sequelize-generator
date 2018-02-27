@@ -157,12 +157,21 @@ const argsAdvancedProcessing = (
 }
 
 const createResolver = (graphqlTypeDeclaration, relation = null) => {
+  if (
+    graphqlTypeDeclaration &&
+    graphqlTypeDeclaration.list &&
+    graphqlTypeDeclaration.list.resolver
+  ) {
+    return graphqlTypeDeclaration.list.resolver
+  }
+
   const listBefore =
     graphqlTypeDeclaration &&
     graphqlTypeDeclaration.list &&
     graphqlTypeDeclaration.list.before
       ? graphqlTypeDeclaration.list.before
       : undefined
+
   return resolver(relation || graphqlTypeDeclaration.model, {
     before: (findOptions, args, context, info) =>
       argsAdvancedProcessing(
@@ -319,15 +328,16 @@ const generateMutationRootType = (
           )
     }
     if (actions.includes('delete')) {
-      mutations[modelName + 'Delete'] = graphqlSchemaDeclaration[modelName]
-        .delete.resolve
-        ? graphqlSchemaDeclaration[modelName].delete
-        : generateMutationDelete(
-          modelName,
-          inputType,
-          outputType,
-          graphqlSchemaDeclaration[modelName]
-        )
+      mutations[modelName + 'Delete'] =
+        graphqlSchemaDeclaration[modelName].delete &&
+        graphqlSchemaDeclaration[modelName].delete.resolve
+          ? graphqlSchemaDeclaration[modelName].delete
+          : generateMutationDelete(
+            modelName,
+            inputType,
+            outputType,
+            graphqlSchemaDeclaration[modelName]
+          )
     }
 
     if (graphqlSchemaDeclaration[modelName].additionalMutations) {

@@ -218,352 +218,252 @@ Array [
     "name": "Company 1",
     "users": Array [
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 5,
         "name": "Test 5 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 10,
         "name": "Test 10 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 15,
         "name": "Test 15 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 20,
         "name": "Test 20 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 25,
         "name": "Test 25 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 30,
         "name": "Test 30 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 35,
         "name": "Test 35 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 40,
         "name": "Test 40 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 45,
         "name": "Test 45 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 50,
         "name": "Test 50 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 55,
         "name": "Test 55 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 60,
         "name": "Test 60 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 65,
         "name": "Test 65 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 70,
         "name": "Test 70 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 75,
         "name": "Test 75 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 80,
         "name": "Test 80 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 85,
         "name": "Test 85 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 90,
         "name": "Test 90 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 95,
         "name": "Test 95 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 100,
         "name": "Test 100 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 105,
         "name": "Test 105 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 110,
         "name": "Test 110 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 115,
         "name": "Test 115 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 120,
         "name": "Test 120 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 125,
         "name": "Test 125 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 130,
         "name": "Test 130 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 135,
         "name": "Test 135 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 140,
         "name": "Test 140 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 145,
         "name": "Test 145 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 150,
         "name": "Test 150 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 155,
         "name": "Test 155 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 160,
         "name": "Test 160 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 165,
         "name": "Test 165 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 170,
         "name": "Test 170 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 175,
         "name": "Test 175 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 180,
         "name": "Test 180 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 185,
         "name": "Test 185 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 190,
         "name": "Test 190 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 195,
         "name": "Test 195 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 200,
         "name": "Test 200 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 205,
         "name": "Test 205 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 210,
         "name": "Test 210 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 215,
         "name": "Test 215 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 220,
         "name": "Test 220 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 225,
         "name": "Test 225 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 230,
         "name": "Test 230 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 235,
         "name": "Test 235 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 240,
         "name": "Test 240 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 245,
         "name": "Test 245 c 2",
       },
       Object {
-        "department": Object {
-          "id": 1,
-        },
+        "department": null,
         "id": 250,
         "name": "Test 250 c 2",
       },
