@@ -1,5 +1,5 @@
 /**
- * Generates a update mutation operation
+ * Generates an update mutation operation
  *
  * @param {*} modelName
  * @param {*} inputType
