@@ -4,6 +4,7 @@
         "esbenp.prettier-vscode", // Allows to prettify the code and run eslint after
         "kumar-harsh.graphql-for-vscode", // Handle linting of graphql
         "dbaeumer.vscode-eslint", // Handle advanced feedback, like variable not used
-        "waderyan.gitblame" // Quickly find out the last commit related to a line
+        "waderyan.gitblame", // Quickly find out the last commit related to a line,
+        "Orta.vscode-jest" // Helpers for jest
     ]
 }
