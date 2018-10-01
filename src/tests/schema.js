@@ -93,7 +93,8 @@ module.exports = {
   graphqlExpressMiddleware: generateGraphqlExpressMiddleware(
     graphqlSchemaDeclaration,
     modelTypes,
+    models,
     pubSubInstance
   ),
-  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, pubSubInstance)
+  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, models)
 }
