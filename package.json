@@ -1,8 +1,7 @@
 {
   "name": "graphql-sequelize-generator",
   "version": "0.0.1",
-  "description":
-    "A set of tools to easily generate a Graphql API from sequelize models.",
+  "description": "A set of tools to easily generate a Graphql API from sequelize models.",
   "main": "src/index.js",
   "repository": "git@github.com:inovia-team/graphql-sequelize-generator.git",
   "author": "vincent desmares <vincent.desmares@gmail.com>",
@@ -25,7 +24,7 @@
     "umzug": "^2.1.0"
   },
   "scripts": {
-    "test": "DEBUG=-* PORT=8282 jest -i",
+    "test": "NODE_ENV=test DEBUG=-* PORT=8282 jest -i",
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
     "start": "rm -f ./src/tests/data/main.db && node ./src/tests/testServer.js"
