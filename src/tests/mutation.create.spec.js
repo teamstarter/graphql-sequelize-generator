@@ -7,6 +7,7 @@ const {
 const express = require('express')
 const { graphqlExpressMiddleware } = require('./schema')
 const http = require('spdy')
+const bodyParser = require('body-parser')
 
 let app = null
 let server = null
@@ -23,7 +24,7 @@ var options = {
 describe('Test the create mutation', () => {
   beforeAll(async () => {
     app = express()
-    app.use('/graphql', graphqlExpressMiddleware)
+    app.use('/graphql', bodyParser.json(), graphqlExpressMiddleware)
     server = await new Promise((resolve, reject) => {
       const newServer = http
         .createServer(options, app)
@@ -78,7 +79,7 @@ describe('Test the create mutation', () => {
       .post('/graphql')
       .set('userid', 1)
       .send({
-        query: `mutation userCreate($user: userInput) {
+        query: `mutation userCreate($user: userInput!) {
               user : userCreate(user: $user) {
                 id
                 name

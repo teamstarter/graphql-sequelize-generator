@@ -7,6 +7,7 @@ const {
 const express = require('express')
 const { graphqlExpressMiddleware } = require('./schema')
 const http = require('spdy')
+const bodyParser = require('body-parser')
 
 let app = null
 let server = null
@@ -23,7 +24,7 @@ var options = {
 describe('Test the delete mutation', () => {
   beforeAll(async () => {
     app = express()
-    app.use('/graphql', graphqlExpressMiddleware)
+    app.use('/graphql', bodyParser.json(), graphqlExpressMiddleware)
     server = await new Promise((resolve, reject) => {
       const newServer = http
         .createServer(options, app)
@@ -67,7 +68,7 @@ describe('Test the delete mutation', () => {
       )
       .set('userId', 1)
     const user = response.body.data.user
-    expect(user).toMatchSnapshot('The user 1 should not exist anymore')
+    expect(user).toMatchSnapshot('The user 5 should not exist anymore')
 
     const responseMutation = await request(server)
       .post('/graphql')
@@ -96,6 +97,6 @@ describe('Test the delete mutation', () => {
       )
       .set('userId', 1)
     const userDeleted = response2.body.data.user
-    expect(userDeleted).toMatchSnapshot('The user 1 should not exist anymore')
+    expect(userDeleted).toMatchSnapshot('The user 5 should not exist anymore')
   })
 })
