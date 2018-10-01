@@ -17,7 +17,7 @@ const {
 const Sequelize = require('sequelize')
 const { argsToFindOptions } = require('graphql-sequelize')
 const { PubSub, withFilter } = require('graphql-subscriptions')
-const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
+const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 const { graphqlExpress } = require('apollo-server-express')
 
 const pubSubInstance = new PubSub()

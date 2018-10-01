@@ -1,59 +1,26 @@
 const request = require('supertest')
-const {
-  migrateDatabase,
-  seedDatabase,
-  deleteTables
-} = require('./testDatabase.js')
-const express = require('express')
-const { graphqlExpressMiddleware } = require('./schema')
-const http = require('spdy')
-const bodyParser = require('body-parser')
-
-let app = null
-let server = null
-
-var options = {
-  spdy: {
-    plain: true
-  }
-}
+const { deleteTables } = require('./testDatabase.js')
+const { createServer, closeServer, resetDb } = require('./utils')
 
 /**
  * Starting the tests
  */
 describe('Test the delete mutation', () => {
+  let server = null
+
   beforeAll(async () => {
-    app = express()
-    app.use('/graphql', bodyParser.json(), graphqlExpressMiddleware)
-    server = await new Promise((resolve, reject) => {
-      const newServer = http
-        .createServer(options, app)
-        .listen(process.env.PORT || 8080, () => {
-          resolve(newServer)
-        })
-    })
+    server = await createServer()
   })
 
-  afterAll(() =>
-    Promise.all([
-      new Promise((resolve, reject) => server.close(() => resolve()))
-    ])
-  )
+  afterAll(() => closeServer(server))
 
   beforeEach(async () => {
-    try {
-      await migrateDatabase()
-      await seedDatabase()
-    } catch (e) {
-      console.log('Critical error during the database migration', e.message, e)
-      throw e
-    }
+    await resetDb()
   })
 
   afterEach(async () => {
     await deleteTables()
   })
-
   it('Check that you can delete an entity', async () => {
     const response = await request(server)
       .get(
