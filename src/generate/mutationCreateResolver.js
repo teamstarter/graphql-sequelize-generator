@@ -24,33 +24,33 @@ const generateMutationCreate = (
       : {})
   },
   resolve: async (source, args, context, info) => {
-    let object = args[modelName]
+    let selectedModel = args[modelName]
     if (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.before
     ) {
-      object = await graphqlModelDeclaration.create.before(
+      selectedModel = await graphqlModelDeclaration.create.before(
         source,
         args,
         context,
         info
       )
     }
-    const newObject = await model.create(object)
+    const newModel = await model.create(selectedModel)
 
     if (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.after
     ) {
       return graphqlModelDeclaration.create.after(
-        newObject,
+        newModel,
         source,
         args,
         context,
         info
       )
     }
-    return newObject
+    return newModel
   }
 })
 

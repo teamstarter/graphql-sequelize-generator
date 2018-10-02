@@ -15,8 +15,8 @@ const createResolver = (graphqlTypeDeclaration, models, relation = null) => {
       ? graphqlTypeDeclaration.list.before
       : undefined
   return resolver(relation || graphqlTypeDeclaration.model, {
-    before: (findOptions, args, context, info) =>
-      argsAdvancedProcessing(
+    before: (findOptions, args, context, info) => {
+      const processedFindOptions = argsAdvancedProcessing(
         findOptions,
         args,
         context,
@@ -25,6 +25,12 @@ const createResolver = (graphqlTypeDeclaration, models, relation = null) => {
         graphqlTypeDeclaration.model,
         models
       )
+
+      if (listBefore) {
+        return listBefore(processedFindOptions, args, context, info)
+      }
+      return processedFindOptions
+    }
   })
 }
 

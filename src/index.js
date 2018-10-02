@@ -137,7 +137,6 @@ const argsAdvancedProcessing = (
   args,
   context,
   info,
-  listBefore,
   model,
   models
 ) => {
@@ -161,9 +160,6 @@ const argsAdvancedProcessing = (
     }
   }
 
-  if (listBefore) {
-    return listBefore(findOptions, args, context, info)
-  }
   return findOptions
 }
 
