@@ -1,3 +1,4 @@
+const { GraphQLNonNull } = require('graphql')
 /**
  * Generates a create mutation operation
  *
@@ -6,7 +7,7 @@
  * @param {*} outputType
  * @param {*} model
  */
-module.exports = (
+const generateMutationCreate = (
   modelName,
   inputType,
   outputType,
@@ -15,14 +16,13 @@ module.exports = (
 ) => ({
   type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
   description: 'Create a ' + modelName,
-  args: Object.assign(
-    {
-      [modelName]: { type: inputType }
-    },
-    graphqlModelDeclaration.create && graphqlModelDeclaration.create.extraArg
+  args: {
+    [modelName]: { type: new GraphQLNonNull(inputType) },
+    ...(graphqlModelDeclaration.create &&
+    graphqlModelDeclaration.create.extraArg
       ? graphqlModelDeclaration.create.extraArg
-      : {}
-  ),
+      : {})
+  },
   resolve: async (source, args, context, info) => {
     let object = args[modelName]
     if (
@@ -53,3 +53,5 @@ module.exports = (
     return newObject
   }
 })
+
+module.exports = generateMutationCreate

@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
-const { createServer, closeServer, resetDb } = require('./utils')
+const { createServer, closeServer, resetDb } = require('./setupServer')
 
 /**
  * Starting the tests

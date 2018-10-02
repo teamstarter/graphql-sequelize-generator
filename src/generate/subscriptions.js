@@ -1,11 +1,9 @@
+const { PubSub, withFilter } = require('graphql-subscriptions')
 const { GraphQLInt, GraphQLObjectType } = require('graphql')
-const { withFilter } = require('graphql-subscriptions')
 
-module.exports = (graphqlSchemaDeclaration, types, pubSubInstance) => {
-  if (!pubSubInstance) {
-    return undefined
-  }
+const pubSubInstance = new PubSub()
 
+const generateSubscriptions = (graphqlSchemaDeclaration, types) => {
   const fields = Object.keys(types.inputTypes).reduce(
     (subscriptions, modelName) => {
       const outputType = types.outputTypes[modelName]
@@ -77,3 +75,5 @@ module.exports = (graphqlSchemaDeclaration, types, pubSubInstance) => {
     fields
   })
 }
+
+module.exports = generateSubscriptions

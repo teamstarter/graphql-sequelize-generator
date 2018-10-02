@@ -1,11 +1,11 @@
-const models = require('./models')
-const {
-  generateModelTypes,
-  generateGraphqlExpressMiddleware,
-  generateSchema
-} = require('./../index.js')
 const { GraphQLObjectType, GraphQLString } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
+const {
+  generateGraphqlExpressMiddleware,
+  generateSchema,
+  generateModelTypes
+} = require('./../generate')
+const models = require('./models')
 
 const graphqlSchemaDeclaration = {}
 const modelTypes = generateModelTypes(models)
