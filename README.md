@@ -17,14 +17,14 @@
 
 The tools provided by this library will allow you to:
 
-* Query any model defined in your app through Graphql.
-* Auto-generate create/update/delete mutations.
-* Define before/after hooks and all resolvers, including the mutations.
-* Easily create custom mutations.
-* Apply ACLs.
-* Get an integrated interface to test your Graphql API: Graphqli is available by default.
-* Counts for each model can also be generated
-* Subscriptions will soon be available for all auto-generated mutations
+* [x] Query any model defined in your app through Graphql.
+* [x] Auto-generate create/update/delete mutations.
+* [x] Define before/after hooks and all resolvers, including the mutations.
+* [x] Easily create custom mutations.
+* [x] Get an integrated interface to test your Graphql API: Graphqli is available by default.
+* [x] Counts for each model can also be generated
+* [x] Subscriptions auto-generated for mutations
+* [ ] Add custom fields/resolvers on auto-generated types
   <!-- [END usecases] -->
 
 <!-- [START getstarted] -->
@@ -44,7 +44,7 @@ yarn add graphql-sequelize-generator
 
 Caution: GSG requires at least Node v7.6.0 or greater as it is using async/await.
 
-**Example** - adding a graphql API to my express:
+**Example** - adding a GraphQL API to my express:
 
 ```js
 const models = require("./models");
@@ -170,6 +170,22 @@ list: {
 ## Contributing to GSG
 
 Check out [contributing guide](https://github.com/inovia-team/graphql-sequelize-generator/blob/master/CONTRIBUTING.md) to get an overview of open-source development at Matters.
+
+###
+
+Tests can be run with:
+
+```bash
+yarn test
+```
+
+A test server can be started with generated seeds with:
+
+```bash
+yarn start
+```
+
+It will make available a Graphiql interface at this [url](http://localhost:8080/graphql)
 
 <!-- [START faq] -->
 

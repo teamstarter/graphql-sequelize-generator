@@ -10,7 +10,7 @@ const departmentPerCompany = 5
 module.exports = {
   up: function (queryInterface, Sequelize) {
     let departments = []
-    let a = [...Array(50)].map((c, companyId) => {
+    for (let companyId = 0; companyId < 50; companyId++) {
       departments = [
         ...departments,
         ...[...Array(departmentPerCompany)].map((u, index) => ({
@@ -19,7 +19,7 @@ module.exports = {
           companyId: companyId + 1
         }))
       ]
-    })
+    }
 
     departments = departments.map(timestamp) // Add timestamps
 

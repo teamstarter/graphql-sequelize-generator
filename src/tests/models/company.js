@@ -7,6 +7,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
+      },
+      companyTypeId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
       }
     },
     {
@@ -17,6 +21,10 @@ module.exports = function (sequelize, DataTypes) {
   Company.associate = function (models) {
     models.company.hasMany(models.user)
     models.company.hasMany(models.department)
+    models.company.belongsTo(models.companyType, {
+      as: 'type',
+      foreignKey: 'companyTypeId'
+    })
   }
   return Company
 }

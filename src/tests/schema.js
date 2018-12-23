@@ -1,19 +1,24 @@
-const models = require('./models')
-const {
-  generateModelTypes,
-  generateGraphqlExpressMiddleware,
-  generateSchema
-} = require('./../index.js')
 const { GraphQLObjectType, GraphQLString } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
+const {
+  generateGraphqlExpressMiddleware,
+  generateSchema,
+  generateModelTypes
+} = require('./../generate')
+const models = require('./models')
 
 const graphqlSchemaDeclaration = {}
 const modelTypes = generateModelTypes(models)
 const pubSubInstance = new PubSub()
 
+graphqlSchemaDeclaration.companyType = {
+  model: models.companyType,
+  actions: ['list']
+}
+
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ['list', 'create'],
+  actions: ['list', 'create', 'delete', 'update'],
   list: {
     before: (findOptions, args, context, info) => {
       if (typeof findOptions.where === 'undefined') {
@@ -47,11 +52,17 @@ graphqlSchemaDeclaration.department = {
   model: models.department,
   actions: ['list', 'create'],
   list: {
-    before: (findOptions, args, context, info) => {
-      findOptions.where = {
-        id: [1, 2, 3, 4, 5, 6, 7, 8]
-      }
-      return findOptions
+    resolver: (source, args, context, info) => {
+      // Making custom resolvers on the list query can be useful
+      // but keep in mind that it will impact the recursivity of the graph.
+      // Here, defining our own resolver without taking into account the args
+      // and the context will make that "departments" will never be returned
+      // when queried outside a simple query like {department{id}}
+      return models.department.findAll({
+        where: {
+          id: [1, 2, 3, 4, 5, 6, 7, 8]
+        }
+      })
     }
   }
 }
@@ -82,7 +93,8 @@ module.exports = {
   graphqlExpressMiddleware: generateGraphqlExpressMiddleware(
     graphqlSchemaDeclaration,
     modelTypes,
+    models,
     pubSubInstance
   ),
-  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, pubSubInstance)
+  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, models)
 }

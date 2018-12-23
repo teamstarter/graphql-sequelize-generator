@@ -7,7 +7,7 @@
   "author": "vincent desmares <vincent.desmares@gmail.com>",
   "license": "BSD-3-Clause",
   "engines": {
-    "node": "8.9.1"
+    "node": ">=9.11.2"
   },
   "devDependencies": {
     "eslint": "^4.16.0",
@@ -20,14 +20,19 @@
     "prettier-eslint": "^8.8.1",
     "spdy": "^3.4.7",
     "sqlite3": "^3.1.13",
+    "standard-version": "^4.4.0",
     "supertest": "^3.0.0",
     "umzug": "^2.1.0"
   },
   "scripts": {
-    "test": "DEBUG=-* PORT=8282 jest",
-    "lint-check": "eslint src"
+    "test": "NODE_ENV=test DEBUG=-* PORT=8282 jest -i",
+    "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
+    "lint-check": "eslint src",
+    "start": "rm -f ./src/tests/data/main.db && node ./src/tests/testServer.js",
+    "release": "standard-version"
   },
   "dependencies": {
+    "apollo-server-express": "1.4.0",
     "debug": "^3.1.0",
     "express": "^4.16.2",
     "express-graphql": "^0.6.11",

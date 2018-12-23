@@ -9,7 +9,8 @@ module.exports = {
   up: function (queryInterface, Sequelize) {
     let companies = [...Array(50)].map((u, index) => ({
       id: index + 1,
-      name: `Company ${index + 1}`
+      name: `Company ${index + 1}`,
+      companyTypeId: index % 4
     }))
 
     companies = companies.map(timestamp) // Add timestamps

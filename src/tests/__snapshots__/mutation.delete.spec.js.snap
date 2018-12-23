@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the delete mutation Check that you can delete an entity 1`] = `1`;
+
+exports[`Test the delete mutation Check that you can delete an entity: The user 5 should not exist anymore 1`] = `
+Array [
+  Object {
+    "id": 5,
+    "name": "Test 5 c 2",
+  },
+]
+`;
+
+exports[`Test the delete mutation Check that you can delete an entity: The user 5 should not exist anymore 2`] = `Array []`;

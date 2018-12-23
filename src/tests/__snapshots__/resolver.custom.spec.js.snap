@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the custom resolvers Check that you can query a custom list resolver: A few departments 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Department 1 c 1",
+  },
+  Object {
+    "id": 2,
+    "name": "Department 2 c 1",
+  },
+  Object {
+    "id": 3,
+    "name": "Department 3 c 1",
+  },
+  Object {
+    "id": 4,
+    "name": "Department 4 c 1",
+  },
+  Object {
+    "id": 5,
+    "name": "Department 5 c 1",
+  },
+  Object {
+    "id": 6,
+    "name": "Department 6 c 1",
+  },
+  Object {
+    "id": 7,
+    "name": "Department 7 c 1",
+  },
+  Object {
+    "id": 8,
+    "name": "Department 8 c 1",
+  },
+]
+`;
