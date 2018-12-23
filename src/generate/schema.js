@@ -1,17 +1,30 @@
-const generateQuery = require('./query')
+const generateQueryRootResolver = require('./rootQueryResolver')
 const generateSubscriptions = require('./subscriptions')
 const generateMutation = require('./mutation')
 
-const generateSchema = (graphqlSchemaDeclaration, types, models) => {
+const generateSchema = (
+  graphqlSchemaDeclaration,
+  types,
+  models,
+  pubSubInstance
+) => {
   return {
-    query: generateQuery(graphqlSchemaDeclaration, types.outputTypes, models),
+    query: generateQueryRootResolver(
+      graphqlSchemaDeclaration,
+      types.outputTypes,
+      models
+    ),
     mutation: generateMutation(
       graphqlSchemaDeclaration,
       types.inputTypes,
       types.outputTypes,
       models
     ),
-    subscription: generateSubscriptions(graphqlSchemaDeclaration, types)
+    subscription: generateSubscriptions(
+      graphqlSchemaDeclaration,
+      types,
+      pubSubInstance
+    )
   }
 }
 

@@ -75,6 +75,7 @@ graphqlSchemaDeclaration.serverStatistics = {
       serverBootDate: { type: GraphQLString }
     }
   }),
+
   // Example of args
   // args: {
   //   id: {
