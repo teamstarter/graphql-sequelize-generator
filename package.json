@@ -1,6 +1,6 @@
 {
   "name": "graphql-sequelize-generator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A set of tools to easily generate a Graphql API from sequelize models.",
   "main": "src/index.js",
   "repository": "git@github.com:inovia-team/graphql-sequelize-generator.git",
