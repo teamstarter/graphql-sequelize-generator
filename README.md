@@ -4,6 +4,7 @@
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![Build Status](https://travis-ci.org/inovia-team/graphql-sequelize-generator.svg?branch=master)](https://travis-ci.org/inovia-team/graphql-sequelize-generator)
+[![Npm version]](https://img.shields.io/npm/v/graphql-sequelize-generator.svg)
 
 <!-- [END badges] -->
 
@@ -17,14 +18,14 @@
 
 The tools provided by this library will allow you to:
 
-* [x] Query any model defined in your app through Graphql.
-* [x] Auto-generate create/update/delete mutations.
-* [x] Define before/after hooks and all resolvers, including the mutations.
-* [x] Easily create custom mutations.
-* [x] Get an integrated interface to test your Graphql API: Graphqli is available by default.
-* [x] Counts for each model can also be generated
-* [x] Subscriptions auto-generated for mutations
-* [ ] Add custom fields/resolvers on auto-generated types
+- [x] Query any model defined in your app through Graphql.
+- [x] Auto-generate create/update/delete mutations.
+- [x] Define before/after hooks and all resolvers, including the mutations.
+- [x] Easily create custom mutations.
+- [x] Get an integrated interface to test your Graphql API: Graphqli is available by default.
+- [x] Counts for each model can also be generated
+- [x] Subscriptions auto-generated for mutations
+- [ ] Add custom fields/resolvers on auto-generated types
   <!-- [END usecases] -->
 
 <!-- [START getstarted] -->
