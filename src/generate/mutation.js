@@ -13,6 +13,10 @@ const generateMutation = (
   const fields = Object.keys(inputTypes).reduce((mutations, modelName) => {
     const inputType = inputTypes[modelName]
     const outputType = outputTypes[modelName]
+    if (!graphqlSchemaDeclaration[modelName]) {
+      // If the model is not defined, we just ignore it
+      return mutations
+    }
     const model = graphqlSchemaDeclaration[modelName].model
     const actions = graphqlSchemaDeclaration[modelName].actions || [
       'create',

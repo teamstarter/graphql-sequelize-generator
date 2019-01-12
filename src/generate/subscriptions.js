@@ -9,6 +9,9 @@ const generateSubscriptions = (
   const fields = Object.keys(types.inputTypes).reduce(
     (subscriptions, modelName) => {
       const outputType = types.outputTypes[modelName]
+      if (!graphqlSchemaDeclaration[modelName]) {
+        return subscriptions
+      }
       const actions = graphqlSchemaDeclaration[modelName].actions || [
         'create',
         'update',
@@ -71,6 +74,10 @@ const generateSubscriptions = (
     },
     {}
   )
+
+  if (Object.values(fields).length === 0) {
+    return undefined
+  }
 
   return new GraphQLObjectType({
     name: 'Subscription',

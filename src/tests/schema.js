@@ -13,7 +13,7 @@ const pubSubInstance = new PubSub()
 
 graphqlSchemaDeclaration.companyType = {
   model: models.companyType,
-  actions: ['list']
+  actions: ['list', 'create']
 }
 
 graphqlSchemaDeclaration.user = {
@@ -95,7 +95,10 @@ module.exports = {
     graphqlSchemaDeclaration,
     modelTypes,
     models,
-    pubSubInstance
+    pubSubInstance,
+    {
+      playground: true
+    }
   ),
   schema: generateSchema(graphqlSchemaDeclaration, modelTypes, models)
 }

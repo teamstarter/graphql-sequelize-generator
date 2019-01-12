@@ -18,16 +18,13 @@ var options = {
 
 /**
  * This is the test server.
- * Used to allow the access to graphiql.
+ * Used to allow the access to the Graphql Playground at this address: http://localhost:8080/graphql.
  * Each time the server is starter, the database is reset.
  */
-app.use('/graphql', bodyParser.json(), graphqlExpressMiddleware)
-app.use(
-  '/graphiql',
-  graphiqlExpress({
-    endpointURL: '/graphql'
-  })
-)
+graphqlExpressMiddleware.applyMiddleware({
+  app,
+  path: '/graphql'
+})
 
 const server = http
   .createServer(options, app)

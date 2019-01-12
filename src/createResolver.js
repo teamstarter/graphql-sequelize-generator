@@ -136,7 +136,6 @@ const createResolver = (graphqlTypeDeclaration, models, relation = null) => {
         args,
         context,
         info,
-        listBefore,
         graphqlTypeDeclaration.model,
         models
       )

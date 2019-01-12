@@ -16,6 +16,7 @@
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
+    "graphql-relay": "^0.5.5",
     "jest": "^22.1.4",
     "prettier-eslint": "^8.8.1",
     "spdy": "^3.4.7",
@@ -33,13 +34,13 @@
     "publish": "npm publish"
   },
   "dependencies": {
-    "apollo-server-express": "1.4.0",
-    "debug": "^3.1.0",
-    "express": "^4.16.2",
-    "graphql": "^0.12.3",
-    "graphql-sequelize": "^5.6.1",
-    "graphql-subscriptions": "^0.5.6",
-    "sequelize": "^4.32.1",
+    "apollo-server-express": "2.3.1",
+    "debug": "^4.1.1",
+    "express": "^4.16.4",
+    "graphql": "^14.0.2",
+    "graphql-sequelize": "^9.3.3",
+    "graphql-subscriptions": "^1.0.0",
+    "sequelize": "^4.42.0",
     "subscriptions-transport-ws": "^0.9.5"
   },
   "jest": {

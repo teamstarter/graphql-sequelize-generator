@@ -10,7 +10,7 @@ const createServer = async (options = {}) => {
     spdy: { plain: true },
     ...options
   }
-  app.use('/graphql', bodyParser.json(), graphqlExpressMiddleware)
+  graphqlExpressMiddleware.applyMiddleware({ app, path: '/graphql' })
   const server = await new Promise((resolve, reject) => {
     const newServer = http
       .createServer(options, app)

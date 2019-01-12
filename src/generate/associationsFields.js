@@ -12,26 +12,24 @@ const generateAssociationField = (relation, types, resolver = null) => {
 
   let field = {
     type,
-    args: {
-      // An arg with the key order will automatically be converted to a order on the target
-      order: {
+    isDeprecated: false,
+    name: relation.as,
+    args: [
+      {
+        // An arg with the key order will automatically be converted to a order on the target
+        name: 'order',
         type: GraphQLString
       }
-    }
+    ]
   }
 
   if (relation.associationType === 'HasMany') {
     // Limit and offset will only work for HasMany relation ship
-    // Having the limit on the include will tigger a "Only HasMany associations support include.separate" error.
+    // Having the limit on the include will trigger a "Only HasMany associations support include.separate" error.
     // While sequelize N:M associations are not supported with hasMany. So BelongsToMany relationships
     // cannot be limited in a subquery. If you want to query them, make a custom resolver, or create a view.
-
-    field.args.limit = {
-      type: GraphQLInt
-    }
-    field.args.offset = {
-      type: GraphQLInt
-    }
+    field.args.push({ name: 'limit', type: GraphQLInt })
+    field.args.push({ name: 'offset', type: GraphQLInt })
   }
 
   if (resolver) {
@@ -75,6 +73,13 @@ const injectAssociations = (
   }
   const associationsFields = {}
   for (let associationName in associations) {
+    if (!graphqlSchemaDeclaration[associations[associationName].target.name]) {
+      throw new Error(
+        `Cannot generate the association for model [${
+          associations[associationName].target.name
+        }] as it wasn't declared in the schema declaration.`
+      )
+    }
     associationsFields[associationName] = generateAssociationField(
       associations[associationName],
       outputTypes,
@@ -85,22 +90,9 @@ const injectAssociations = (
       )
     )
   }
-  // We have to mutate the original field, as type names must be unique
-  // We cannot return a new type as the type may have already been used
-  // In previous models.
-  const oldFields = { ...modelType._typeConfig.fields }
-  let baseFields = {}
-  if (typeof graphqlSchemaDeclaration[modelName] !== 'undefined') {
-    baseFields = attributeFields(graphqlSchemaDeclaration[modelName].model, {
-      allowNull: false,
-      exclude: graphqlSchemaDeclaration[modelName].excludeFields
-    })
-  }
-  // return
-  modelType._typeConfig.fields = {
-    ...oldFields,
-    ...baseFields,
-    ...associationsFields
+
+  for (const field in associationsFields) {
+    modelType._fields[field] = associationsFields[field]
   }
 
   return modelType

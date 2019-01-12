@@ -22,7 +22,8 @@ module.exports = function generateQueryRootResolver (
       const modelType = outputTypes[modelTypeName]
       const schemaDeclaration = allSchemaDeclarations[modelType.name]
       if (typeof schemaDeclaration === 'undefined') {
-        throw new Error(`The model type ${modelType.name} is not defined`)
+        // If a model is not defined, we just ignore it.
+        return fields
       }
 
       // @todo counts should only be added if configured in the schema declaration
