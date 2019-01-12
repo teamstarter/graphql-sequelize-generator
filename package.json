@@ -29,7 +29,8 @@
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
     "start": "rm -f ./src/tests/data/main.db && node ./src/tests/testServer.js",
-    "release": "standard-version"
+    "release": "standard-version",
+    "publish": "npm publish"
   },
   "dependencies": {
     "apollo-server-express": "1.4.0",
