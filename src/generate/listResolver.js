@@ -1,4 +1,4 @@
-const { GraphQLObjectType, GraphQLList, GraphQLInt } = require('graphql')
+const { GraphQLList } = require('graphql')
 const { defaultArgs, defaultListArgs } = require('graphql-sequelize')
 
 const createResolver = require('../createResolver')

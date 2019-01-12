@@ -1,5 +1,4 @@
 const { GraphQLList, GraphQLString, GraphQLInt } = require('graphql')
-const { attributeFields } = require('graphql-sequelize')
 
 const createResolver = require('../createResolver')
 

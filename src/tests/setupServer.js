@@ -1,7 +1,6 @@
 const express = require('express')
 const { graphqlExpressMiddleware } = require('./schema')
 const http = require('spdy')
-const bodyParser = require('body-parser')
 const { migrateDatabase, seedDatabase } = require('./testDatabase.js')
 
 const createServer = async (options = {}) => {
