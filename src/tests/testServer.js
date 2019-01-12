@@ -2,6 +2,8 @@ const express = require('express')
 const http = require('spdy')
 const { SubscriptionServer } = require('subscriptions-transport-ws')
 const { execute, subscribe } = require('graphql')
+const { graphiqlExpress } = require('apollo-server-express')
+const bodyParser = require('body-parser')
 
 const { migrateDatabase, seedDatabase } = require('./testDatabase.js')
 const { graphqlExpressMiddleware, schema } = require('./schema')
@@ -16,10 +18,14 @@ var options = {
 
 /**
  * This is the test server.
- * Used to allow the access to graphiql.
+ * Used to allow the access to the Graphql Playground at this address: http://localhost:8080/graphql.
  * Each time the server is starter, the database is reset.
  */
-app.use('/graphql', graphqlExpressMiddleware)
+graphqlExpressMiddleware.applyMiddleware({
+  app,
+  path: '/graphql'
+})
+
 const server = http
   .createServer(options, app)
   .listen(process.env.PORT || 8080, async () => {

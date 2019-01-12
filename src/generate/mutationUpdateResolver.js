@@ -1,22 +1,28 @@
+const { GraphQLNonNull } = require('graphql')
 /**
- * Generates an update mutation operation
+ * Generates a update mutation operation
  *
  * @param {*} modelName
  * @param {*} inputType
  * @param {*} outputType
  * @param {*} model
  */
-module.exports = (
+const generateMutationUpdate = (
   modelName,
   inputType,
   outputType,
   model,
-  graphqlModelDeclaration
+  graphqlModelDeclaration,
+  models
 ) => ({
   type: outputType,
   description: 'Update a ' + modelName,
   args: {
-    [modelName]: { type: inputType }
+    [modelName]: { type: new GraphQLNonNull(inputType) },
+    ...(graphqlModelDeclaration.update &&
+    graphqlModelDeclaration.update.extraArg
+      ? graphqlModelDeclaration.update.extraArg
+      : {})
   },
   resolve: async (source, args, context, info) => {
     let data = args[modelName]
@@ -32,12 +38,13 @@ module.exports = (
       )
     }
 
-    const object = await model.findOne({ where: { id: data.id } })
+    const object = await models[modelName].findOne({ where: { id: data.id } })
 
     if (!object) {
       throw new Error(`${modelName} not found.`)
     }
 
+    const snapshotBeforeUpdate = { ...object.get({ plain: true }) }
     await object.update(data)
     await object.reload()
 
@@ -47,6 +54,7 @@ module.exports = (
     ) {
       return graphqlModelDeclaration.update.after(
         object,
+        snapshotBeforeUpdate,
         source,
         args,
         context,
@@ -56,3 +64,5 @@ module.exports = (
     return object
   }
 })
+
+module.exports = generateMutationUpdate

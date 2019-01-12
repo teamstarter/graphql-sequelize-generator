@@ -1,3 +1,4 @@
+const { GraphQLNonNull } = require('graphql')
 /**
  * Generates a create mutation operation
  *
@@ -6,7 +7,7 @@
  * @param {*} outputType
  * @param {*} model
  */
-module.exports = (
+const generateMutationCreate = (
   modelName,
   inputType,
   outputType,
@@ -15,41 +16,42 @@ module.exports = (
 ) => ({
   type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
   description: 'Create a ' + modelName,
-  args: Object.assign(
-    {
-      [modelName]: { type: inputType }
-    },
-    graphqlModelDeclaration.create && graphqlModelDeclaration.create.extraArg
+  args: {
+    [modelName]: { type: new GraphQLNonNull(inputType) },
+    ...(graphqlModelDeclaration.create &&
+    graphqlModelDeclaration.create.extraArg
       ? graphqlModelDeclaration.create.extraArg
-      : {}
-  ),
+      : {})
+  },
   resolve: async (source, args, context, info) => {
-    let object = args[modelName]
+    let selectedModel = args[modelName]
     if (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.before
     ) {
-      object = await graphqlModelDeclaration.create.before(
+      selectedModel = await graphqlModelDeclaration.create.before(
         source,
         args,
         context,
         info
       )
     }
-    const newObject = await model.create(object)
+    const newModel = await model.create(selectedModel)
 
     if (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.after
     ) {
       return graphqlModelDeclaration.create.after(
-        newObject,
+        newModel,
         source,
         args,
         context,
         info
       )
     }
-    return newObject
+    return newModel
   }
 })
+
+module.exports = generateMutationCreate

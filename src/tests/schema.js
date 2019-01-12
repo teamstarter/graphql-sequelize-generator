@@ -1,11 +1,11 @@
-const models = require('./models')
-const {
-  generateModelTypes,
-  generateGraphqlExpressMiddleware,
-  generateSchema
-} = require('./../index.js')
 const { GraphQLObjectType, GraphQLString } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
+const {
+  generateGraphqlExpressMiddleware,
+  generateSchema,
+  generateModelTypes
+} = require('./../generate')
+const models = require('./models')
 
 const graphqlSchemaDeclaration = {}
 const modelTypes = generateModelTypes(models)
@@ -13,7 +13,7 @@ const pubSubInstance = new PubSub()
 
 graphqlSchemaDeclaration.companyType = {
   model: models.companyType,
-  actions: ['list']
+  actions: ['list', 'create']
 }
 
 graphqlSchemaDeclaration.user = {
@@ -75,6 +75,7 @@ graphqlSchemaDeclaration.serverStatistics = {
       serverBootDate: { type: GraphQLString }
     }
   }),
+
   // Example of args
   // args: {
   //   id: {
@@ -93,7 +94,11 @@ module.exports = {
   graphqlExpressMiddleware: generateGraphqlExpressMiddleware(
     graphqlSchemaDeclaration,
     modelTypes,
-    pubSubInstance
+    models,
+    pubSubInstance,
+    {
+      playground: true
+    }
   ),
-  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, pubSubInstance)
+  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, models)
 }

@@ -1,5 +1,4 @@
 const { GraphQLInt, GraphQLNonNull } = require('graphql')
-
 /**
  * Generates a delete mutation operation
  *
@@ -8,11 +7,12 @@ const { GraphQLInt, GraphQLNonNull } = require('graphql')
  * @param {*} outputType
  * @param {*} model
  */
-module.exports = (
+const generateMutationDelete = (
   modelName,
   inputType,
   outputType,
-  graphqlModelDeclaration
+  graphqlModelDeclaration,
+  models
 ) => ({
   type: GraphQLInt,
   description: 'Delete a ' + modelName,
@@ -33,9 +33,31 @@ module.exports = (
         info
       )
     }
+
+    const entity = await models[modelName].findOne({ where })
+
+    if (!entity) {
+      throw new Error(`${modelName} not found.`)
+    }
+
     const rowDeleted = await graphqlModelDeclaration.model.destroy({
       where
     }) // Returns the number of rows affected (0 or 1)
+
+    if (
+      graphqlModelDeclaration.delete &&
+      graphqlModelDeclaration.delete.after
+    ) {
+      await graphqlModelDeclaration.delete.after(
+        entity,
+        source,
+        args,
+        context,
+        info
+      )
+    }
     return rowDeleted
   }
 })
+
+module.exports = generateMutationDelete

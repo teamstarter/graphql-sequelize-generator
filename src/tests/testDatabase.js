@@ -40,14 +40,14 @@ const seederFiles = fs
 const umzugMigrations = new Umzug(umzugOptions('./src/tests/migrations'))
 const umzugSeeders = new Umzug(umzugOptions('./src/tests/seeders'))
 
-exports.migrateDatabase = async () =>
+exports.migrateDatabase = () =>
   umzugMigrations.up({
     migrations: migrationFiles
   })
 
-exports.seedDatabase = async () =>
+exports.seedDatabase = () =>
   umzugSeeders.up({
     migrations: seederFiles
   })
 
-exports.deleteTables = async () => sequelize.getQueryInterface().dropAllTables()
+exports.deleteTables = () => sequelize.getQueryInterface().dropAllTables()

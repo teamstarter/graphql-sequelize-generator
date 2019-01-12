@@ -1,52 +1,21 @@
 const request = require('supertest')
-const {
-  migrateDatabase,
-  seedDatabase,
-  deleteTables
-} = require('./testDatabase.js')
-const express = require('express')
-const { graphqlExpressMiddleware } = require('./schema')
-const http = require('spdy')
-
-let app = null
-let server = null
-
-var options = {
-  spdy: {
-    plain: true
-  }
-}
+const { deleteTables } = require('./testDatabase.js')
+const { createServer, closeServer, resetDb } = require('./setupServer')
 
 /**
  * Starting the tests
  */
 describe('Test the custom resolvers', () => {
+  let server = null
+
   beforeAll(async () => {
-    app = express()
-    app.use('/graphql', graphqlExpressMiddleware)
-    server = await new Promise((resolve, reject) => {
-      const newServer = http
-        .createServer(options, app)
-        .listen(process.env.PORT || 8080, () => {
-          resolve(newServer)
-        })
-    })
+    server = await createServer()
   })
 
-  afterAll(() =>
-    Promise.all([
-      new Promise((resolve, reject) => server.close(() => resolve()))
-    ])
-  )
+  afterAll(() => closeServer(server))
 
   beforeEach(async () => {
-    try {
-      await migrateDatabase()
-      await seedDatabase()
-    } catch (e) {
-      console.log('Critical error during the database migration', e.message, e)
-      throw e
-    }
+    await resetDb()
   })
 
   afterEach(async () => {

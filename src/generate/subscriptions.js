@@ -1,14 +1,17 @@
-const { GraphQLInt, GraphQLObjectType } = require('graphql')
 const { withFilter } = require('graphql-subscriptions')
+const { GraphQLInt, GraphQLObjectType } = require('graphql')
 
-module.exports = (graphqlSchemaDeclaration, types, pubSubInstance) => {
-  if (!pubSubInstance) {
-    return undefined
-  }
-
+const generateSubscriptions = (
+  graphqlSchemaDeclaration,
+  types,
+  pubSubInstance
+) => {
   const fields = Object.keys(types.inputTypes).reduce(
     (subscriptions, modelName) => {
       const outputType = types.outputTypes[modelName]
+      if (!graphqlSchemaDeclaration[modelName]) {
+        return subscriptions
+      }
       const actions = graphqlSchemaDeclaration[modelName].actions || [
         'create',
         'update',
@@ -72,8 +75,14 @@ module.exports = (graphqlSchemaDeclaration, types, pubSubInstance) => {
     {}
   )
 
+  if (Object.values(fields).length === 0) {
+    return undefined
+  }
+
   return new GraphQLObjectType({
     name: 'Subscription',
     fields
   })
 }
+
+module.exports = generateSubscriptions
