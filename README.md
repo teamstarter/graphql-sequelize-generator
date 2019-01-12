@@ -4,7 +4,7 @@
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![Build Status](https://travis-ci.org/inovia-team/graphql-sequelize-generator.svg?branch=master)](https://travis-ci.org/inovia-team/graphql-sequelize-generator)
-[![Npm version]](https://img.shields.io/npm/v/graphql-sequelize-generator.svg)
+![](https://img.shields.io/npm/v/graphql-sequelize-generator.svg)
 
 <!-- [END badges] -->
 
