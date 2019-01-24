@@ -28,7 +28,7 @@ The tools provided by this library will allow you to:
 - [ ] Add custom fields/resolvers on auto-generated types
   <!-- [END usecases] -->
 
-![Generated API](https://github.com/matterstech/graphql-sequelize-generator/raw/master/assets/screen-graphgql-playground.png)
+![Generated API](https://github.com/matterstech/graphql-sequelize-generator/raw/master/assets/screen-graphql-playground.png)
 
 <!-- [START getstarted] -->
 
