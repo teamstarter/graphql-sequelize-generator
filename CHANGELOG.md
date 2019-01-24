@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.3.0...v0.4.0) (2019-01-24)
+
+
+### Bug Fixes
+
+* **dependencies:** Make dataloader-sequelize a dep. ([b38f126](https://github.com/inovia-team/graphql-sequelize-generator/commit/b38f126))
+
+
+### Features
+
+* **doc:** Improve the README to reflect the last APIs changes. ([9939787](https://github.com/inovia-team/graphql-sequelize-generator/commit/9939787))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.2.1...v0.3.0) (2019-01-12)
 
