@@ -3,12 +3,12 @@
 <!-- [START badges] -->
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
-[![Build Status](https://travis-ci.org/inovia-team/graphql-sequelize-generator.svg?branch=master)](https://travis-ci.org/inovia-team/graphql-sequelize-generator)
+[![Build Status](https://travis-ci.org/matterstech/graphql-sequelize-generator.svg?branch=master)](https://travis-ci.org/matterstech/graphql-sequelize-generator)
 ![](https://img.shields.io/npm/v/graphql-sequelize-generator.svg)
 
 <!-- [END badges] -->
 
-###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/inovia-team/graphql-sequelize-generator/blob/master/CONTRIBUTING.md)
+###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/matterstech/graphql-sequelize-generator/blob/master/CONTRIBUTING.md)
 
 > Graphql-Sequelize-Generator (GSG) is a set of tools that will allow you to easily generate a [graphql](http://graphql.org/) API from your [sequelize](http://docs.sequelizejs.com/) models.
 
@@ -28,6 +28,8 @@ The tools provided by this library will allow you to:
 - [ ] Add custom fields/resolvers on auto-generated types
   <!-- [END usecases] -->
 
+![Generated API](https://github.com/matterstech/graphql-sequelize-generator/raw/master/assets/screen-graphgql-playground.png)
+
 <!-- [START getstarted] -->
 
 ## Getting Started
@@ -43,46 +45,61 @@ yarn add graphql-sequelize-generator
 
 ### Usage
 
-Caution: GSG requires at least Node v7.6.0 or greater as it is using async/await.
+Caution: GSG requires at least Node v9.11.2 or greater as it is using async/await.
 
 **Example** - adding a GraphQL API to my express:
 
 ```js
-const models = require("./models");
+const express = require("express");
 const {
   generateModelTypes,
   generateGraphqlExpressMiddleware
-} = require("./../index.js");
+} = require("graphql-sequelize-generator");
+const models = require("./models");
 
 const modelTypes = generateModelTypes(models);
 
 graphqlSchemaDeclaration.user = {
-  model: models.user
+  model: models.user,
+  actions: ["list", "create"]
 };
 
-app.use(
-  "/graphql",
-  generateGraphqlExpressMiddleware(graphqlSchemaDeclaration, modelTypes)
+const server = generateGraphqlExpressMiddleware(
+  graphqlSchemaDeclaration,
+  modelTypes,
+  models
 );
+
+const app = express();
+server.applyMiddleware({
+  app,
+  path: "/graphql"
+});
 ```
 
 **Example** - Custom mutation.
 
 ```js
-graphqlSchemaDeclaration.serverStatistics = {
-  type: new GraphQLObjectType({
-    name: "serverStatistics",
-    description: "Statistics about the server",
-    fields: {
-      serverBootDate: { type: GraphQLString }
+graphqlSchemaDeclaration.user = {
+  model: models.user,
+  actions: ["list", "create"],
+  additionalMutations: {
+    serverStatistics = {
+      type: new GraphQLObjectType({
+        name: "serverStatistics",
+        description: "Statistics about the server",
+        fields: {
+          serverBootDate: { type: GraphQLString }
+        }
+      }),
+      resolve: async (source, args, context, info) => {
+        return {
+          serverBootDate: context.bootDate
+        };
+      }
     }
-  }),
-  resolve: async (source, args, context, info) => {
-    return {
-      serverBootDate: context.bootDate
-    };
   }
-};
+}
 ```
 
 **Example** - Select only
@@ -119,7 +136,7 @@ graphqlSchemaDeclaration.user = {
 
 ## API Documentation
 
-Explore the [API documentation](docs/api.md) and [examples](https://github.com/inovia-team/graphql-sequelize-generator/tree/master/examples/) to learn more.
+Explore the [API documentation](docs/api.md) and [examples](https://github.com/matterstech/graphql-sequelize-generator/tree/master/examples/) to learn more.
 
 ## Known limitations
 
@@ -170,7 +187,7 @@ list: {
 
 ## Contributing to GSG
 
-Check out [contributing guide](https://github.com/inovia-team/graphql-sequelize-generator/blob/master/CONTRIBUTING.md) to get an overview of open-source development at Matters.
+Check out [contributing guide](https://github.com/matterstech/graphql-sequelize-generator/blob/master/CONTRIBUTING.md) to get an overview of open-source development at Matters.
 
 ###
 
