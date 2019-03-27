@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.4.0...v0.5.0) (2019-03-27)
+
+
+### Bug Fixes
+
+* **deps:** Fix outdated dependency. ([1b7b724](https://github.com/inovia-team/graphql-sequelize-generator/commit/1b7b724))
+
+
+### Features
+
+* **seo:** Add tags for npm discovery. ([c1a12dd](https://github.com/inovia-team/graphql-sequelize-generator/commit/c1a12dd))
+
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.3.0...v0.4.0) (2019-01-24)
 
