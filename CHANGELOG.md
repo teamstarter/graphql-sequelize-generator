@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.1"></a>
+## [0.5.1](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.5.0...v0.5.1) (2019-03-27)
+
+
+### Bug Fixes
+
+* **deps:** Move graphql as a peer-dep as the Types instances must come from the same source. ([2f2ece9](https://github.com/inovia-team/graphql-sequelize-generator/commit/2f2ece9))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.4.0...v0.5.0) (2019-03-27)
 
