@@ -1,6 +1,7 @@
 const generateMutationCreate = require('./mutationCreateResolver')
 const generateMutationUpdate = require('./mutationUpdateResolver')
 const generateMutationDelete = require('./mutationDeleteResolver')
+const generateCount = require('./countResolver')
 const generateModelTypes = require('./modelTypes')
 const generateGraphQLType = require('./graphQLType')
 const generateSchema = require('./schema')
@@ -17,6 +18,7 @@ module.exports = {
   generateMutationCreate,
   generateMutationUpdate,
   generateMutationDelete,
+  generateCount,
   generateSchema,
   generateGraphqlExpressMiddleware,
   injectAssociations

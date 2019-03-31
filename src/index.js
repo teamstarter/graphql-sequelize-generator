@@ -6,7 +6,8 @@ const {
   generateGraphqlExpressMiddleware,
   generateSchema,
   generateModelTypes,
-  injectAssociations
+  injectAssociations,
+  generateCount
 } = require('./generate')
 
 const removeUnusedAttributes = require('./removeUnusedAttributes')
@@ -21,6 +22,7 @@ module.exports = {
   generateGraphqlExpressMiddleware,
   generateSchema,
   generateModelTypes,
+  generateCount,
   // Functions that you can use in your resolvers
   removeUnusedAttributes,
   injectAssociations

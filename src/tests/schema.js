@@ -18,7 +18,7 @@ graphqlSchemaDeclaration.companyType = {
 
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ['list', 'create', 'delete', 'update'],
+  actions: ['list', 'create', 'delete', 'update', 'count'],
   list: {
     before: (findOptions, args, context, info) => {
       if (typeof findOptions.where === 'undefined') {
