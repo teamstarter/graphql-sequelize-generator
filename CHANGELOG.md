@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.5.1...v0.6.0) (2019-03-31)
+
+
+### Bug Fixes
+
+* **doc:** Remove uselss command. ([ddbfc74](https://github.com/inovia-team/graphql-sequelize-generator/commit/ddbfc74))
+
+
+### Features
+
+* Add custom query endpoints. ([abd8e87](https://github.com/inovia-team/graphql-sequelize-generator/commit/abd8e87))
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.5.0...v0.5.1) (2019-03-27)
 
