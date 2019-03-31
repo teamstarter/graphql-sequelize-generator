@@ -1,5 +1,5 @@
 const { GraphQLList, GraphQLString, GraphQLInt } = require('graphql')
-
+const { attributeFields } = require('graphql-sequelize')
 const createResolver = require('../createResolver')
 
 const generateAssociationField = (relation, types, resolver = null) => {
@@ -88,6 +88,26 @@ const injectAssociations = (
         associations[associationName]
       )
     )
+  }
+
+  // We have to mutate the original field, as type names must be unique
+  // We cannot return a new type as the type may have already been used
+  // In previous models.
+  let baseFields = {}
+  if (typeof graphqlSchemaDeclaration[modelName] !== 'undefined') {
+    baseFields = attributeFields(graphqlSchemaDeclaration[modelName].model, {
+      allowNull: false,
+      exclude: graphqlSchemaDeclaration[modelName].excludeFields
+    })
+  }
+
+  for (const field in baseFields) {
+    modelType._fields[field] = {
+      name: field,
+      isDeprecated: false,
+      args: [],
+      ...baseFields[field]
+    }
   }
 
   for (const field in associationsFields) {

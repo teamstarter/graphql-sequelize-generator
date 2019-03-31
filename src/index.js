@@ -5,7 +5,8 @@ const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 const {
   generateGraphqlExpressMiddleware,
   generateSchema,
-  generateModelTypes
+  generateModelTypes,
+  injectAssociations
 } = require('./generate')
 
 const removeUnusedAttributes = require('./removeUnusedAttributes')
@@ -20,6 +21,7 @@ module.exports = {
   generateGraphqlExpressMiddleware,
   generateSchema,
   generateModelTypes,
-  // Functions that you can use in your reducers
-  removeUnusedAttributes
+  // Functions that you can use in your resolvers
+  removeUnusedAttributes,
+  injectAssociations
 }
