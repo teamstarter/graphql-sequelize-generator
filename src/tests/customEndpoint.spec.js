@@ -5,7 +5,7 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
 /**
  * Starting the tests
  */
-describe('Test the custom resolvers', () => {
+describe('Test the custom endpoints', () => {
   let server = null
 
   beforeAll(async () => {
@@ -22,19 +22,20 @@ describe('Test the custom resolvers', () => {
     await deleteTables()
   })
 
-  it('Check that you can query a custom list resolver', async () => {
+  it('Check that you can query a custom endpoint', async () => {
     const response = await request(server)
       .get(
         `/graphql?query=
-          query getDepartments {
-            departments: department {
-              id
-              name
+          query getContextFromCustomEndpoint {
+            serverStatistics {
+              serverBootDate
             }
-          }
-          &operationName=getDepartments`
+          }`
       )
       .set('userId', 1)
-    expect(response.body.data.departments).toMatchSnapshot('A few departments')
+    expect(response.body.data.serverStatistics).not.toBeUndefined()
+    expect(response.body.data.serverStatistics).toMatchSnapshot(
+      'The server boot date.'
+    )
   })
 })

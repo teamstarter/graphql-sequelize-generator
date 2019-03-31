@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the custom endpoints Check that you can query a custom endpoint: The server boot date. 1`] = `
+Object {
+  "serverBootDate": "2017-01-01",
+}
+`;

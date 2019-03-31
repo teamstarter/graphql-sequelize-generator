@@ -35,6 +35,7 @@ describe('Test the delete mutation', () => {
       )
       .set('userId', 1)
     const user = response.body.data.user
+    expect(user).not.toBeUndefined()
     expect(user).toMatchSnapshot('The user 5 should not exist anymore')
 
     const responseMutation = await request(server)
@@ -49,6 +50,7 @@ describe('Test the delete mutation', () => {
         },
         operationName: 'userDelete'
       })
+    expect(responseMutation.body.data.userDelete).not.toBeUndefined()
     expect(responseMutation.body.data.userDelete).toMatchSnapshot()
 
     const response2 = await request(server)
@@ -64,6 +66,7 @@ describe('Test the delete mutation', () => {
       )
       .set('userId', 1)
     const userDeleted = response2.body.data.user
+    expect(userDeleted).not.toBeUndefined()
     expect(userDeleted).toMatchSnapshot('The user 5 should not exist anymore')
   })
 })

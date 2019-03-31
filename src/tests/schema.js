@@ -75,14 +75,6 @@ graphqlSchemaDeclaration.serverStatistics = {
       serverBootDate: { type: GraphQLString }
     }
   }),
-
-  // Example of args
-  // args: {
-  //   id: {
-  //     name: 'id',
-  //     type: new GraphQLNonNull(GraphQLID)
-  //   }
-  // },
   resolve: async (source, args, context, info) => {
     return {
       serverBootDate: context.bootDate
@@ -97,7 +89,11 @@ module.exports = {
     models,
     pubSubInstance,
     {
-      playground: true
+      playground: true,
+      context: ({ req }) => {
+        // This is an example of context manipulation.
+        return { ...req, bootDate: '2017-01-01' }
+      }
     }
   ),
   schema: generateSchema(graphqlSchemaDeclaration, modelTypes, models)
