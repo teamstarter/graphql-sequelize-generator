@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.7.1...v1.0.0) (2019-04-13)
+
+
+### Features
+
+* **subscriptions:** Make generated subscriptions work. ([05e1393](https://github.com/inovia-team/graphql-sequelize-generator/commit/05e1393))
+
+
+### BREAKING CHANGES
+
+* **subscriptions:** Rename generateGraphqlExpressMiddleware to generateApolloServer.
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](https://github.com/inovia-team/graphql-sequelize-generator/compare/v0.7.0...v0.7.1) (2019-03-31)
 
