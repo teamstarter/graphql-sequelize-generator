@@ -8,7 +8,8 @@ const generateMutation = (
   graphqlSchemaDeclaration,
   inputTypes,
   outputTypes,
-  models
+  models,
+  pubSubInstance = null
 ) => {
   const fields = Object.keys(inputTypes).reduce((mutations, modelName) => {
     const inputType = inputTypes[modelName]
@@ -34,7 +35,8 @@ const generateMutation = (
             inputType,
             outputType,
             model,
-            graphqlSchemaDeclaration[modelName]
+            graphqlSchemaDeclaration[modelName],
+            pubSubInstance
           )
     }
     if (actions.includes('update')) {
@@ -48,7 +50,8 @@ const generateMutation = (
             outputType,
             model,
             graphqlSchemaDeclaration[modelName],
-            models
+            models,
+            pubSubInstance
           )
     }
     if (actions.includes('delete')) {
@@ -61,7 +64,8 @@ const generateMutation = (
             inputType,
             outputType,
             graphqlSchemaDeclaration[modelName],
-            models
+            models,
+            pubSubInstance
           )
     }
 

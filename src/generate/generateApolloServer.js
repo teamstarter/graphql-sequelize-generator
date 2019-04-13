@@ -3,15 +3,15 @@ const { ApolloServer } = require('apollo-server-express')
 
 const generateSchema = require('./schema')
 
-const generateGraphqlExpressMiddleware = (
+const generateApolloServer = (
   graphqlSchemaDeclaration,
   modelTypes,
   models,
-  pubSubInstance,
-  serverOptions = {}
+  serverOptions = {},
+  pubSubInstance = null
 ) => {
   const graphqlSchema = new GraphQLSchema(
-    generateSchema(graphqlSchemaDeclaration, modelTypes, models)
+    generateSchema(graphqlSchemaDeclaration, modelTypes, models, pubSubInstance)
   )
 
   return new ApolloServer({
@@ -21,4 +21,4 @@ const generateGraphqlExpressMiddleware = (
   })
 }
 
-module.exports = generateGraphqlExpressMiddleware
+module.exports = generateApolloServer

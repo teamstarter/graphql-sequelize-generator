@@ -5,7 +5,7 @@ const generateCount = require('./countResolver')
 const generateModelTypes = require('./modelTypes')
 const generateGraphQLType = require('./graphQLType')
 const generateSchema = require('./schema')
-const generateGraphqlExpressMiddleware = require('./graphqlExpressMiddleware')
+const generateApolloServer = require('./generateApolloServer')
 const {
   injectAssociations,
   generateAssociationsFields
@@ -20,6 +20,6 @@ module.exports = {
   generateMutationDelete,
   generateCount,
   generateSchema,
-  generateGraphqlExpressMiddleware,
+  generateApolloServer,
   injectAssociations
 }

@@ -2,20 +2,23 @@ const { GraphQLInt, GraphQLNonNull } = require('graphql')
 /**
  * Generates a delete mutation operation
  *
- * @param {*} modelName
+ * @param {String} modelName
  * @param {*} inputType
  * @param {*} outputType
- * @param {*} model
+ * @param {*} graphqlModelDeclaration
+ * @param {*} models
+ * @param {PubSub} pubSubInstance
  */
 const generateMutationDelete = (
   modelName,
   inputType,
   outputType,
   graphqlModelDeclaration,
-  models
+  models,
+  pubSubInstance = null
 ) => ({
   type: GraphQLInt,
-  description: 'Delete a ' + modelName,
+  description: `Delete a ${modelName}`,
   args: {
     id: { type: new GraphQLNonNull(GraphQLInt) }
   },
@@ -43,6 +46,12 @@ const generateMutationDelete = (
     const rowDeleted = await graphqlModelDeclaration.model.destroy({
       where
     }) // Returns the number of rows affected (0 or 1)
+
+    if (pubSubInstance) {
+      pubSubInstance.publish(`${modelName}Deleted`, {
+        [`${modelName}Deleted`]: entity.get()
+      })
+    }
 
     if (
       graphqlModelDeclaration.delete &&

@@ -2,20 +2,23 @@ const { GraphQLNonNull } = require('graphql')
 /**
  * Generates a create mutation operation
  *
- * @param {*} modelName
+ * @param {String} modelName
  * @param {*} inputType
  * @param {*} outputType
  * @param {*} model
+ * @param {*} graphqlModelDeclaration
+ * @param {PubSub} pubSubInstance
  */
 const generateMutationCreate = (
   modelName,
   inputType,
   outputType,
   model,
-  graphqlModelDeclaration
+  graphqlModelDeclaration,
+  pubSubInstance = null
 ) => ({
   type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
-  description: 'Create a ' + modelName,
+  description: `Create a ${modelName}`,
   args: {
     [modelName]: { type: new GraphQLNonNull(inputType) },
     ...(graphqlModelDeclaration.create &&
@@ -42,14 +45,29 @@ const generateMutationCreate = (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.after
     ) {
-      return graphqlModelDeclaration.create.after(
+      const updatedModel = graphqlModelDeclaration.create.after(
         newModel,
         source,
         args,
         context,
         info
       )
+
+      if (pubSubInstance) {
+        pubSubInstance.publish(`${modelName}Created`, {
+          [`${modelName}Created`]: updatedModel.get()
+        })
+      }
+
+      return updatedModel
     }
+
+    if (pubSubInstance) {
+      pubSubInstance.publish(`${modelName}Created`, {
+        [`${modelName}Created`]: newModel.get()
+      })
+    }
+
     return newModel
   }
 })

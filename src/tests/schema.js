@@ -1,7 +1,7 @@
 const { GraphQLObjectType, GraphQLString } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const {
-  generateGraphqlExpressMiddleware,
+  generateApolloServer,
   generateSchema,
   generateModelTypes
 } = require('./../generate')
@@ -83,18 +83,36 @@ graphqlSchemaDeclaration.serverStatistics = {
 }
 
 module.exports = {
-  graphqlExpressMiddleware: generateGraphqlExpressMiddleware(
+  server: generateApolloServer(
     graphqlSchemaDeclaration,
     modelTypes,
     models,
-    pubSubInstance,
     {
       playground: true,
-      context: ({ req }) => {
+      // Example of context modification.
+      context: ({ req, connection }) => {
+        // Connection is provided when a webSocket is connected.
+        if (connection) {
+          // check connection for metadata
+          return connection.context
+        }
+
         // This is an example of context manipulation.
         return { ...req, bootDate: '2017-01-01' }
+      },
+      // Example of socket security hook.
+      subscriptions: {
+        onConnect: (connectionParams, webSocket) => {
+          return true
+        }
       }
-    }
+    },
+    pubSubInstance
   ),
-  schema: generateSchema(graphqlSchemaDeclaration, modelTypes, models)
+  schema: generateSchema(
+    graphqlSchemaDeclaration,
+    modelTypes,
+    models,
+    pubSubInstance
+  )
 }

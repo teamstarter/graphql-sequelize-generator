@@ -24,37 +24,37 @@ const generateSubscriptions = (
           : actions
 
       if (subscriptionsEnabled.includes('create')) {
-        subscriptions[modelName + 'Created'] = {
+        subscriptions[`${modelName}Created`] = {
           type: outputType,
           args: {
             id: { type: GraphQLInt }
           },
           subscribe: withFilter(
-            () => pubSubInstance.asyncIterator(modelName + 'Created'),
+            () => pubSubInstance.asyncIterator(`${modelName}Created`),
             (payload, args) => true // @todo add a hook
           )
         }
       }
       if (subscriptionsEnabled.includes('update')) {
-        subscriptions[modelName + 'Updated'] = {
+        subscriptions[`${modelName}Updated`] = {
           type: outputType,
           args: {
             id: { type: GraphQLInt }
           },
           subscribe: withFilter(
-            () => pubSubInstance.asyncIterator(modelName + 'Updated'),
+            () => pubSubInstance.asyncIterator(`${modelName}Updated`),
             (payload, args) => true // @todo add a hook
           )
         }
       }
       if (subscriptionsEnabled.includes('delete')) {
-        subscriptions[modelName + 'Deleted'] = {
+        subscriptions[`${modelName}Deleted`] = {
           type: outputType,
           args: {
             id: { type: GraphQLInt }
           },
           subscribe: withFilter(
-            () => pubSubInstance.asyncIterator(modelName + 'Deleted'),
+            () => pubSubInstance.asyncIterator(`${modelName}Deleted`),
             (payload, args) => true // @todo add a hook
           )
         }

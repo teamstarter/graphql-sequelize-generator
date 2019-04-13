@@ -2,10 +2,13 @@ const { GraphQLNonNull } = require('graphql')
 /**
  * Generates a update mutation operation
  *
- * @param {*} modelName
+ * @param {string} modelName Name of the generated model
  * @param {*} inputType
  * @param {*} outputType
  * @param {*} model
+ * @param {*} graphqlModelDeclaration
+ * @param {*} models
+ * @param {PubSub} pubSubInstance
  */
 const generateMutationUpdate = (
   modelName,
@@ -13,10 +16,11 @@ const generateMutationUpdate = (
   outputType,
   model,
   graphqlModelDeclaration,
-  models
+  models,
+  pubSubInstance = null
 ) => ({
   type: outputType,
-  description: 'Update a ' + modelName,
+  description: `Update a ${modelName}`,
   args: {
     [modelName]: { type: new GraphQLNonNull(inputType) },
     ...(graphqlModelDeclaration.update &&
@@ -52,7 +56,7 @@ const generateMutationUpdate = (
       graphqlModelDeclaration.update &&
       graphqlModelDeclaration.update.after
     ) {
-      return graphqlModelDeclaration.update.after(
+      const updatedObject = graphqlModelDeclaration.update.after(
         object,
         snapshotBeforeUpdate,
         source,
@@ -60,7 +64,22 @@ const generateMutationUpdate = (
         context,
         info
       )
+
+      if (pubSubInstance) {
+        pubSubInstance.publish(`${modelName}Updated`, {
+          [`${modelName}Updated`]: updatedObject.get()
+        })
+      }
+
+      return updatedObject
     }
+
+    if (pubSubInstance) {
+      pubSubInstance.publish(`${modelName}Updated`, {
+        [`${modelName}Updated`]: object.get()
+      })
+    }
+
     return object
   }
 })

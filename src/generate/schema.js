@@ -8,7 +8,7 @@ const generateSchema = (
   models,
   pubSubInstance
 ) => {
-  return {
+  const definition = {
     query: generateQueryRootResolver(
       graphqlSchemaDeclaration,
       types.outputTypes,
@@ -18,14 +18,21 @@ const generateSchema = (
       graphqlSchemaDeclaration,
       types.inputTypes,
       types.outputTypes,
-      models
-    ),
-    subscription: generateSubscriptions(
+      models,
+      pubSubInstance
+    )
+  }
+
+  // Do not generate subscriptions if no ways of propagating information is defined.
+  if (pubSubInstance) {
+    definition.subscription = generateSubscriptions(
       graphqlSchemaDeclaration,
       types,
       pubSubInstance
     )
   }
+
+  return definition
 }
 
 module.exports = generateSchema
