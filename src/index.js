@@ -3,7 +3,7 @@ const { resolver } = require('graphql-sequelize')
 const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 
 const {
-  generateGraphqlExpressMiddleware,
+  generateApolloServer,
   generateSchema,
   generateModelTypes,
   injectAssociations,
@@ -19,7 +19,7 @@ resolver.contextToOptions = { [EXPECTED_OPTIONS_KEY]: EXPECTED_OPTIONS_KEY }
 
 module.exports = {
   // Functions to help generating a schema
-  generateGraphqlExpressMiddleware,
+  generateApolloServer,
   generateSchema,
   generateModelTypes,
   generateCount,
