@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/inovia-team/graphql-sequelize-generator/compare/v1.0.1...v1.0.2) (2019-04-14)
+
+
+### Bug Fixes
+
+* **associations:** Fix associations not well injected. ([6ac30ce](https://github.com/inovia-team/graphql-sequelize-generator/commit/6ac30ce))
+
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/inovia-team/graphql-sequelize-generator/compare/v1.0.0...v1.0.1) (2019-04-13)
 
