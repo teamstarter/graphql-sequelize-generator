@@ -1,9 +1,11 @@
-const { GraphQLObjectType, GraphQLString } = require('graphql')
+const { GraphQLObjectType, GraphQLString, GraphQLList } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
+const { resolver, defaultListArgs } = require('graphql-sequelize')
 const {
   generateApolloServer,
   generateSchema,
-  generateModelTypes
+  generateModelTypes,
+  injectAssociations
 } = require('./../generate')
 const models = require('./models')
 
@@ -80,6 +82,37 @@ graphqlSchemaDeclaration.serverStatistics = {
       serverBootDate: context.bootDate
     }
   }
+}
+
+const OddUser = new GraphQLObjectType({
+  name: 'OddUser',
+  description: 'Like an user, but only with odd ids.',
+  fields: {
+    handleAdditionalFields: { type: GraphQLString }
+  }
+})
+
+graphqlSchemaDeclaration.oddUser = {
+  type: new GraphQLList(
+    injectAssociations(
+      OddUser,
+      graphqlSchemaDeclaration,
+      modelTypes.outputTypes,
+      models,
+      'user'
+    )
+  ),
+  args: {
+    ...defaultListArgs()
+  },
+  resolve: resolver(models.user, {
+    before: async (findOptions, args, context, info) => {
+      findOptions.where = {
+        $and: [findOptions.where, { id: models.sequelize.literal('id % 2') }]
+      }
+      return findOptions
+    }
+  })
 }
 
 module.exports = {

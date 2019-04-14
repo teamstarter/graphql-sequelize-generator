@@ -101,8 +101,21 @@ const injectAssociations = (
     })
   }
 
+  // Fields can either be a function or an Object.
+  // Due to the behavior of modelType.toConfig(),
+  // we must reconvert the fields to an Object to add more fields.
+
+  // For more details, look at this file
+  // node_modules/graphql/type/definition.js
+
+  // As this will be calling the fields function,
+  // if injectAssociations is called in the middle of the fields
+  // definitions generation, it may break the process.
+  // Make sure you are using it after the model Types are all generated.
+  const fields = modelType.getFields()
+
   for (const field in baseFields) {
-    modelType._fields[field] = {
+    fields[field] = {
       name: field,
       isDeprecated: false,
       args: [],
@@ -111,8 +124,10 @@ const injectAssociations = (
   }
 
   for (const field in associationsFields) {
-    modelType._fields[field] = associationsFields[field]
+    fields[field] = associationsFields[field]
   }
+
+  modelType._fields = fields
 
   return modelType
 }

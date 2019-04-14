@@ -1,5 +1,82 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test the count resolvers Check that you can inject types attributes and associations into a random Type: Users ids should only be odd. 1`] = `
+Object {
+  "users": Array [
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 1,
+      "name": "Test 1 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 3,
+      "name": "Test 3 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 5,
+      "name": "Test 5 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 7,
+      "name": "Test 7 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 9,
+      "name": "Test 9 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 11,
+      "name": "Test 11 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 13,
+      "name": "Test 13 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 15,
+      "name": "Test 15 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 17,
+      "name": "Test 17 c 2",
+    },
+    Object {
+      "company": Object {
+        "id": 1,
+      },
+      "id": 19,
+      "name": "Test 19 c 2",
+    },
+  ],
+}
+`;
+
 exports[`Test the count resolvers Check that you can query a custom list resolver: Users ids and count 1`] = `
 Object {
   "user": Array [

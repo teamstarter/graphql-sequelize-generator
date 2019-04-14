@@ -23,6 +23,8 @@
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
+    "dataloader-sequelize": "^1.7.6",
+    "express": "^4.16.4",
     "graphql": "^14.0.2",
     "graphql-relay": "^0.5.5",
     "jest": "^22.1.4",
@@ -46,9 +48,8 @@
   },
   "dependencies": {
     "apollo-server-express": "2.4.8",
-    "dataloader-sequelize": "^1.7.6",
     "debug": "^4.1.1",
-    "express": "^4.16.4",
+    "graphql-sequelize": "^9.3.5",
     "graphql-subscriptions": "^1.1.0",
     "sequelize": "^4.42.0",
     "subscriptions-transport-ws": "^0.9.5"
