@@ -42,22 +42,22 @@ const generateMutationUpdate = (
       )
     }
 
-    const object = await models[modelName].findOne({ where: { id: data.id } })
+    const entity = await models[modelName].findOne({ where: { id: data.id } })
 
-    if (!object) {
+    if (!entity) {
       throw new Error(`${modelName} not found.`)
     }
 
-    const snapshotBeforeUpdate = { ...object.get({ plain: true }) }
-    await object.update(data)
-    await object.reload()
+    const snapshotBeforeUpdate = { ...entity.get({ plain: true }) }
+    await entity.update(data)
+    await entity.reload()
 
     if (
       graphqlModelDeclaration.update &&
       graphqlModelDeclaration.update.after
     ) {
-      const updatedObject = graphqlModelDeclaration.update.after(
-        object,
+      const updatedEntity = await graphqlModelDeclaration.update.after(
+        entity,
         snapshotBeforeUpdate,
         source,
         args,
@@ -67,20 +67,20 @@ const generateMutationUpdate = (
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Updated`, {
-          [`${modelName}Updated`]: updatedObject.get()
+          [`${modelName}Updated`]: updatedEntity.get()
         })
       }
 
-      return updatedObject
+      return updatedEntity
     }
 
     if (pubSubInstance) {
       pubSubInstance.publish(`${modelName}Updated`, {
-        [`${modelName}Updated`]: object.get()
+        [`${modelName}Updated`]: entity.get()
       })
     }
 
-    return object
+    return entity
   }
 })
 

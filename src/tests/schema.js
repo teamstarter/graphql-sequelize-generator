@@ -32,6 +32,47 @@ graphqlSchemaDeclaration.user = {
       }
       return findOptions
     }
+    // List configuration does not have an after hook.
+    // Should it have one?
+  },
+  // The followings hooks are just here to demo their signatures.
+  // They are not required and can be omited if you don't need them.
+  create: {
+    before: (source, args, context, info) => {
+      // You can restrict the creation if needed
+      return args.user
+    },
+    after: async (newEntity, source, args, context, info) => {
+      // You can log what happened here
+      return newEntity
+    }
+  },
+  update: {
+    before: (source, args, context, info) => {
+      // You can restrict the creation if needed
+      return args.user
+    },
+    after: async (
+      updatedEntity,
+      entitySnapshot,
+      source,
+      args,
+      context,
+      info
+    ) => {
+      // You can log what happened here
+      return updatedEntity
+    }
+  },
+  delete: {
+    before: (where, source, args, context, info) => {
+      // You can restrict the creation if needed
+      return where
+    },
+    after: async (deletedEntity, source, args, context, info) => {
+      // You can log what happened here
+      return deletedEntity
+    }
   }
 }
 

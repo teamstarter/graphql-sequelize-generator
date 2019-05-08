@@ -27,26 +27,26 @@ const generateMutationCreate = (
       : {})
   },
   resolve: async (source, args, context, info) => {
-    let selectedModel = args[modelName]
+    let attributes = args[modelName]
     if (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.before
     ) {
-      selectedModel = await graphqlModelDeclaration.create.before(
+      attributes = await graphqlModelDeclaration.create.before(
         source,
         args,
         context,
         info
       )
     }
-    const newModel = await model.create(selectedModel)
+    const newEntity = await model.create(attributes)
 
     if (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.after
     ) {
-      const updatedModel = graphqlModelDeclaration.create.after(
-        newModel,
+      const updatedEntity = await graphqlModelDeclaration.create.after(
+        newEntity,
         source,
         args,
         context,
@@ -55,20 +55,20 @@ const generateMutationCreate = (
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Created`, {
-          [`${modelName}Created`]: updatedModel.get()
+          [`${modelName}Created`]: updatedEntity.get()
         })
       }
 
-      return updatedModel
+      return updatedEntity
     }
 
     if (pubSubInstance) {
       pubSubInstance.publish(`${modelName}Created`, {
-        [`${modelName}Created`]: newModel.get()
+        [`${modelName}Created`]: newEntity.get()
       })
     }
 
-    return newModel
+    return newEntity
   }
 })
 
