@@ -54,6 +54,7 @@ describe('Test the count resolvers', () => {
           }`
       )
       .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
     expect(response.body.data.users).not.toBeUndefined()
     expect(response.body.data).toMatchSnapshot('Users ids should only be odd.')
   })

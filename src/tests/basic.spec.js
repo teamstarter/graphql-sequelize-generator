@@ -39,6 +39,7 @@ describe('Test the API queries', () => {
           &operationName=getCompanies`
       )
       .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
     const companies = response.body.data.companies
     expect(companies).toMatchSnapshot('All companies')
   })
@@ -63,9 +64,28 @@ describe('Test the API queries', () => {
           &operationName=getCompanies`
       )
       .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
     const companies = response.body.data.companies
     expect(companies).toMatchSnapshot(
       'All companies with users and their department'
     )
+  })
+
+  it('Check that you can sort', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getCompanies {
+            companies: company(order: "name,id") {
+              id
+              name
+            }
+          }
+          &operationName=getCompanies`
+      )
+      .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
+    const companies = response.body.data.companies
+    expect(companies).toMatchSnapshot('All companies sorted by name')
   })
 })

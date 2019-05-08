@@ -46,11 +46,11 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
       // Virtual field must be sorted using quotes
       // as they are not real fields.
       if (
-        model.attributes[field] &&
-        model.attributes[field].type.key === 'VIRTUAL'
+        model.rawAttributes[field] &&
+        model.rawAttributes[field].type.key === 'VIRTUAL'
       ) {
-        // model.attributes[field].fieldName is used to avoid code-injection.
-        field = Sequelize.literal(`\`${model.attributes[field].fieldName}\``)
+        // model.rawAttributes[field].fieldName is used to avoid code-injection.
+        field = Sequelize.literal(`\`${model.rawAttributes[field].fieldName}\``)
       }
       processedOrder.push([field, direction])
     }

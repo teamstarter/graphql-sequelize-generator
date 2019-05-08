@@ -6,6 +6,7 @@ const timestamp = entry =>
   })
 
 const userPerCompany = 250
+const departmentPerCompany = 5
 
 module.exports = {
   up: function (queryInterface, Sequelize) {
@@ -17,7 +18,7 @@ module.exports = {
           id: userPerCompany * companyId + 1 + index,
           name: `Test ${userPerCompany * companyId + 1 + index} c 2`,
           companyId: companyId + 1,
-          departmentId: companyId + 1 + (index + 1) % 5
+          departmentId: companyId * departmentPerCompany + 1 + ((index + 1) % 5)
         }))
       ]
     }

@@ -1,10 +1,8 @@
 const express = require('express')
 const http = require('spdy')
-const { SubscriptionServer } = require('subscriptions-transport-ws')
-const { execute, subscribe } = require('graphql')
 
 const { migrateDatabase, seedDatabase } = require('./testDatabase.js')
-const { server, schema } = require('./schema')
+const { server } = require('./schema')
 
 let app = express()
 

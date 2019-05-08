@@ -33,6 +33,7 @@ describe('Test the custom endpoints', () => {
           }`
       )
       .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
     expect(response.body.data.serverStatistics).not.toBeUndefined()
     expect(response.body.data.serverStatistics).toMatchSnapshot(
       'The server boot date.'

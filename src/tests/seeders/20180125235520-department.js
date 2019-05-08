@@ -14,8 +14,10 @@ module.exports = {
       departments = [
         ...departments,
         ...[...Array(departmentPerCompany)].map((u, index) => ({
-          id: companyId * 5 + 1 + index,
-          name: `Department ${companyId * 5 + 1 + index} c 1`,
+          id: companyId * departmentPerCompany + 1 + index,
+          name: `Department ${companyId * departmentPerCompany +
+            1 +
+            index} c 1`,
           companyId: companyId + 1
         }))
       ]

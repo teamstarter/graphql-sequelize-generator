@@ -35,6 +35,7 @@ describe('Test the custom resolvers', () => {
           &operationName=getDepartments`
       )
       .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
     expect(response.body.data.departments).not.toBeUndefined()
     expect(response.body.data.departments).toMatchSnapshot('A few departments')
   })

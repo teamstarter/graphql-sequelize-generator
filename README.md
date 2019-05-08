@@ -107,7 +107,7 @@ graphqlSchemaDeclaration.user = {
 ```js
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ["list"] // ['list', 'create', 'update', 'delete', 'count'] available
+  actions: ["list"] // Other available options: ['list', 'create', 'update', 'delete', 'count']
 };
 ```
 
@@ -152,37 +152,35 @@ Instead of that:
 
 ```js
 list: {
-    before: async (findOptions, args, context) => {
-    if (typeof findOptions.include === 'undefined') {
-        findOptions.include = []
+  before: async (findOptions, args, context) => {
+    if (typeof findOptions.include === "undefined") {
+      findOptions.include = [];
     }
     findOptions.include.push({
-        model: models.user,
-        where: {
-            id: context.myUserId
-        }
-    })
-    return findOptions
-},
+      model: models.user,
+      where: {
+        id: context.myUserId
+      }
+    });
+    return findOptions;
+  };
+}
 ```
 
 Try to do this if possible:
 
 ```js
 list: {
-    before: async (findOptions, args, context) => {
-    if (typeof findOptions.where === 'undefined') {
-        findOptions.where = {}
+  before: async (findOptions, args, context) => {
+    if (typeof findOptions.where === "undefined") {
+      findOptions.where = {};
     }
     findOptions.where = {
-        $and: [
-            findOptions.where,
-            { id: context.myAllowedCompaniesIds }
-        ]
-    }
-    return findOptions
-    }
-},
+      $and: [findOptions.where, { id: context.myAllowedCompaniesIds }]
+    };
+    return findOptions;
+  };
+}
 ```
 
 ## Contributing to GSG

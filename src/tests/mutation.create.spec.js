@@ -39,6 +39,7 @@ describe('Test the create mutation', () => {
         &operationName=getUsers`
       )
       .set('userId', 1)
+    expect(responseNoUser.body.errors).toBeUndefined()
     expect(responseNoUser.body.data.user).not.toBeUndefined()
     expect(responseNoUser.body.data.user).toMatchSnapshot(
       'User 12501 does not exists yet.'
@@ -64,6 +65,7 @@ describe('Test the create mutation', () => {
         },
         operationName: 'userCreate'
       })
+    expect(responseUserCreate.body.errors).toBeUndefined()
     expect(responseUserCreate.body.data.user).not.toBeUndefined()
     expect(responseUserCreate.body.data.user).toMatchSnapshot('Created user')
 
@@ -83,6 +85,7 @@ describe('Test the create mutation', () => {
           &operationName=getUsers`
       )
       .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
     expect(response.body.data.user).not.toBeUndefined()
     expect(response.body.data.user).toMatchSnapshot('The new user')
   })

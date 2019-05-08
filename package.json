@@ -51,7 +51,7 @@
     "debug": "^4.1.1",
     "graphql-sequelize": "^9.3.5",
     "graphql-subscriptions": "^1.1.0",
-    "sequelize": "^4.42.0",
+    "sequelize": "^5.8.5",
     "subscriptions-transport-ws": "^0.9.5"
   },
   "jest": {

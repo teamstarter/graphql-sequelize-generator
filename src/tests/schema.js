@@ -1,6 +1,7 @@
 const { GraphQLObjectType, GraphQLString, GraphQLList } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
+const { Op } = require('sequelize')
 const {
   generateApolloServer,
   generateSchema,
@@ -27,7 +28,7 @@ graphqlSchemaDeclaration.user = {
         findOptions.where = {}
       }
       findOptions.where = {
-        $and: [findOptions.where, { departmentId: [1] }]
+        [Op.and]: [findOptions.where, { departmentId: [1] }]
       }
       return findOptions
     }
@@ -42,8 +43,10 @@ graphqlSchemaDeclaration.company = {
       if (typeof findOptions.where === 'undefined') {
         findOptions.where = {}
       }
+
+      // This is an example of rights enforcement
       findOptions.where = {
-        $and: [findOptions.where, { id: [1] }]
+        [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }]
       }
       return findOptions
     }
@@ -56,10 +59,17 @@ graphqlSchemaDeclaration.department = {
   list: {
     resolver: (source, args, context, info) => {
       // Making custom resolvers on the list query can be useful
-      // but keep in mind that it will impact the recursivity of the graph.
+      // but keep in mind that it will be used at any level in the graph.
+
       // Here, defining our own resolver without taking into account the args
-      // and the context will make that "departments" will never be returned
+      // and the source would make that "departments" would never be returned
       // when queried outside a simple query like {department{id}}
+
+      // Be sure to look at the source!
+      if (source && source.departmentId) {
+        return models.department.findOne({ where: { id: source.departmentId } })
+      }
+
       return models.department.findAll({
         where: {
           id: [1, 2, 3, 4, 5, 6, 7, 8]
@@ -108,7 +118,10 @@ graphqlSchemaDeclaration.oddUser = {
   resolve: resolver(models.user, {
     before: async (findOptions, args, context, info) => {
       findOptions.where = {
-        $and: [findOptions.where, { id: models.sequelize.literal('id % 2') }]
+        [Op.and]: [
+          findOptions.where,
+          { id: models.sequelize.literal('id % 2') }
+        ]
       }
       return findOptions
     }
