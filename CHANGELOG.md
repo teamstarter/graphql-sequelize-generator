@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v1.1.1...v2.0.0) (2019-05-25)
+
+
+### Features
+
+* Add a global callback, called before for each hooks. ([58ce66b](https://github.com/inovia-team/graphql-sequelize-generator/commit/58ce66b))
+
+
+### BREAKING CHANGES
+
+* generateSchema is now taking a configuration object instead of arguments.
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/inovia-team/graphql-sequelize-generator/compare/v1.1.0...v1.1.1) (2019-05-08)
 
