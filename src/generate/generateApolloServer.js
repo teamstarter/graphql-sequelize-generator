@@ -5,13 +5,19 @@ const generateSchema = require('./schema')
 
 const generateApolloServer = (
   graphqlSchemaDeclaration,
-  modelTypes,
+  types,
   models,
   serverOptions = {},
   pubSubInstance = null
 ) => {
   const graphqlSchema = new GraphQLSchema(
-    generateSchema(graphqlSchemaDeclaration, modelTypes, models, pubSubInstance)
+    generateSchema({
+      graphqlSchemaDeclaration,
+      types,
+      models,
+      globalPreCallback: serverOptions.globalPreCallback,
+      pubSubInstance
+    })
   )
 
   return new ApolloServer({

@@ -17,6 +17,7 @@ const generateMutationUpdate = (
   model,
   graphqlModelDeclaration,
   models,
+  globalPreCallback,
   pubSubInstance = null
 ) => ({
   type: outputType,
@@ -34,12 +35,16 @@ const generateMutationUpdate = (
       graphqlModelDeclaration.update &&
       graphqlModelDeclaration.update.before
     ) {
+      const beforeHandle = globalPreCallback('updateBefore')
       data = await graphqlModelDeclaration.update.before(
         source,
         args,
         context,
         info
       )
+      if (beforeHandle) {
+        beforeHandle()
+      }
     }
 
     const entity = await models[modelName].findOne({ where: { id: data.id } })
@@ -56,6 +61,7 @@ const generateMutationUpdate = (
       graphqlModelDeclaration.update &&
       graphqlModelDeclaration.update.after
     ) {
+      const afterHandle = globalPreCallback('updateAfter')
       const updatedEntity = await graphqlModelDeclaration.update.after(
         entity,
         snapshotBeforeUpdate,
@@ -64,6 +70,9 @@ const generateMutationUpdate = (
         context,
         info
       )
+      if (afterHandle) {
+        afterHandle()
+      }
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Updated`, {

@@ -1,6 +1,10 @@
 const { argsToFindOptions } = require('graphql-sequelize')
 
-module.exports = function countResolver (model, schemaDeclaration) {
+module.exports = function countResolver (
+  model,
+  schemaDeclaration,
+  globalPreCallback
+) {
   const listBefore =
     schemaDeclaration.list && schemaDeclaration.list.before
       ? schemaDeclaration.list.before
@@ -14,12 +18,16 @@ module.exports = function countResolver (model, schemaDeclaration) {
 
   return async (source, args, context, info) => {
     if (typeof countBefore !== 'undefined') {
+      const handle = globalPreCallback('countBefore')
       const countOptions = await countBefore(
         argsToFindOptions.default(args, Object.keys(model.rawAttributes)),
         args,
         context,
         info
       )
+      if (handle) {
+        handle()
+      }
       return model.count(countOptions)
     }
     return model.count(

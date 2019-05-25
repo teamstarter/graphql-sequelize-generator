@@ -1,5 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test the create mutation Check that you can create a new instance of one entity 1`] = `
+Array [
+  "listBefore",
+]
+`;
+
 exports[`Test the create mutation Check that you can create a new instance of one entity: Created user 1`] = `
 Object {
   "__typename": "user",

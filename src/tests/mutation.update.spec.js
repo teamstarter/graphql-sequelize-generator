@@ -7,14 +7,19 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
  */
 describe('Test the create mutation', () => {
   let server = null
+  let trace = []
+  let globalPreCallback = type => {
+    trace.push(type)
+  }
 
   beforeAll(async () => {
-    server = await createServer()
+    server = await createServer({}, globalPreCallback)
   })
 
   afterAll(() => closeServer(server))
 
   beforeEach(async () => {
+    trace = []
     await resetDb()
   })
 
@@ -89,5 +94,6 @@ describe('Test the create mutation', () => {
     expect(responseUser5PostUpdate.body.data.user).toMatchSnapshot(
       'User 5 post update'
     )
+    expect(trace).toMatchSnapshot()
   })
 })

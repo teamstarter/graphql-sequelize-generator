@@ -116,7 +116,12 @@ const argsAdvancedProcessing = (
   return findOptions
 }
 
-const createResolver = (graphqlTypeDeclaration, models, relation = null) => {
+const createResolver = (
+  graphqlTypeDeclaration,
+  models,
+  globalPreCallback,
+  relation = null
+) => {
   if (
     graphqlTypeDeclaration &&
     graphqlTypeDeclaration.list &&
@@ -141,7 +146,13 @@ const createResolver = (graphqlTypeDeclaration, models, relation = null) => {
       )
 
       if (listBefore) {
-        return listBefore(processedFindOptions, args, context, info)
+        let handle = null
+        handle = globalPreCallback('listBefore')
+        const result = listBefore(processedFindOptions, args, context, info)
+        if (handle) {
+          handle()
+        }
+        return result
       }
       return processedFindOptions
     }

@@ -7,14 +7,19 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
  */
 describe('Test the delete mutation', () => {
   let server = null
+  let trace = []
+  let globalPreCallback = type => {
+    trace.push(type)
+  }
 
   beforeAll(async () => {
-    server = await createServer()
+    server = await createServer({}, globalPreCallback)
   })
 
   afterAll(() => closeServer(server))
 
   beforeEach(async () => {
+    trace = []
     await resetDb()
   })
 
@@ -71,5 +76,6 @@ describe('Test the delete mutation', () => {
     const userDeleted = response2.body.data.user
     expect(userDeleted).not.toBeUndefined()
     expect(userDeleted).toMatchSnapshot('The user 5 should not exist anymore')
+    expect(trace).toMatchSnapshot()
   })
 })

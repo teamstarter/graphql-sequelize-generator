@@ -57,18 +57,14 @@ const {
 } = require("graphql-sequelize-generator");
 const models = require("./models");
 
-const modelTypes = generateModelTypes(models);
+const types = generateModelTypes(models);
 
 graphqlSchemaDeclaration.user = {
   model: models.user,
   actions: ["list", "create"]
 };
 
-const server = generateGraphqlExpressMiddleware(
-  graphqlSchemaDeclaration,
-  modelTypes,
-  models
-);
+const server = generateApolloServer(graphqlSchemaDeclaration, types, models);
 
 const app = express();
 server.applyMiddleware({
@@ -130,6 +126,33 @@ graphqlSchemaDeclaration.user = {
     serverBootDate
   }
 }
+```
+
+**Example configuration** - Customize Apollo server
+
+```js
+const server = generateApolloServer(
+  graphqlSchemaDeclaration,
+  types,
+  models,
+  {
+    playground: true,
+    context: addDataloaderContext,
+    extensions: [
+      () => new ApolloNewrelicExtension(),
+      () => new ErrorTrackingExtension()
+    ],
+    tracing: true,
+    // Example of socket security hook.
+    subscriptions: {
+      path: '/api/graphql',
+      onConnect: async (connectionParams, webSocket) => {
+        return getSubscriptionAccountAndUserFromJWT(connectionParams)
+      }
+    }
+  },
+  pubSubInstance)
+);
 ```
 
 <!-- [END getstarted] -->

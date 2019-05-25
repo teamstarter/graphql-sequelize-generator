@@ -7,14 +7,19 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
  */
 describe('Test the count resolvers', () => {
   let server = null
+  let trace = []
+  let globalPreCallback = type => {
+    trace.push(type)
+  }
 
   beforeAll(async () => {
-    server = await createServer()
+    server = await createServer({}, globalPreCallback)
   })
 
   afterAll(() => closeServer(server))
 
   beforeEach(async () => {
+    trace = []
     await resetDb()
   })
 
@@ -37,6 +42,7 @@ describe('Test the count resolvers', () => {
     expect(response.body.data.user).not.toBeUndefined()
     expect(response.body.data).toMatchSnapshot('Users ids and count')
     expect(response.body.data.user.length).toBe(response.body.data.userCount)
+    expect(trace).toMatchSnapshot()
   })
 
   it('Check that you can inject types attributes and associations into a random Type', async () => {
@@ -57,5 +63,6 @@ describe('Test the count resolvers', () => {
     expect(response.body.errors).toBeUndefined()
     expect(response.body.data.users).not.toBeUndefined()
     expect(response.body.data).toMatchSnapshot('Users ids should only be odd.')
+    expect(trace).toMatchSnapshot()
   })
 })

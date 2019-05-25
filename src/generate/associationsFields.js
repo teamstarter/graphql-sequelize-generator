@@ -63,6 +63,7 @@ const injectAssociations = (
   graphqlSchemaDeclaration,
   outputTypes,
   models,
+  globalPreCallback,
   proxyModelName = null
 ) => {
   const modelName = proxyModelName || modelType.name
@@ -85,6 +86,7 @@ const injectAssociations = (
       createResolver(
         graphqlSchemaDeclaration[associations[associationName].target.name],
         models,
+        globalPreCallback,
         associations[associationName]
       )
     )

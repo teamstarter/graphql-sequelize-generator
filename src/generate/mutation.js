@@ -9,6 +9,7 @@ const generateMutation = (
   inputTypes,
   outputTypes,
   models,
+  globalPreCallback,
   pubSubInstance = null
 ) => {
   const fields = Object.keys(inputTypes).reduce((mutations, modelName) => {
@@ -36,6 +37,7 @@ const generateMutation = (
             outputType,
             model,
             graphqlSchemaDeclaration[modelName],
+            globalPreCallback,
             pubSubInstance
           )
     }
@@ -51,6 +53,7 @@ const generateMutation = (
             model,
             graphqlSchemaDeclaration[modelName],
             models,
+            globalPreCallback,
             pubSubInstance
           )
     }
@@ -65,6 +68,7 @@ const generateMutation = (
             outputType,
             graphqlSchemaDeclaration[modelName],
             models,
+            globalPreCallback,
             pubSubInstance
           )
     }

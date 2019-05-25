@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test the count resolvers Check that you can inject types attributes and associations into a random Type 1`] = `Array []`;
+
 exports[`Test the count resolvers Check that you can inject types attributes and associations into a random Type: Users ids should only be odd. 1`] = `
 Object {
   "users": Array [
@@ -76,6 +78,8 @@ Object {
   ],
 }
 `;
+
+exports[`Test the count resolvers Check that you can query a custom list resolver 1`] = `Array []`;
 
 exports[`Test the count resolvers Check that you can query a custom list resolver: Users ids and count 1`] = `
 Object {

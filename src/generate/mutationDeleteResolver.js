@@ -15,6 +15,7 @@ const generateMutationDelete = (
   outputType,
   graphqlModelDeclaration,
   models,
+  globalPreCallback,
   pubSubInstance = null
 ) => ({
   type: GraphQLInt,
@@ -28,6 +29,7 @@ const generateMutationDelete = (
       graphqlModelDeclaration.delete &&
       graphqlModelDeclaration.delete.before
     ) {
+      const beforeHandle = globalPreCallback('deleteBefore')
       where = await graphqlModelDeclaration.delete.before(
         where,
         source,
@@ -35,6 +37,9 @@ const generateMutationDelete = (
         context,
         info
       )
+      if (beforeHandle) {
+        beforeHandle()
+      }
     }
 
     const entity = await models[modelName].findOne({ where })
@@ -57,6 +62,7 @@ const generateMutationDelete = (
       graphqlModelDeclaration.delete &&
       graphqlModelDeclaration.delete.after
     ) {
+      const afterHandle = globalPreCallback('deleteAfter')
       await graphqlModelDeclaration.delete.after(
         entity,
         source,
@@ -64,6 +70,9 @@ const generateMutationDelete = (
         context,
         info
       )
+      if (afterHandle) {
+        afterHandle()
+      }
     }
     return rowDeleted
   }

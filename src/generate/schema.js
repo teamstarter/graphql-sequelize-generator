@@ -2,23 +2,26 @@ const generateQueryRootResolver = require('./rootQueryResolver')
 const generateSubscriptions = require('./subscriptions')
 const generateMutation = require('./mutation')
 
-const generateSchema = (
+const generateSchema = ({
   graphqlSchemaDeclaration,
   types,
   models,
+  globalPreCallback = () => null,
   pubSubInstance
-) => {
+}) => {
   const definition = {
     query: generateQueryRootResolver(
       graphqlSchemaDeclaration,
       types.outputTypes,
-      models
+      models,
+      globalPreCallback
     ),
     mutation: generateMutation(
       graphqlSchemaDeclaration,
       types.inputTypes,
       types.outputTypes,
       models,
+      globalPreCallback,
       pubSubInstance
     )
   }

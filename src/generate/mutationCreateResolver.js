@@ -15,6 +15,7 @@ const generateMutationCreate = (
   outputType,
   model,
   graphqlModelDeclaration,
+  globalPreCallback,
   pubSubInstance = null
 ) => ({
   type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
@@ -32,12 +33,16 @@ const generateMutationCreate = (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.before
     ) {
+      const beforeHandle = globalPreCallback('createBefore')
       attributes = await graphqlModelDeclaration.create.before(
         source,
         args,
         context,
         info
       )
+      if (beforeHandle) {
+        beforeHandle()
+      }
     }
     const newEntity = await model.create(attributes)
 
@@ -45,6 +50,7 @@ const generateMutationCreate = (
       graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.after
     ) {
+      const afterHandle = globalPreCallback('createAfter')
       const updatedEntity = await graphqlModelDeclaration.create.after(
         newEntity,
         source,
@@ -52,6 +58,9 @@ const generateMutationCreate = (
         context,
         info
       )
+      if (afterHandle) {
+        afterHandle()
+      }
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Created`, {

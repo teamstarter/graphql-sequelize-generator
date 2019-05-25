@@ -4,7 +4,12 @@ const { defaultArgs, defaultListArgs } = require('graphql-sequelize')
 const generateCountResolver = require('./countResolver')
 const generateListResolver = require('./listResolver')
 
-function getModelsFields (allSchemaDeclarations, outputTypes, models) {
+function getModelsFields (
+  allSchemaDeclarations,
+  outputTypes,
+  models,
+  globalPreCallback
+) {
   return Object.keys(outputTypes).reduce((fields, modelTypeName) => {
     const modelType = outputTypes[modelTypeName]
     const schemaDeclaration = allSchemaDeclarations[modelType.name]
@@ -22,7 +27,8 @@ function getModelsFields (allSchemaDeclarations, outputTypes, models) {
         modelTypeName,
         allSchemaDeclarations,
         outputTypes,
-        models
+        models,
+        globalPreCallback
       ),
       // COUNT RESOLVER
       [`${modelType.name}Count`]: {
@@ -33,7 +39,8 @@ function getModelsFields (allSchemaDeclarations, outputTypes, models) {
         },
         resolve: generateCountResolver(
           schemaDeclaration.model,
-          schemaDeclaration
+          schemaDeclaration,
+          globalPreCallback
         )
       }
     }
@@ -68,13 +75,15 @@ function getCustomEndpoints (allSchemaDeclarations, outputTypes, models) {
 module.exports = function generateQueryRootResolver (
   allSchemaDeclarations,
   outputTypes,
-  models
+  models,
+  globalPreCallback
 ) {
   // Endpoints depending on a model
   const modelFields = getModelsFields(
     allSchemaDeclarations,
     outputTypes,
-    models
+    models,
+    globalPreCallback
   )
 
   // Custom endpoints, without models specified.

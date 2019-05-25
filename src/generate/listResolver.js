@@ -15,12 +15,19 @@ module.exports = function generateListResolver (
   modelTypeName,
   allSchemaDeclarations,
   outputTypes,
-  models
+  models,
+  globalPreCallback
 ) {
   const schemaDeclaration = allSchemaDeclarations[modelType.name]
   return {
     type: new GraphQLList(
-      injectAssociations(modelType, allSchemaDeclarations, outputTypes, models)
+      injectAssociations(
+        modelType,
+        allSchemaDeclarations,
+        outputTypes,
+        models,
+        globalPreCallback
+      )
     ),
     args: {
       ...defaultArgs(schemaDeclaration.model),
@@ -29,6 +36,6 @@ module.exports = function generateListResolver (
         ? schemaDeclaration.list.extraArg
         : {})
     },
-    resolve: createResolver(schemaDeclaration, models)
+    resolve: createResolver(schemaDeclaration, models, globalPreCallback)
   }
 }

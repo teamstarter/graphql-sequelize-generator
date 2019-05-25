@@ -11,7 +11,7 @@ const {
 const models = require('./models')
 
 const graphqlSchemaDeclaration = {}
-const modelTypes = generateModelTypes(models)
+const types = generateModelTypes(models)
 const pubSubInstance = new PubSub()
 
 graphqlSchemaDeclaration.companyType = {
@@ -148,8 +148,9 @@ graphqlSchemaDeclaration.oddUser = {
     injectAssociations(
       OddUser,
       graphqlSchemaDeclaration,
-      modelTypes.outputTypes,
+      types.outputTypes,
       models,
+      () => null,
       'user'
     )
   ),
@@ -169,10 +170,10 @@ graphqlSchemaDeclaration.oddUser = {
   })
 }
 
-module.exports = {
+module.exports = globalPreCallback => ({
   server: generateApolloServer(
     graphqlSchemaDeclaration,
-    modelTypes,
+    types,
     models,
     {
       playground: true,
@@ -196,10 +197,11 @@ module.exports = {
     },
     pubSubInstance
   ),
-  schema: generateSchema(
+  schema: generateSchema({
     graphqlSchemaDeclaration,
-    modelTypes,
+    types,
     models,
+    globalPreCallback,
     pubSubInstance
-  )
-}
+  })
+})

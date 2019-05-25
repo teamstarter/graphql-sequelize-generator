@@ -1,14 +1,15 @@
 const express = require('express')
-const { server } = require('./schema')
+const setupServer = require('./schema')
 const http = require('spdy')
 const { migrateDatabase, seedDatabase } = require('./testDatabase.js')
 
-const createServer = async (options = {}) => {
+const createServer = async (options = {}, globalPreCallback = () => null) => {
   const app = express()
   options = {
     spdy: { plain: true },
     ...options
   }
+  const { server } = setupServer(globalPreCallback)
   server.applyMiddleware({ app, path: '/graphql' })
   const serverHttp = await new Promise((resolve, reject) => {
     const newServer = http
