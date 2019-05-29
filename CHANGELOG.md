@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v2.0.0...v3.0.0) (2019-05-29)
+
+
+### Features
+
+* **mutations:** Add a way to declare mutations ouside of the models definitions. ([af5f36b](https://github.com/inovia-team/graphql-sequelize-generator/commit/af5f36b))
+
+
+### BREAKING CHANGES
+
+* **mutations:** Update of the generateApolloServer signature.
+
+
+
 <a name="2.0.0"></a>
 # [2.0.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v1.1.1...v2.0.0) (2019-05-25)
 
