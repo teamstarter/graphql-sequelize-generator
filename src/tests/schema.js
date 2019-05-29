@@ -170,12 +170,40 @@ graphqlSchemaDeclaration.oddUser = {
   })
 }
 
+// Sometimes you want to add an action that do not match an existing model
+// ex: Trigger a process
+const customMutations = {}
+customMutations.logThat = {
+  type: new GraphQLObjectType({
+    name: 'logThat',
+    fields: {
+      message: { type: GraphQLString }
+    }
+  }),
+  args: {
+    message: {
+      type: GraphQLString
+    }
+  },
+  description: 'Refresh the status of the call for projects.',
+  resolve: async (source, args, context, info) => {
+    // Your mutation can do something here...
+    console.log(args.message)
+
+    return {
+      message: args.message
+    }
+  }
+}
+
 module.exports = globalPreCallback => ({
-  server: generateApolloServer(
+  server: generateApolloServer({
     graphqlSchemaDeclaration,
+    customMutations,
     types,
     models,
-    {
+    globalPreCallback,
+    apolloServerOptions: {
       playground: true,
       // Example of context modification.
       context: ({ req, connection }) => {
@@ -196,12 +224,13 @@ module.exports = globalPreCallback => ({
       }
     },
     pubSubInstance
-  ),
+  }),
   schema: generateSchema({
     graphqlSchemaDeclaration,
     types,
     models,
     globalPreCallback,
+    customMutations,
     pubSubInstance
   })
 })

@@ -2,7 +2,14 @@
 
 exports[`Test the delete mutation Check that you can delete an entity 1`] = `1`;
 
-exports[`Test the delete mutation Check that you can delete an entity 2`] = `Array []`;
+exports[`Test the delete mutation Check that you can delete an entity 2`] = `
+Array [
+  "listBefore",
+  "deleteBefore",
+  "deleteAfter",
+  "listBefore",
+]
+`;
 
 exports[`Test the delete mutation Check that you can delete an entity: The user 5 should not exist anymore 1`] = `
 Array [

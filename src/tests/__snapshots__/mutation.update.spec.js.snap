@@ -4,6 +4,10 @@ exports[`Test the create mutation Check that you can create a new instance of on
 Array [
   "listBefore",
   "listBefore",
+  "updateBefore",
+  "updateAfter",
+  "listBefore",
+  "listBefore",
 ]
 `;
 

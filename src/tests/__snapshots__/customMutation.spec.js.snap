@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the custom mutations Check that you can call a custom Mutation 1`] = `
+Array [
+  "logThatCustomResolver",
+]
+`;
+
+exports[`Test the custom mutations Check that you can call a custom Mutation: The sent message 1`] = `
+Object {
+  "message": "Hello",
+}
+`;

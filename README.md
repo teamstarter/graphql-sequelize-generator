@@ -64,7 +64,11 @@ graphqlSchemaDeclaration.user = {
   actions: ["list", "create"]
 };
 
-const server = generateApolloServer(graphqlSchemaDeclaration, types, models);
+const server = generateApolloServer({
+  graphqlSchemaDeclaration,
+  types,
+  models
+});
 
 const app = express();
 server.applyMiddleware({
@@ -73,7 +77,7 @@ server.applyMiddleware({
 });
 ```
 
-**Example** - Custom mutation.
+**Example** - Add a custom mutation related to a model.
 
 ```js
 graphqlSchemaDeclaration.user = {
@@ -98,7 +102,7 @@ graphqlSchemaDeclaration.user = {
 }
 ```
 
-**Example** - Select only
+**Example** - Select only configuration
 
 ```js
 graphqlSchemaDeclaration.user = {
@@ -128,14 +132,20 @@ graphqlSchemaDeclaration.user = {
 }
 ```
 
-**Example configuration** - Customize Apollo server
+**Example configuration** - All options:
 
 ```js
-const server = generateApolloServer(
+const server = generateApolloServer({
   graphqlSchemaDeclaration,
   types,
   models,
-  {
+  customMutations: {
+    /* ...
+      your custom mutations that are not related to any declared models.
+     ... */
+  },
+  // Apollo server options can be passed here.
+  apolloServerOptions: {
     playground: true,
     context: addDataloaderContext,
     extensions: [
@@ -151,9 +161,12 @@ const server = generateApolloServer(
       }
     }
   },
-  pubSubInstance)
+  pubSubInstance
+})
 );
 ```
+
+You can check the [test schema]([examples](https://github.com/matterstech/graphql-sequelize-generator/tree/master/src/tests/schema.js) which contains all of the feature available in the library.
 
 <!-- [END getstarted] -->
 

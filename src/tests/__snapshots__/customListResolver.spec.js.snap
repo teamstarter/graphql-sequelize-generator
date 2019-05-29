@@ -1,5 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test the custom resolvers Check that you can query a custom list resolver 1`] = `
+Array [
+  "customListBefore",
+]
+`;
+
 exports[`Test the custom resolvers Check that you can query a custom list resolver: A few departments 1`] = `
 Array [
   Object {

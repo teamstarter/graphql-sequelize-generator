@@ -79,7 +79,12 @@ Object {
 }
 `;
 
-exports[`Test the count resolvers Check that you can query a custom list resolver 1`] = `Array []`;
+exports[`Test the count resolvers Check that you can query a custom list resolver 1`] = `
+Array [
+  "listBefore",
+  "countBefore",
+]
+`;
 
 exports[`Test the count resolvers Check that you can query a custom list resolver: Users ids and count 1`] = `
 Object {

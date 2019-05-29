@@ -3,6 +3,10 @@
 exports[`Test the create mutation Check that you can create a new instance of one entity 1`] = `
 Array [
   "listBefore",
+  "createBefore",
+  "createAfter",
+  "listBefore",
+  "listBefore",
 ]
 `;
 

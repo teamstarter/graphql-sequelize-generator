@@ -7,14 +7,18 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
  */
 describe('Test the custom resolvers', () => {
   let server = null
+  let trace = []
+  let globalPreCallback = type => {
+    trace.push(type)
+  }
 
   beforeAll(async () => {
-    server = await createServer()
+    server = await createServer({}, globalPreCallback)
   })
-
   afterAll(() => closeServer(server))
 
   beforeEach(async () => {
+    trace = []
     await resetDb()
   })
 
@@ -38,5 +42,6 @@ describe('Test the custom resolvers', () => {
     expect(response.body.errors).toBeUndefined()
     expect(response.body.data.departments).not.toBeUndefined()
     expect(response.body.data.departments).toMatchSnapshot('A few departments')
+    expect(trace).toMatchSnapshot()
   })
 })

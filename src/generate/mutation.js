@@ -4,12 +4,38 @@ const generateMutationCreate = require('./mutationCreateResolver')
 const generateMutationDelete = require('./mutationDeleteResolver')
 const generateMutationUpdate = require('./mutationUpdateResolver')
 
+function wrapMutationsResolver (mutations, globalPreCallback) {
+  const wrappedMutations = {}
+
+  Object.keys(mutations).forEach(mutationKey => {
+    const mutation = mutations[mutationKey]
+    if (!mutation.resolve) {
+      throw new Error(
+        `A resolve attribute is required for custom mutations. Please provide one for [${mutationKey}]`
+      )
+    }
+    wrappedMutations[mutationKey] = {
+      ...mutation,
+      resolve: async (source, args, context, info) => {
+        const customHandle = globalPreCallback(`${mutationKey}CustomResolver`)
+        const result = await mutation.resolve(source, args, context, info)
+        if (customHandle) {
+          customHandle()
+        }
+        return result
+      }
+    }
+  })
+  return wrappedMutations
+}
+
 const generateMutation = (
   graphqlSchemaDeclaration,
   inputTypes,
   outputTypes,
   models,
   globalPreCallback,
+  customMutations = {},
   pubSubInstance = null
 ) => {
   const fields = Object.keys(inputTypes).reduce((mutations, modelName) => {
@@ -86,7 +112,10 @@ const generateMutation = (
 
   return new GraphQLObjectType({
     name: 'Root_Mutations',
-    fields
+    fields: {
+      ...fields,
+      ...wrapMutationsResolver(customMutations, globalPreCallback)
+    }
   })
 }
 

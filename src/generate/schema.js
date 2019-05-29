@@ -6,6 +6,7 @@ const generateSchema = ({
   graphqlSchemaDeclaration,
   types,
   models,
+  customMutations,
   globalPreCallback = () => null,
   pubSubInstance
 }) => {
@@ -22,6 +23,7 @@ const generateSchema = ({
       types.outputTypes,
       models,
       globalPreCallback,
+      customMutations,
       pubSubInstance
     )
   }

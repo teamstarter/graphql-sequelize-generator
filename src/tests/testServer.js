@@ -2,7 +2,7 @@ const express = require('express')
 const http = require('spdy')
 
 const { migrateDatabase, seedDatabase } = require('./testDatabase.js')
-const { server } = require('./schema')
+const setupServer = require('./schema')
 
 let app = express()
 
@@ -11,6 +11,8 @@ var options = {
     plain: true
   }
 }
+
+const { server } = setupServer(console.log)
 
 /**
  * This is the test server.

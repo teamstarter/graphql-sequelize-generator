@@ -3,19 +3,22 @@ const { ApolloServer } = require('apollo-server-express')
 
 const generateSchema = require('./schema')
 
-const generateApolloServer = (
+const generateApolloServer = ({
   graphqlSchemaDeclaration,
+  customMutations,
   types,
   models,
-  serverOptions = {},
-  pubSubInstance = null
-) => {
+  apolloServerOptions = {},
+  pubSubInstance = null,
+  globalPreCallback = () => null
+}) => {
   const graphqlSchema = new GraphQLSchema(
     generateSchema({
       graphqlSchemaDeclaration,
+      customMutations,
       types,
       models,
-      globalPreCallback: serverOptions.globalPreCallback,
+      globalPreCallback,
       pubSubInstance
     })
   )
@@ -23,7 +26,7 @@ const generateApolloServer = (
   return new ApolloServer({
     schema: graphqlSchema,
     cacheControl: false,
-    ...serverOptions
+    ...apolloServerOptions
   })
 }
 
