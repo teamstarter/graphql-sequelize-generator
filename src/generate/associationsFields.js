@@ -1,6 +1,7 @@
 const { GraphQLList, GraphQLString, GraphQLInt } = require('graphql')
 const { attributeFields } = require('graphql-sequelize')
 const createResolver = require('../createResolver')
+const debug = require('debug')('gsg')
 
 const generateAssociationField = (relation, types, resolver = null) => {
   const type =
@@ -67,6 +68,11 @@ const injectAssociations = (
   proxyModelName = null
 ) => {
   const modelName = proxyModelName || modelType.name
+  if (Object.keys(modelName).length === 0) {
+    throw new Error(
+      'Associations cannot be injected if no models were provided.'
+    )
+  }
   const associations = models[modelName].associations
   if (Object.keys(associations).length === 0) {
     return modelType
@@ -74,11 +80,12 @@ const injectAssociations = (
   const associationsFields = {}
   for (let associationName in associations) {
     if (!graphqlSchemaDeclaration[associations[associationName].target.name]) {
-      throw new Error(
+      debug(
         `Cannot generate the association for model [${
           associations[associationName].target.name
-        }] as it wasn't declared in the schema declaration.`
+        }] as it wasn't declared in the schema declaration. Skipping it.`
       )
+      continue
     }
     associationsFields[associationName] = generateAssociationField(
       associations[associationName],
