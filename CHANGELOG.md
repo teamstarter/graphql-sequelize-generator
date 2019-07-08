@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v3.0.0...v3.1.0) (2019-07-08)
+
+
+### Features
+
+* **associations:** Allow to skip associations. ([e9fea8c](https://github.com/inovia-team/graphql-sequelize-generator/commit/e9fea8c))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v2.0.0...v3.0.0) (2019-05-29)
 
