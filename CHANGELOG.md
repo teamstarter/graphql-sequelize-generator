@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.2.1"></a>
+## [3.2.1](https://github.com/inovia-team/graphql-sequelize-generator/compare/v3.2.0...v3.2.1) (2019-07-19)
+
+
+### Bug Fixes
+
+* **security:** Upgrade jest for security reasons. ([4263164](https://github.com/inovia-team/graphql-sequelize-generator/commit/4263164))
+
+
+
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v3.1.0...v3.2.0) (2019-07-19)
 
