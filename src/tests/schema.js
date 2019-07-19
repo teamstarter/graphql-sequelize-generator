@@ -97,6 +97,7 @@ graphqlSchemaDeclaration.company = {
 graphqlSchemaDeclaration.department = {
   model: models.department,
   actions: ['list', 'create'],
+  excludeFields: ['company', 'updatedAt'],
   list: {
     resolver: (source, args, context, info) => {
       // Making custom resolvers on the list query can be useful

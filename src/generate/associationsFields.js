@@ -117,23 +117,44 @@ const injectAssociations = (
   // For more details, look at this file
   // node_modules/graphql/type/definition.js
 
-  // As this will be calling the fields function,
-  // if injectAssociations is called in the middle of the fields
-  // definitions generation, it may break the process.
-  // Make sure you are using it after the model Types are all generated.
-  const fields = modelType.getFields()
+  // As this will be calling the fields definition function,
+  // make sure to not call injectAssociations in the middle of the fields definitions generation.
+  // The model Types must already be generated.
+  const defaultFields = modelType.getFields()
+  // The default fields needs to be filtered as attributeFields will
+  // not contain the fields that are not defined in the models files.
+  const fields = Object.keys(defaultFields).reduce((acc, field) => {
+    if (
+      !graphqlSchemaDeclaration[modelName].excludeFields ||
+      !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
+    ) {
+      acc[field] = defaultFields[field]
+    }
+    return acc
+  }, {})
 
   for (const field in baseFields) {
-    fields[field] = {
-      name: field,
-      isDeprecated: false,
-      args: [],
-      ...baseFields[field]
+    if (
+      !graphqlSchemaDeclaration[modelName].excludeFields ||
+      !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
+    ) {
+      fields[field] = {
+        name: field,
+        isDeprecated: false,
+        args: [],
+        ...baseFields[field]
+      }
     }
   }
 
   for (const field in associationsFields) {
-    fields[field] = associationsFields[field]
+    // One can also exclude generated field
+    if (
+      !graphqlSchemaDeclaration[modelName].excludeFields ||
+      !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
+    ) {
+      fields[field] = associationsFields[field]
+    }
   }
 
   modelType._fields = fields

@@ -88,4 +88,42 @@ describe('Test the API queries', () => {
     const companies = response.body.data.companies
     expect(companies).toMatchSnapshot('All companies sorted by name')
   })
+
+  it('One can exclude an associated model', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getDepartments {
+            department {
+              id
+              name
+              company {
+                id
+              }
+            }
+          }
+          &operationName=getDepartments`
+      )
+      .set('userId', 1)
+    expect(response.body.errors).not.toBeUndefined()
+    expect(response.body.errors).toMatchSnapshot()
+  })
+
+  it('One can exclude a basic field from a model', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getDepartments {
+            department {
+              id
+              name
+              updatedAt
+            }
+          }
+          &operationName=getDepartments`
+      )
+      .set('userId', 1)
+    expect(response.body.errors).not.toBeUndefined()
+    expect(response.body.errors).toMatchSnapshot()
+  })
 })

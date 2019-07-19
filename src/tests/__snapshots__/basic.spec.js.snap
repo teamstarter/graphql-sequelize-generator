@@ -622,3 +622,37 @@ Array [
   },
 ]
 `;
+
+exports[`Test the API queries One can exclude a basic field from a model 1`] = `
+Array [
+  Object {
+    "extensions": Object {
+      "code": "GRAPHQL_VALIDATION_FAILED",
+    },
+    "locations": Array [
+      Object {
+        "column": 15,
+        "line": 6,
+      },
+    ],
+    "message": "Cannot query field \\"updatedAt\\" on type \\"department\\". Did you mean \\"createdAt\\"?",
+  },
+]
+`;
+
+exports[`Test the API queries One can exclude an associated model 1`] = `
+Array [
+  Object {
+    "extensions": Object {
+      "code": "GRAPHQL_VALIDATION_FAILED",
+    },
+    "locations": Array [
+      Object {
+        "column": 15,
+        "line": 6,
+      },
+    ],
+    "message": "Cannot query field \\"company\\" on type \\"department\\". Did you mean \\"companyId\\"?",
+  },
+]
+`;

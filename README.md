@@ -247,6 +247,14 @@ It will make available a Graphiql interface at this [url](http://localhost:8080/
 
 This is available through this configuration:.
 
-@todo: Add an example
+You can use the property "excludeFields".
+
+```js
+graphqlSchemaDeclaration.user = {
+  model: models.user,
+  actions: ["list"],
+  excludeFields: ["password", "preferences"] // Individual fields or generated models can be exluded.
+};
+```
 
 <!-- [END faq] -->
