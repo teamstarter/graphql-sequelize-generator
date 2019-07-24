@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.3.1](https://github.com/inovia-team/graphql-sequelize-generator/compare/v3.3.0...v3.3.1) (2019-07-24)
+
+
+### Bug Fixes
+
+* Fix missing associations on models not defined on the server root. ([64f9f55](https://github.com/inovia-team/graphql-sequelize-generator/commit/64f9f55))
+
+
+
 ## [3.3.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v3.2.3...v3.3.0) (2019-07-24)
 
 
