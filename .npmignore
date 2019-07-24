@@ -1,0 +1,8 @@
+assets
+.eslintrc
+.prettierrc
+*.log
+.nvmrc
+.travis.yml
+src/tests
+.vscode
