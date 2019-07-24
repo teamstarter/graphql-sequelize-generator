@@ -126,4 +126,37 @@ describe('Test the API queries', () => {
     expect(response.body.errors).not.toBeUndefined()
     expect(response.body.errors).toMatchSnapshot()
   })
+
+  it('One can exclude a model from the root of the server.', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getCompanySettings {
+            companySetting {
+              whiteLabelEnabled
+            }
+          }
+          &operationName=getCompanySettings`
+      )
+      .set('userId', 1)
+    expect(response.body.errors).not.toBeUndefined()
+    expect(response.body.errors).toMatchSnapshot()
+
+    const responseSuccess = await request(server)
+      .get(
+        `/graphql?query=
+          query getCompanies {
+            company {
+              id
+              settings {
+                whiteLabelEnabled
+              }
+            }
+          }
+          &operationName=getCompanies`
+      )
+      .set('userId', 1)
+    expect(responseSuccess.body.errors).toBeUndefined()
+    expect(responseSuccess.body.data).toMatchSnapshot()
+  })
 })

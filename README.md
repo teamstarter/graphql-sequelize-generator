@@ -245,9 +245,7 @@ It will make available a Graphiql interface at this [url](http://localhost:8080/
 
 #### Q: Can I hide fields?
 
-This is available through this configuration:.
-
-You can use the property "excludeFields".
+Yes, You can use the property "excludeFields":
 
 ```js
 graphqlSchemaDeclaration.user = {
@@ -256,5 +254,20 @@ graphqlSchemaDeclaration.user = {
   excludeFields: ["password", "preferences"] // Individual fields or generated models can be exluded.
 };
 ```
+
+#### Q: Can I remove a model from the root of the GraphgQL server?
+
+Yes, You can use the property "excludeFromRoot":
+
+```js
+graphqlSchemaDeclaration.companySetting = {
+  model: models.companySetting,
+  excludeFromRoot: true,
+  actions: ["list"]
+};
+```
+
+By default all defined models with a "list" resolver are added to the root of the server.
+Yet it might be useful, for example for security reasons, to exclude some models from the root.
 
 <!-- [END faq] -->

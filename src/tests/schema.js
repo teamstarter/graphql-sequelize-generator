@@ -197,6 +197,12 @@ customMutations.logThat = {
   }
 }
 
+graphqlSchemaDeclaration.companySetting = {
+  model: models.companySetting,
+  excludeFromRoot: true,
+  actions: ['list']
+}
+
 module.exports = globalPreCallback => ({
   server: generateApolloServer({
     graphqlSchemaDeclaration,

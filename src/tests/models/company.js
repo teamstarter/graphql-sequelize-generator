@@ -25,6 +25,10 @@ module.exports = function (sequelize, DataTypes) {
       as: 'type',
       foreignKey: 'companyTypeId'
     })
+    models.company.hasOne(models.companySetting, {
+      as: 'settings',
+      foreignKey: 'companyId'
+    })
   }
   return Company
 }

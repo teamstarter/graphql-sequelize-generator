@@ -18,6 +18,12 @@ function getModelsFields (
       return fields
     }
 
+    // One can exclude a given model from the root query.
+    // It will only be used through associations.
+    if (schemaDeclaration.excludeFromRoot === true) {
+      return fields
+    }
+
     // @todo counts should only be added if configured in the schema declaration
     return {
       ...fields,

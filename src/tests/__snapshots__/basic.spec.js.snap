@@ -640,6 +640,48 @@ Array [
 ]
 `;
 
+exports[`Test the API queries One can exclude a model from the root of the server. 1`] = `
+Array [
+  Object {
+    "extensions": Object {
+      "code": "GRAPHQL_VALIDATION_FAILED",
+    },
+    "locations": Array [
+      Object {
+        "column": 13,
+        "line": 3,
+      },
+    ],
+    "message": "Cannot query field \\"companySetting\\" on type \\"Root_Query\\". Did you mean \\"companyCount\\", \\"companyType\\", \\"company\\", or \\"companyTypeCount\\"?",
+  },
+]
+`;
+
+exports[`Test the API queries One can exclude a model from the root of the server. 2`] = `
+Object {
+  "company": Array [
+    Object {
+      "id": 1,
+      "settings": Object {
+        "whiteLabelEnabled": true,
+      },
+    },
+    Object {
+      "id": 3,
+      "settings": null,
+    },
+    Object {
+      "id": 5,
+      "settings": null,
+    },
+    Object {
+      "id": 7,
+      "settings": null,
+    },
+  ],
+}
+`;
+
 exports[`Test the API queries One can exclude an associated model 1`] = `
 Array [
   Object {
