@@ -8,7 +8,7 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
 describe('Test the count resolvers', () => {
   let server = null
   let trace = []
-  let globalPreCallback = type => {
+  const globalPreCallback = type => {
     trace.push(type)
   }
 

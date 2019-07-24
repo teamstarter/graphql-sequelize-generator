@@ -8,7 +8,7 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
 describe('Test the custom mutations', () => {
   let server = null
   let trace = []
-  let globalPreCallback = type => {
+  const globalPreCallback = type => {
     trace.push(type)
   }
 

@@ -8,12 +8,15 @@ const generateGraphQLType = require('./graphQLType')
  */
 // This function is exported
 const generateModelTypes = models => {
-  let outputTypes = {}
-  let inputTypes = {}
-  for (let modelName in models) {
+  const outputTypes = {}
+  const inputTypes = {}
+  for (const modelName in models) {
     const model = models[modelName]
     // Only our models, not Sequelize nor sequelize
-    if (model.hasOwnProperty('name') && modelName !== 'Sequelize') {
+    if (
+      Object.prototype.hasOwnProperty.call(model, 'name') &&
+      modelName !== 'Sequelize'
+    ) {
       outputTypes[modelName] = generateGraphQLType(model, outputTypes)
       inputTypes[modelName] = generateGraphQLType(model, inputTypes, true)
     }

@@ -5,6 +5,7 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
   if (typeof findOptions.order === 'undefined') {
     return findOptions
   }
+  const processedOrder = []
 
   const checkForAssociationSort = singleOrder => {
     // When the comas is used, graphql-sequelize will not handle the 'reverse:' command.
@@ -69,7 +70,6 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
    * to
    * order = [['id', 'ASC'], ['fullname', 'DESC']
    */
-  let processedOrder = []
   findOptions.order.map(order => {
     // Handle multiple sort fields.
     if (order[0].search(',') === -1) {
@@ -128,7 +128,7 @@ const createResolver = (
     graphqlTypeDeclaration.list.resolver
   ) {
     return async (source, args, context, info) => {
-      let customResolverHandle = globalPreCallback('customListBefore')
+      const customResolverHandle = globalPreCallback('customListBefore')
       const customResult = await graphqlTypeDeclaration.list.resolver(
         source,
         args,

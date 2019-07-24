@@ -3,16 +3,36 @@ const { attributeFields } = require('graphql-sequelize')
 const createResolver = require('../createResolver')
 const debug = require('debug')('gsg')
 
-const generateAssociationField = (relation, types, resolver = null) => {
+const generateAssociationField = (
+  relation,
+  types,
+  graphqlSchemaDeclaration,
+  models,
+  globalPreCallback,
+  resolver = null
+) => {
+  const newBaseType =
+    graphqlSchemaDeclaration &&
+    !types[relation.target.name].associationsInjected
+      ? injectAssociations(
+          types[relation.target.name],
+          graphqlSchemaDeclaration,
+          types,
+          models,
+          globalPreCallback
+        )
+      : types[relation.target.name]
+
   const type =
     relation.associationType === 'BelongsToMany' ||
     relation.associationType === 'HasMany'
-      ? new GraphQLList(types[relation.target.name])
-      : types[relation.target.name]
+      ? new GraphQLList(newBaseType)
+      : newBaseType
 
-  let field = {
+  const field = {
     type,
     isDeprecated: false,
+    associationsInjected: true,
     name: relation.as,
     args: [
       {
@@ -50,7 +70,7 @@ const generateAssociationField = (relation, types, resolver = null) => {
  */
 const generateAssociationsFields = (associations, types) => {
   const fields = {}
-  for (let associationName in associations) {
+  for (const associationName in associations) {
     fields[associationName] = generateAssociationField(
       associations[associationName],
       types
@@ -60,36 +80,40 @@ const generateAssociationsFields = (associations, types) => {
 }
 
 const injectAssociations = (
-  modelType,
+  modelGraphQLType,
   graphqlSchemaDeclaration,
   outputTypes,
   models,
   globalPreCallback,
   proxyModelName = null
 ) => {
-  const modelName = proxyModelName || modelType.name
+  const modelName = proxyModelName || modelGraphQLType.name
   if (Object.keys(modelName).length === 0) {
     throw new Error(
       'Associations cannot be injected if no models were provided.'
     )
   }
+
+  outputTypes[modelName].associationsInjected = true
+
   const associations = models[modelName].associations
   if (Object.keys(associations).length === 0) {
-    return modelType
+    return modelGraphQLType
   }
   const associationsFields = {}
-  for (let associationName in associations) {
+  for (const associationName in associations) {
     if (!graphqlSchemaDeclaration[associations[associationName].target.name]) {
       debug(
-        `Cannot generate the association for model [${
-          associations[associationName].target.name
-        }] as it wasn't declared in the schema declaration. Skipping it.`
+        `Cannot generate the association for model [${associations[associationName].target.name}] as it wasn't declared in the schema declaration. Skipping it.`
       )
       continue
     }
     associationsFields[associationName] = generateAssociationField(
       associations[associationName],
       outputTypes,
+      graphqlSchemaDeclaration,
+      models,
+      globalPreCallback,
       createResolver(
         graphqlSchemaDeclaration[associations[associationName].target.name],
         models,
@@ -111,7 +135,7 @@ const injectAssociations = (
   }
 
   // Fields can either be a function or an Object.
-  // Due to the behavior of modelType.toConfig(),
+  // Due to the behavior of modelGraphQLType.toConfig(),
   // we must reconvert the fields to an Object to add more fields.
 
   // For more details, look at this file
@@ -120,7 +144,7 @@ const injectAssociations = (
   // As this will be calling the fields definition function,
   // make sure to not call injectAssociations in the middle of the fields definitions generation.
   // The model Types must already be generated.
-  const defaultFields = modelType.getFields()
+  const defaultFields = modelGraphQLType.getFields()
   // The default fields needs to be filtered as attributeFields will
   // not contain the fields that are not defined in the models files.
   const fields = Object.keys(defaultFields).reduce((acc, field) => {
@@ -157,9 +181,9 @@ const injectAssociations = (
     }
   }
 
-  modelType._fields = fields
+  modelGraphQLType._fields = fields
 
-  return modelType
+  return modelGraphQLType
 }
 
 module.exports = { injectAssociations, generateAssociationsFields }

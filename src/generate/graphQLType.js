@@ -12,17 +12,16 @@ const { generateAssociationsFields } = require('./associationsFields')
  */
 const generateGraphQLType = (model, types, isInput = false) => {
   const GraphQLClass = isInput ? GraphQLInputObjectType : GraphQLObjectType
-  return new GraphQLClass({
+  const type = new GraphQLClass({
     name: isInput ? `${model.name}Input` : model.name,
     fields: () => ({
       ...attributeFields(model, {
         allowNull: !!isInput
       }),
-      ...(isInput
-        ? generateAssociationsFields(model.associations, types, isInput)
-        : {})
+      ...(isInput ? generateAssociationsFields(model.associations, types) : {})
     })
   })
+  return type
 }
 
 module.exports = generateGraphQLType

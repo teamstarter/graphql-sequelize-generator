@@ -1,12 +1,12 @@
 {
-    "editor.formatOnSave" : true,
-    "prettier.eslintIntegration" : true,
-    "files.exclude": {
-      "**/.git": true,
-      "**/.DS_Store": true
-    },
-    // Flow related settings
-    "javascript.validate.enable": false,
-    "flow.useNPMPackagedFlow": true,
-    "eslint.packageManager": "yarn"
-  }
+  "editor.formatOnSave": true,
+  "prettier.eslintIntegration": false,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true
+  },
+  // Flow related settings
+  "javascript.validate.enable": false,
+  "flow.useNPMPackagedFlow": true,
+  "eslint.packageManager": "yarn"
+}
