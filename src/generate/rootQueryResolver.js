@@ -4,7 +4,7 @@ const { defaultArgs, defaultListArgs } = require('graphql-sequelize')
 const generateCountResolver = require('./countResolver')
 const generateListResolver = require('./listResolver')
 
-function getModelsFields (
+function getModelsFields(
   allSchemaDeclarations,
   outputTypes,
   models,
@@ -22,6 +22,12 @@ function getModelsFields (
     // It will only be used through associations.
     if (schemaDeclaration.excludeFromRoot === true) {
       return fields
+    }
+
+    if (!schemaDeclaration.model) {
+      throw new Error(
+        `You provided an empty/undefined model for the endpoint ${modelType}. Please provide a Sequelize model.`
+      )
     }
 
     // @todo counts should only be added if configured in the schema declaration
@@ -53,7 +59,7 @@ function getModelsFields (
   }, {})
 }
 
-function getCustomEndpoints (allSchemaDeclarations, outputTypes, models) {
+function getCustomEndpoints(allSchemaDeclarations, outputTypes, models) {
   return Object.keys(allSchemaDeclarations).reduce((fields, endpointKey) => {
     // We ignore all endpoints matching a model type.
     if (outputTypes[endpointKey]) {
@@ -78,7 +84,7 @@ function getCustomEndpoints (allSchemaDeclarations, outputTypes, models) {
  * from Sequelize models.
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
-module.exports = function generateQueryRootResolver (
+module.exports = function generateQueryRootResolver(
   allSchemaDeclarations,
   outputTypes,
   models,

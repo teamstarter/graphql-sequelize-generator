@@ -10,7 +10,7 @@ const { injectAssociations } = require('./associationsFields')
  * from Sequelize models.
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
-module.exports = function generateListResolver (
+module.exports = function generateListResolver(
   modelType,
   modelTypeName,
   allSchemaDeclarations,
@@ -19,6 +19,13 @@ module.exports = function generateListResolver (
   globalPreCallback
 ) {
   const schemaDeclaration = allSchemaDeclarations[modelType.name]
+
+  if (!schemaDeclaration.model) {
+    throw new Error(
+      `You provided an empty/undefined model for the endpoint ${modelType}. Please provide a Sequelize model.`
+    )
+  }
+
   return {
     type: new GraphQLList(
       injectAssociations(
