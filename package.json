@@ -10,7 +10,7 @@
     "express"
   ],
   "main": "src/index.js",
-  "repository": "git@github.com:inovia-team/graphql-sequelize-generator.git",
+  "repository": "git@github.com:teamstarter/graphql-sequelize-generator.git",
   "author": "vincent desmares <vincent.desmares@gmail.com>",
   "license": "BSD-3-Clause",
   "engines": {
