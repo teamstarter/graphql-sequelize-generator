@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.4.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v3.3.1...v3.4.0) (2019-09-05)
+
+
+### Features
+
+* Improve error handling for undefined models. ([5550369](https://github.com/inovia-team/graphql-sequelize-generator/commit/5550369))
+
+
+
 ### [3.3.1](https://github.com/inovia-team/graphql-sequelize-generator/compare/v3.3.0...v3.3.1) (2019-07-24)
 
 
