@@ -19,7 +19,7 @@
   "devDependencies": {
     "babel-eslint": "^10.0.2",
     "dataloader-sequelize": "^1.7.6",
-    "eslint": "^6.0.1",
+    "eslint": "^6.3.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-config-standard": "^13.0.1",
     "eslint-plugin-import": "^2.18.0",
@@ -29,7 +29,7 @@
     "express": "^4.16.4",
     "graphql": "^14.0.2",
     "graphql-relay": "^0.5.5",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
     "spdy": "^3.4.7",
