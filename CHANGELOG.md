@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v3.4.0...v4.0.0) (2019-10-21)
+
+
+### Bug Fixes
+
+* **security:** Upgrade some dev libs to fix security issues. ([88e1ab8](https://github.com/teamstarter/graphql-sequelize-generator/commit/88e1ab8))
+
+
+### chore
+
+* Upgrade sequelize. ([35a1589](https://github.com/teamstarter/graphql-sequelize-generator/commit/35a1589))
+
+
+### BREAKING CHANGES
+
+* Move sequelize as a peer-dependency.
+
+
+
 ## [3.4.0](https://github.com/inovia-team/graphql-sequelize-generator/compare/v3.3.1...v3.4.0) (2019-09-05)
 
 
