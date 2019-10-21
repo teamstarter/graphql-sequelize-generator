@@ -39,7 +39,7 @@ The tools provided by this library will allow you to:
 To use GSG in your project, run:
 
 ```
-yarn add graphql-sequelize-generator
+yarn add graphql-sequelize-generator graphql sequelize graphql-sequelize
 # or "npm i --save graphql-sequelize-generator"
 ```
 
@@ -50,31 +50,31 @@ Caution: GSG requires at least Node v9.11.2 or greater as it is using async/awai
 **Example** - adding a GraphQL API to my express:
 
 ```js
-const express = require("express");
+const express = require('express')
 const {
   generateModelTypes,
   generateGraphqlExpressMiddleware
-} = require("graphql-sequelize-generator");
-const models = require("./models");
+} = require('graphql-sequelize-generator')
+const models = require('./models')
 
-const types = generateModelTypes(models);
+const types = generateModelTypes(models)
 
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ["list", "create"]
-};
+  actions: ['list', 'create']
+}
 
 const server = generateApolloServer({
   graphqlSchemaDeclaration,
   types,
   models
-});
+})
 
-const app = express();
+const app = express()
 server.applyMiddleware({
   app,
-  path: "/graphql"
-});
+  path: '/graphql'
+})
 ```
 
 **Example** - Add a custom mutation related to a model.
@@ -107,8 +107,8 @@ graphqlSchemaDeclaration.user = {
 ```js
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ["list"] // Other available options: ['list', 'create', 'update', 'delete', 'count']
-};
+  actions: ['list'] // Other available options: ['list', 'create', 'update', 'delete', 'count']
+}
 ```
 
 **Example queries** - Query associations
@@ -189,17 +189,17 @@ Instead of that:
 ```js
 list: {
   before: async (findOptions, args, context) => {
-    if (typeof findOptions.include === "undefined") {
-      findOptions.include = [];
+    if (typeof findOptions.include === 'undefined') {
+      findOptions.include = []
     }
     findOptions.include.push({
       model: models.user,
       where: {
         id: context.myUserId
       }
-    });
-    return findOptions;
-  };
+    })
+    return findOptions
+  }
 }
 ```
 
@@ -208,14 +208,14 @@ Try to do this if possible:
 ```js
 list: {
   before: async (findOptions, args, context) => {
-    if (typeof findOptions.where === "undefined") {
-      findOptions.where = {};
+    if (typeof findOptions.where === 'undefined') {
+      findOptions.where = {}
     }
     findOptions.where = {
       $and: [findOptions.where, { id: context.myAllowedCompaniesIds }]
-    };
-    return findOptions;
-  };
+    }
+    return findOptions
+  }
 }
 ```
 
@@ -239,6 +239,15 @@ yarn start
 
 It will make available a Graphiql interface at this [url](http://localhost:8080/graphql)
 
+## Why the peer dependencies?
+
+Graphql and Sequelize are two libraries that are doing a lot of type checking. If one of those
+librairies ends up duplicated due to GSG requiring a different package version than your application
+the type checking will not work and the libraries may fail at strange places with cryptic errors.
+
+Having them on peer dependencies make the install a bit more tedious but your application will
+fail with clear errors when the versions will missmatch.
+
 <!-- [START faq] -->
 
 # FAQ
@@ -250,9 +259,9 @@ Yes, You can use the property "excludeFields":
 ```js
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ["list"],
-  excludeFields: ["password", "preferences"] // Individual fields or generated models can be exluded.
-};
+  actions: ['list'],
+  excludeFields: ['password', 'preferences'] // Individual fields or generated models can be exluded.
+}
 ```
 
 #### Q: Can I remove a model from the root of the GraphgQL server?
@@ -263,8 +272,8 @@ Yes, You can use the property "excludeFromRoot":
 graphqlSchemaDeclaration.companySetting = {
   model: models.companySetting,
   excludeFromRoot: true,
-  actions: ["list"]
-};
+  actions: ['list']
+}
 ```
 
 By default all defined models with a "list" resolver are added to the root of the server.

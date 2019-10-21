@@ -36,7 +36,8 @@
     "sqlite3": "^4.0.6",
     "standard-version": "^6.0.1",
     "supertest": "^3.0.0",
-    "umzug": "^2.1.0"
+    "umzug": "^2.1.0",
+    "sequelize": "5.21.1"
   },
   "scripts": {
     "test": "NODE_ENV=test DEBUG=-* PORT=8282 jest -i",
@@ -47,14 +48,14 @@
   },
   "peerDependencies": {
     "graphql": "^14.0.2",
-    "graphql-sequelize": "^9.3.5"
+    "graphql-sequelize": "^9.3.5",
+    "sequelize": "5.21.1"
   },
   "dependencies": {
     "apollo-server-express": "2.4.8",
     "debug": "^4.1.1",
     "graphql-sequelize": "^9.3.5",
     "graphql-subscriptions": "^1.1.0",
-    "sequelize": "^5.8.5",
     "subscriptions-transport-ws": "^0.9.5"
   },
   "jest": {
