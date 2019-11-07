@@ -29,6 +29,7 @@
     "express": "^4.16.4",
     "graphql": "^14.0.2",
     "graphql-relay": "^0.5.5",
+    "graphql-sequelize": "^9.3.5",
     "jest": "^24.9.0",
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
@@ -54,7 +55,6 @@
   "dependencies": {
     "apollo-server-express": "2.4.8",
     "debug": "^4.1.1",
-    "graphql-sequelize": "^9.3.5",
     "graphql-subscriptions": "^1.1.0",
     "subscriptions-transport-ws": "^0.9.5"
   },
