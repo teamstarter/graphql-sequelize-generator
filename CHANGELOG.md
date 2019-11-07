@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v4.0.0...v5.0.0) (2019-11-07)
+
+
+### chore
+
+* Update library deps. ([df3daa1](https://github.com/teamstarter/graphql-sequelize-generator/commit/df3daa1))
+
+
+### BREAKING CHANGES
+
+* Move graphql-sequelize as a peer-dependency.
+
+
+
 ## [4.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v3.4.0...v4.0.0) (2019-10-21)
 
 
