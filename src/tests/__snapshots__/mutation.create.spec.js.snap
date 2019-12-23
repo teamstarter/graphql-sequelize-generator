@@ -6,29 +6,17 @@ Array [
   "createBefore",
   "createAfter",
   "listBefore",
-  "listBefore",
 ]
 `;
 
 exports[`Test the create mutation Check that you can create a new instance of one entity: Created user 1`] = `
 Object {
   "__typename": "user",
-  "id": 12501,
+  "id": 25001,
   "name": "new user",
 }
 `;
 
-exports[`Test the create mutation Check that you can create a new instance of one entity: The new user 1`] = `
-Array [
-  Object {
-    "company": Object {
-      "id": 1,
-      "name": "Company 1",
-    },
-    "id": 12501,
-    "name": "new user",
-  },
-]
-`;
+exports[`Test the create mutation Check that you can create a new instance of one entity: The new user 1`] = `Array []`;
 
 exports[`Test the create mutation Check that you can create a new instance of one entity: User 12501 does not exists yet. 1`] = `Array []`;

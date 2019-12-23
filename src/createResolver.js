@@ -6,12 +6,14 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
   }
   const processedOrder = []
 
-  const checkForAssociationSort = singleOrder => {
+  const checkForAssociationSort = (singleOrder, index) => {
     // When the comas is used, graphql-sequelize will not handle the 'reverse:' command.
     // We have to implement it ourselves.
     let field = null
-    // By default the direction is ASC.
-    let direction = 'ASC'
+    // By default we take the direction detected by GraphQL-sequelize
+    // It will be 'ASC' if 'reverse:' was not specified.
+    // But this will only work for the first field.
+    let direction = index === 0 ? findOptions.order[0][1] : 'ASC'
     // When reverse is not already removed by graphql-sequelize
     // we try to detect it ourselves. Happens for multiple fields sort.
     if (singleOrder.search('reverse:') === 0) {
@@ -33,11 +35,26 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
       if (typeof findOptions.include === 'undefined') {
         findOptions.include = []
       }
-      findOptions.include.push({
+
+      const modelInclude = {
         model: model.associations[associationName].target
-      })
+      }
+
+      if (model.associations[associationName].as) {
+        modelInclude.as = model.associations[associationName].as
+      }
+
+      findOptions.include.push(modelInclude)
+
+      const modelSort = { model: model.associations[associationName].target }
+      // When sorting by a associated table, the alias must be specified
+      // if defined in the association definition.
+      if (model.associations[associationName].as) {
+        modelSort.as = model.associations[associationName].as
+      }
+
       processedOrder.push([
-        model.associations[associationName].target,
+        modelSort,
         parts[1],
         direction
       ])
@@ -73,12 +90,12 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
   findOptions.order.map(order => {
     // Handle multiple sort fields.
     if (order[0].search(',') === -1) {
-      checkForAssociationSort(order[0])
+      checkForAssociationSort(order[0], 0)
       return
     }
     const multipleOrder = order[0].split(',')
-    for (const splitOrder of multipleOrder) {
-      checkForAssociationSort(splitOrder)
+    for (const index in multipleOrder) {
+      checkForAssociationSort(multipleOrder[index], parseInt(index))
     }
   })
   findOptions.order = processedOrder
