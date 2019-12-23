@@ -89,6 +89,44 @@ describe('Test the API queries', () => {
     expect(companies).toMatchSnapshot('All companies sorted by name')
   })
 
+  it('Check that you can sort by virtual fields in any order', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getCompanies {
+            companies: company(order: "reverse:userCount,name") {
+              id
+              userCount
+              name
+            }
+          }
+          &operationName=getCompanies`
+      )
+      .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
+    const companies = response.body.data.companies
+    expect(companies).toMatchSnapshot('All companies sorted by userCount desc and name asc.')
+  })
+
+  it('Sorting can ignore spacing typoes', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getCompanies {
+            companies: company(order: "reverse: userCount, name") {
+              id
+              userCount
+              name
+            }
+          }
+          &operationName=getCompanies`
+      )
+      .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
+    const companies = response.body.data.companies
+    expect(companies).toMatchSnapshot('All companies sorted by userCount desc and name asc.')
+  })
+
   it('One can exclude an associated model', async () => {
     const response = await request(server)
       .get(

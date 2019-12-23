@@ -1,5 +1,4 @@
 const { resolver } = require('graphql-sequelize')
-const Sequelize = require('sequelize')
 
 const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
   if (typeof findOptions.order === 'undefined') {
@@ -11,16 +10,15 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
     // When the comas is used, graphql-sequelize will not handle the 'reverse:' command.
     // We have to implement it ourselves.
     let field = null
-    // By default we take the direction detected by GraphQL-sequelize
-    // It will be 'ASC' if 'reverse:' was not specified.
-    let direction = findOptions.order[0][1]
+    // By default the direction is ASC.
+    let direction = 'ASC'
     // When reverse is not already removed by graphql-sequelize
     // we try to detect it ourselves. Happens for multiple fields sort.
     if (singleOrder.search('reverse:') === 0) {
-      field = singleOrder.slice(8)
+      field = singleOrder.slice(8).trim()
       direction = 'DESC'
     } else {
-      field = singleOrder
+      field = singleOrder.trim()
     }
 
     // if there is exactly one dot, we check for associations
@@ -50,8 +48,10 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
         model.rawAttributes[field] &&
         model.rawAttributes[field].type.key === 'VIRTUAL'
       ) {
-        // model.rawAttributes[field].fieldName is used to avoid code-injection.
-        field = Sequelize.literal(`\`${model.rawAttributes[field].fieldName}\``)
+        // When a virtual field is used, we must sort with the expression and not
+        // the name of the field, as it is not compatible with multiple database engines.
+        // IE : Sorting by virtual field is inefficient if using sub-queries.
+        field = model.rawAttributes[field].type.fields[0][0]
       }
       processedOrder.push([field, direction])
     }
@@ -77,8 +77,8 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
       return
     }
     const multipleOrder = order[0].split(',')
-    for (const singleOrder of multipleOrder) {
-      checkForAssociationSort(singleOrder)
+    for (const splitOrder of multipleOrder) {
+      checkForAssociationSort(splitOrder)
     }
   })
   findOptions.order = processedOrder

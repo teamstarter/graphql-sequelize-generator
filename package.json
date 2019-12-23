@@ -17,7 +17,7 @@
     "node": ">=9.11.2"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.2",
+    "babel-eslint": "^10.0.3",
     "dataloader-sequelize": "^1.7.6",
     "eslint": "^6.3.0",
     "eslint-config-prettier": "^6.0.0",

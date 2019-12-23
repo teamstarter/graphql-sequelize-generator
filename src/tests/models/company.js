@@ -11,6 +11,16 @@ module.exports = function (sequelize, DataTypes) {
       companyTypeId: {
         type: DataTypes.INTEGER,
         allowNull: false
+      },
+      userCount: {
+        type: DataTypes.VIRTUAL(DataTypes.INTEGER, [
+          [
+            sequelize.literal(
+              `(SELECT COALESCE(COUNT("user".id), 0) FROM "user" WHERE "user"."companyId" = "company".id)`
+            ),
+            'userCount'
+          ]
+        ])
       }
     },
     {

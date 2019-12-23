@@ -602,6 +602,31 @@ Array [
 ]
 `;
 
+exports[`Test the API queries Check that you can sort by virtual fields in any order: All companies sorted by userCount desc and name asc. 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "userCount": 250,
+  },
+  Object {
+    "id": 3,
+    "name": "Company 3",
+    "userCount": 250,
+  },
+  Object {
+    "id": 5,
+    "name": "Company 5",
+    "userCount": 250,
+  },
+  Object {
+    "id": 7,
+    "name": "Company 7",
+    "userCount": 250,
+  },
+]
+`;
+
 exports[`Test the API queries Check that you can sort: All companies sorted by name 1`] = `
 Array [
   Object {
@@ -695,6 +720,31 @@ Array [
       },
     ],
     "message": "Cannot query field \\"company\\" on type \\"department\\". Did you mean \\"companyId\\"?",
+  },
+]
+`;
+
+exports[`Test the API queries Sorting can ignore spacing typoes: All companies sorted by userCount desc and name asc. 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "userCount": 250,
+  },
+  Object {
+    "id": 3,
+    "name": "Company 3",
+    "userCount": 250,
+  },
+  Object {
+    "id": 5,
+    "name": "Company 5",
+    "userCount": 250,
+  },
+  Object {
+    "id": 7,
+    "name": "Company 7",
+    "userCount": 250,
   },
 ]
 `;
