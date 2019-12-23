@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.0.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.0.0...v5.0.1) (2019-12-23)
+
+
+### Bug Fixes
+
+* **sorting:** Fix default sorting and improve sorting on virtual fields. ([f573772](https://github.com/teamstarter/graphql-sequelize-generator/commit/f573772))
+
+
+
 ## [5.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v4.0.0...v5.0.0) (2019-11-07)
 
 
