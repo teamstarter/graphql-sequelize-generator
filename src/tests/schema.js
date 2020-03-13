@@ -31,9 +31,16 @@ graphqlSchemaDeclaration.user = {
         [Op.and]: [findOptions.where, { departmentId: [1] }]
       }
       return findOptions
-    }
-    // List configuration does not have an after hook.
-    // Should it have one?
+    },
+    after: (result, args, context, info) => {
+      for (const user of result) {
+        if (user.name === 'Test 5 c 2') {
+          user.name = `Mr ${user.name}`
+        }
+      }
+    
+      return result
+    },
   },
   // The followings hooks are just here to demo their signatures.
   // They are not required and can be omited if you don't need them.

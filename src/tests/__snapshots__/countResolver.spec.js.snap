@@ -73,6 +73,7 @@ exports[`Test the count resolvers Check that you can query a custom list resolve
 Array [
   "listBefore",
   "countBefore",
+  "listAfter",
 ]
 `;
 

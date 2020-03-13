@@ -5,9 +5,11 @@ exports[`Test the delete mutation Check that you can delete an entity 1`] = `1`;
 exports[`Test the delete mutation Check that you can delete an entity 2`] = `
 Array [
   "listBefore",
+  "listAfter",
   "deleteBefore",
   "deleteAfter",
   "listBefore",
+  "listAfter",
 ]
 `;
 
@@ -15,7 +17,7 @@ exports[`Test the delete mutation Check that you can delete an entity: The user 
 Array [
   Object {
     "id": 5,
-    "name": "Test 5 c 2",
+    "name": "Mr Test 5 c 2",
   },
 ]
 `;

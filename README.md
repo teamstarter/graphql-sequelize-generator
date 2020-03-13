@@ -3,12 +3,12 @@
 <!-- [START badges] -->
 
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
-[![Build Status](https://travis-ci.org/matterstech/graphql-sequelize-generator.svg?branch=master)](https://travis-ci.org/matterstech/graphql-sequelize-generator)
+[![Build Status](https://travis-ci.org/teamstarter/graphql-sequelize-generator.svg?branch=master)](https://travis-ci.org/teamstarter/graphql-sequelize-generator)
 ![](https://img.shields.io/npm/v/graphql-sequelize-generator.svg)
 
 <!-- [END badges] -->
 
-###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/matterstech/graphql-sequelize-generator/blob/master/CONTRIBUTING.md)
+###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/teamstarter/graphql-sequelize-generator/blob/master/CONTRIBUTING.md)
 
 > Graphql-Sequelize-Generator (GSG) is a set of tools that will allow you to easily generate a [graphql](http://graphql.org/) API from your [sequelize](http://docs.sequelizejs.com/) models.
 
@@ -28,7 +28,7 @@ The tools provided by this library will allow you to:
 - [ ] Add custom fields/resolvers on auto-generated types
   <!-- [END usecases] -->
 
-![Generated API](https://github.com/matterstech/graphql-sequelize-generator/raw/master/assets/screen-graphql-playground.png)
+![Generated API](https://github.com/teamstarter/graphql-sequelize-generator/raw/master/assets/screen-graphql-playground.png)
 
 <!-- [START getstarted] -->
 
@@ -166,13 +166,13 @@ const server = generateApolloServer({
 );
 ```
 
-You can check the [test schema]([examples](https://github.com/matterstech/graphql-sequelize-generator/tree/master/src/tests/schema.js) which contains all of the feature available in the library.
+You can check the [test schema]([examples](https://github.com/teamstarter/graphql-sequelize-generator/tree/master/src/tests/schema.js) which contains all of the feature available in the library.
 
 <!-- [END getstarted] -->
 
 ## API Documentation
 
-Explore the [API documentation](docs/api.md) and [examples](https://github.com/matterstech/graphql-sequelize-generator/tree/master/examples/) to learn more.
+Explore the [API documentation](docs/api.md) and [examples](https://github.com/teamstarter/graphql-sequelize-generator/tree/master/examples/) to learn more.
 
 ## Known limitations
 
@@ -221,7 +221,7 @@ list: {
 
 ## Contributing to GSG
 
-Check out [contributing guide](https://github.com/matterstech/graphql-sequelize-generator/blob/master/CONTRIBUTING.md) to get an overview of open-source development at Matters.
+Check out [contributing guide](https://github.com/teamstarter/graphql-sequelize-generator/blob/master/CONTRIBUTING.md) to get an overview of open-source development at Matters.
 
 ###
 

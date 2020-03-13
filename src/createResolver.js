@@ -163,6 +163,9 @@ const createResolver = (
     graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.before
       ? graphqlTypeDeclaration.list.before
       : undefined
+  const listAfter =  graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.after
+      ? graphqlTypeDeclaration.list.after
+      : undefined
   return resolver(relation || graphqlTypeDeclaration.model, {
     before: async (findOptions, args, context, info) => {
       const processedFindOptions = argsAdvancedProcessing(
@@ -175,8 +178,7 @@ const createResolver = (
       )
 
       if (listBefore) {
-        let handle = null
-        handle = globalPreCallback('listBefore')
+        const handle = globalPreCallback('listBefore')
         const result = await listBefore(
           processedFindOptions,
           args,
@@ -189,6 +191,22 @@ const createResolver = (
         return result
       }
       return processedFindOptions
+    },
+    after: async (result, args, context, info) => {
+      if (listAfter) {
+        const handle = globalPreCallback('listAfter')
+        const modifiedResult = await listAfter(
+          result,
+          args,
+          context,
+          info
+        )
+        if (handle) {
+          handle()
+        }
+        return modifiedResult
+      }
+      return result
     }
   })
 }
