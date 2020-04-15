@@ -151,6 +151,12 @@ const OddUser = new GraphQLObjectType({
   }
 })
 
+// Testing the many to many relationships
+graphqlSchemaDeclaration.tag = {
+  model: models.tag,
+  actions: ['list']
+}
+
 graphqlSchemaDeclaration.oddUser = {
   type: new GraphQLList(
     injectAssociations(

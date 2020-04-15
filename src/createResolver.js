@@ -1,4 +1,5 @@
 const { resolver } = require('graphql-sequelize')
+const removeUnusedAttributes = require('./removeUnusedAttributes')
 
 const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
   if (typeof findOptions.order === 'undefined') {
@@ -188,7 +189,7 @@ const createResolver = (
         if (handle) {
           handle()
         }
-        return result
+        return graphqlTypeDeclaration.list.removeUnusedAttributes === false ? result : removeUnusedAttributes(result, info, graphqlTypeDeclaration.model, models)
       }
       return processedFindOptions
     },

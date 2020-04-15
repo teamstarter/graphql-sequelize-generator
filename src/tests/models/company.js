@@ -39,6 +39,12 @@ module.exports = function (sequelize, DataTypes) {
       as: 'settings',
       foreignKey: 'companyId'
     })
+    models.company.belongsToMany(models.tag, {
+      as: 'tags',
+      through: 'tagCompanyLink',
+      foreignKey: 'companyId',
+      otherKey: 'tagId'
+    })
   }
   return Company
 }

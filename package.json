@@ -34,7 +34,7 @@
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
     "spdy": "^3.4.7",
-    "sqlite3": "^4.0.6",
+    "sqlite3": "^4.1.1",
     "standard-version": "^6.0.1",
     "supertest": "^3.0.0",
     "umzug": "^2.1.0",
