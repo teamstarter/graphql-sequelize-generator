@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.1.0...v5.2.0) (2020-04-15)
+
+
+### Features
+
+* **performances:** Remove the unused attributes by default. ([a44d434](https://github.com/teamstarter/graphql-sequelize-generator/commit/a44d434))
+
+
+
 ## [5.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.0.2...v5.1.0) (2020-03-13)
 
 
