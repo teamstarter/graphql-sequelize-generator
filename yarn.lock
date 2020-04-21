@@ -1692,15 +1692,15 @@ data-urls@^1.0.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
-dataloader-sequelize@^1.7.6:
-  version "1.7.6"
-  resolved "https://registry.yarnpkg.com/dataloader-sequelize/-/dataloader-sequelize-1.7.6.tgz#5220708434425e40b703b51982aed806bbb3d0d3"
-  integrity sha512-inml9XUwrUvCn4Of8yQ+x3OGnaavhRovYK+9v21xAelmXr7zKQSCEp+t+QzKASVvR4iizCLkiP8VUMk5ad4nMA==
+dataloader-sequelize@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/dataloader-sequelize/-/dataloader-sequelize-2.1.2.tgz#bceb5d14cdfd6bd271be84bd6d23929a092ea5ea"
+  integrity sha512-ZEQx/I7NbBPMqL2WTnnQmJXfbhEB3PcW+urDnMHL/qPfGgQZNvRyO4NAF9y6jJuJ0qMjAhh4IRNjBW/d1NNlGg==
   dependencies:
     dataloader "^1.2.0"
     lodash "^4.15.0"
     lru-cache "^4.0.1"
-    shimmer "^1.1.0"
+    shimmer "^1.2.1"
 
 dataloader@^1.2.0:
   version "1.4.0"
@@ -2725,10 +2725,10 @@ graphql-relay@^0.5.5:
   resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.5.5.tgz#d6815e6edd618e878d5d921c13fc66033ec867e2"
   integrity sha1-1oFebt1hjoeNXZIcE/xmAz7IZ+I=
 
-graphql-sequelize@^9.3.5:
-  version "9.3.5"
-  resolved "https://registry.yarnpkg.com/graphql-sequelize/-/graphql-sequelize-9.3.5.tgz#0ff48d763411078e6b98d85b93e8ec8338480fec"
-  integrity sha512-1uXmSptUUf2UogLgxwLSLSC+GdeM+wWB2oW8bw5hZA9XCLmKOABNkC1jfvxK9oQ40Gy1oomS0ZiSGfiHCeGSfQ==
+graphql-sequelize@^9.4.0:
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/graphql-sequelize/-/graphql-sequelize-9.4.0.tgz#451223fdf0c27021b8bf50824ae8ec66e979e91f"
+  integrity sha512-hEoNoEcHn+v4dmWDb1yAh6/AFX6RcMGoHq3H3oiJcmRDRmS+8CVpPgaIW7E3ibWVpf/o2I1HOzgB+QFnPJ2LhQ==
   dependencies:
     bluebird "^3.4.0"
     invariant "2.2.1"
@@ -5483,6 +5483,11 @@ shimmer@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/shimmer/-/shimmer-1.2.0.tgz#f966f7555789763e74d8841193685a5e78736665"
   integrity sha512-xTCx2vohXC2EWWDqY/zb4+5Mu28D+HYNSOuFzsyRDRvI/e1ICb69afwaUwfjr+25ZXldbOLyp+iDUZHq8UnTag==
+
+shimmer@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/shimmer/-/shimmer-1.2.1.tgz#610859f7de327b587efebf501fb43117f9aff337"
+  integrity sha512-sQTKC1Re/rM6XyFM6fIAGHRPVGvyXfgzIDvzoq608vM+jeyVD0Tu1E6Np0Kc2zAIFWIj963V2800iF/9LPieQw==
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
