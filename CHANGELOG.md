@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.2.0...v5.3.0) (2020-04-21)
+
+
+### Bug Fixes
+
+* Fix removeUnusedAttributes when using a model referenced by the source. ([5b17b84](https://github.com/teamstarter/graphql-sequelize-generator/commit/5b17b84))
+* Remove default export to avoid shadow dependency. ([f98e284](https://github.com/teamstarter/graphql-sequelize-generator/commit/f98e284))
+
+
+### Features
+
+* Improve the seeds. ([182ed8e](https://github.com/teamstarter/graphql-sequelize-generator/commit/182ed8e))
+* One can specify a contextToOptions per resolver. ([6330304](https://github.com/teamstarter/graphql-sequelize-generator/commit/6330304))
+* Update dataloader-sequelize example. ([38d4a6a](https://github.com/teamstarter/graphql-sequelize-generator/commit/38d4a6a))
+
+
+
 ## [5.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.1.0...v5.2.0) (2020-04-15)
 
 
