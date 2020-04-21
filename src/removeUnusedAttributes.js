@@ -45,5 +45,18 @@ module.exports = function removeUnusedAttributes (findOptions, info, currentMode
     }
   )
 
-  return { ...findOptions, attributes: [...new Set([...attributes, ...linkFields, ...keep])] }
+  const parentModelReferenceAttributes = []
+  if (currentModel.associations[info.parentType.name]) {
+    if (currentModel.associations[info.parentType.name].associationType === 'BelongsTo') {
+      parentModelReferenceAttributes.push(currentModel.associations[info.parentType.name].foreignKey)
+    }
+  } 
+
+
+  return { ...findOptions, attributes: [...new Set([
+    ...attributes,
+    ...linkFields,
+    ...parentModelReferenceAttributes,
+    ...keep
+  ])] }
 }
