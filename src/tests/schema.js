@@ -146,7 +146,17 @@ graphqlSchemaDeclaration.department = {
 
 graphqlSchemaDeclaration.location = {
   model: models.location,
-  actions: ['list']
+  actions: ['list', 'count'],
+  count: {
+    resolver: async () => {
+      // You can specify you own count if needed
+      const result = await models.sequelize.query(
+        `SELECT count(*) as "count" FROM location`, 
+        { type: models.sequelize.QueryTypes.SELECT }
+      )
+      return result && result[0] ? result[0].count : 0
+    }
+  }
 }
 
 graphqlSchemaDeclaration.serverStatistics = {

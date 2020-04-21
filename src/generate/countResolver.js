@@ -5,6 +5,14 @@ module.exports = function countResolver (
   schemaDeclaration,
   globalPreCallback
 ) {
+  const countResolver = schemaDeclaration.count && schemaDeclaration.count.resolver
+  ? schemaDeclaration.count.resolver
+  : undefined
+
+  if (countResolver) {
+    return countResolver
+  }
+
   const listBefore =
     schemaDeclaration.list && schemaDeclaration.list.before
       ? schemaDeclaration.list.before
