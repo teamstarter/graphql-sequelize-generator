@@ -12,6 +12,11 @@ module.exports = {
         id: 1,
         companyId: 1,
         whiteLabelEnabled: 1
+      },
+      {
+        id: 2,
+        companyId: 2,
+        whiteLabelEnabled: 0
       }
     ].map(timestamp), {})
   },

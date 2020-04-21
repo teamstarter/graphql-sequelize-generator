@@ -30,15 +30,15 @@ Array [
   },
   Object {
     "id": 6,
-    "name": "Department 6 c 1",
+    "name": "Department 6 c 2",
   },
   Object {
     "id": 7,
-    "name": "Department 7 c 1",
+    "name": "Department 7 c 2",
   },
   Object {
     "id": 8,
-    "name": "Department 8 c 1",
+    "name": "Department 8 c 2",
   },
 ]
 `;

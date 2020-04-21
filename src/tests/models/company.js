@@ -31,6 +31,9 @@ module.exports = function (sequelize, DataTypes) {
   Company.associate = function (models) {
     models.company.hasMany(models.user)
     models.company.hasMany(models.department)
+    models.company.hasMany(models.location, {
+      as: 'spaces'
+    })
     models.company.belongsTo(models.companyType, {
       as: 'type',
       foreignKey: 'companyTypeId'

@@ -5,17 +5,17 @@ const timestamp = entry =>
     updatedAt: new Date('2007-07-12 00:04:22')
   })
 
-const departmentPerCompany = 5
+const departmentPerCompany = 3
 
 module.exports = {
   up: function (queryInterface, Sequelize) {
-    let departments = []
+    let locations = []
     for (let companyId = 0; companyId < 50; companyId++) {
-      departments = [
-        ...departments,
+      locations = [
+        ...locations,
         ...[...Array(departmentPerCompany)].map((u, index) => ({
           id: companyId * departmentPerCompany + 1 + index,
-          name: `Department ${companyId * departmentPerCompany +
+          name: `Location ${companyId * departmentPerCompany +
             1 +
             index} c ${companyId + 1}`,
           companyId: companyId + 1
@@ -23,12 +23,12 @@ module.exports = {
       ]
     }
 
-    departments = departments.map(timestamp) // Add timestamps
+    locations = locations.map(timestamp) // Add timestamps
 
-    return queryInterface.bulkInsert('department', departments, {})
+    return queryInterface.bulkInsert('location', locations, {})
   },
 
   down: function (queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('department', null, {})
+    return queryInterface.bulkDelete('location', null, {})
   }
 }
