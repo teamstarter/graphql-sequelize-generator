@@ -167,7 +167,9 @@ const createResolver = (
   const listAfter =  graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.after
       ? graphqlTypeDeclaration.list.after
       : undefined
+
   return resolver(relation || graphqlTypeDeclaration.model, {
+    contextToOptions: graphqlTypeDeclaration.list ? graphqlTypeDeclaration.list.contextToOptions : undefined,
     before: async (findOptions, args, context, info) => {
       const processedFindOptions = argsAdvancedProcessing(
         findOptions,
@@ -189,9 +191,9 @@ const createResolver = (
         if (handle) {
           handle()
         }
-        return graphqlTypeDeclaration.list.removeUnusedAttributes === false ? result : removeUnusedAttributes(result, info, graphqlTypeDeclaration.model, models)
+        return graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.removeUnusedAttributes === false ? result : removeUnusedAttributes(result, info, graphqlTypeDeclaration.model, models)
       }
-      return processedFindOptions
+      return graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.removeUnusedAttributes === false ? processedFindOptions : removeUnusedAttributes(processedFindOptions, info, graphqlTypeDeclaration.model, models)
     },
     after: async (result, args, context, info) => {
       if (listAfter) {

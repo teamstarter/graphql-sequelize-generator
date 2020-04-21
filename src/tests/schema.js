@@ -1,6 +1,7 @@
 const { GraphQLObjectType, GraphQLString, GraphQLList } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
+const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 const { Op } = require('sequelize')
 const {
   generateApolloServer,
@@ -9,6 +10,10 @@ const {
   injectAssociations
 } = require('./../generate')
 const models = require('./models')
+
+// If you want to enable the dataloader everywhere, you can do this:
+// From https://github.com/mickhansen/graphql-sequelize#options
+resolver.contextToOptions = {[EXPECTED_OPTIONS_KEY]: EXPECTED_OPTIONS_KEY}
 
 const graphqlSchemaDeclaration = {}
 const types = generateModelTypes(models)
@@ -101,12 +106,13 @@ graphqlSchemaDeclaration.company = {
   }
 }
 
+
 graphqlSchemaDeclaration.department = {
   model: models.department,
   actions: ['list', 'create'],
   excludeFields: ['company', 'updatedAt'],
   list: {
-    resolver: (source, args, context, info) => {
+    resolver: async (source, args, context, info) => {
       // Making custom resolvers on the list query can be useful
       // but keep in mind that it will be used at any level in the graph.
 
@@ -116,9 +122,19 @@ graphqlSchemaDeclaration.department = {
 
       // Be sure to look at the source!
       if (source && source.departmentId) {
-        return models.department.findOne({ where: { id: source.departmentId } })
+        // This call Will not be taken in account by the dataloader
+        const entity = await models.department.findByPk(source.departmentId)
+        return entity
       }
 
+      if (source && source.dataValues && source.dataValues.id) {
+        // Example of dataloader used for a query
+        // This call will be taken in account by the dataloader
+        return source.getDepartments({[EXPECTED_OPTIONS_KEY]: context[EXPECTED_OPTIONS_KEY]})
+      }
+
+      // Do not do that in production!
+      // The dataloader will not be used for this query!
       return models.department.findAll({
         where: {
           id: [1, 2, 3, 4, 5, 6, 7, 8]
@@ -126,6 +142,11 @@ graphqlSchemaDeclaration.department = {
       })
     }
   }
+}
+
+graphqlSchemaDeclaration.location = {
+  model: models.location,
+  actions: ['list']
 }
 
 graphqlSchemaDeclaration.serverStatistics = {
@@ -227,14 +248,16 @@ module.exports = globalPreCallback => ({
       playground: true,
       // Example of context modification.
       context: ({ req, connection }) => {
+        const contextDataloader = createContext(models.sequelize)
+
         // Connection is provided when a webSocket is connected.
         if (connection) {
           // check connection for metadata
-          return connection.context
+          return {...connection.context, [EXPECTED_OPTIONS_KEY]: contextDataloader}
         }
 
         // This is an example of context manipulation.
-        return { ...req, bootDate: '2017-01-01' }
+        return { ...req, bootDate: '2017-01-01', [EXPECTED_OPTIONS_KEY]: contextDataloader }
       },
       // Example of socket security hook.
       subscriptions: {
