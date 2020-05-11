@@ -12,6 +12,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false
       },
+      managerId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
       userCount: {
         type: DataTypes.VIRTUAL(DataTypes.INTEGER, [
           [
@@ -41,6 +45,10 @@ module.exports = function (sequelize, DataTypes) {
     models.company.hasOne(models.companySetting, {
       as: 'settings',
       foreignKey: 'companyId'
+    })
+    models.company.belongsTo(models.user, {
+      as: 'manager',
+      otherKey: 'managerId'
     })
     models.company.belongsToMany(models.tag, {
       as: 'tags',

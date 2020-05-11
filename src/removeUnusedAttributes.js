@@ -16,6 +16,25 @@ module.exports = function removeUnusedAttributes (findOptions, info, currentMode
   const ast = simplifyAST(fieldNodes[0], info)
 
   const linkFields = []
+  /**
+   * This reduce is made to add the attributes required to fetch
+   * sub objects. This part of the code not responsible for the parents.
+   * For exemple if the "id" of car is not selected, it will not be handled here
+   * but on the next step.
+   * 
+   * Example :
+   * user {
+   *   id
+   *   // carId
+   *   car {
+   *     id
+   *   }
+   * }
+   * 
+   * If carId is not asked in the GraphQL query, we must still include it so
+   * that the reconcilier can match the car with the user.
+   * 
+   */
   const attributes = Object.keys(ast.fields).filter(
     attribute => {
       // The typename field is a key metadata and must always be returned if asked
@@ -45,12 +64,38 @@ module.exports = function removeUnusedAttributes (findOptions, info, currentMode
     }
   )
 
+  /**
+   * This part of the code is in charge of adding information required to be fetched
+   * to match with the parent object.
+   * 
+   * Example :
+   * user {
+   *   id
+   *   cars {
+   *     id
+   *     // userId
+   *   }
+   * }
+   * 
+   * If userId is not asked in the GraphQL query, we must still include it so
+   * that the reconcilier can match the cars with the user.
+   * 
+   */
   const parentModelReferenceAttributes = []
+  // The relation can be direct
   if (currentModel.associations[info.parentType.name]) {
     if (currentModel.associations[info.parentType.name].associationType === 'BelongsTo') {
       parentModelReferenceAttributes.push(currentModel.associations[info.parentType.name].foreignKey)
     }
+    // @todo add more cases as they are used
   } 
+  // Or indirect
+  if (models[info.parentType.name] && models[info.parentType.name].associations[info.fieldName]) {
+    if (models[info.parentType.name].associations[info.fieldName].associationType === 'HasMany') {
+      parentModelReferenceAttributes.push(models[info.parentType.name].associations[info.fieldName].foreignKey)
+    }
+    // @todo add more cases as they are used
+  }
 
 
   return { ...findOptions, attributes: [...new Set([

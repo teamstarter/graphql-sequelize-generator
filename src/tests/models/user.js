@@ -26,6 +26,10 @@ module.exports = function (sequelize, DataTypes) {
     // associations can be defined here
     models.user.belongsTo(models.company)
     models.user.belongsTo(models.department)
+    models.user.hasMany(models.company, {
+      as : 'managedCompanies',
+      foreignKey: 'managerId'
+    })
   }
   return User
 }

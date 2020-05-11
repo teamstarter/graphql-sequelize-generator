@@ -28,6 +28,7 @@ graphqlSchemaDeclaration.user = {
   model: models.user,
   actions: ['list', 'create', 'delete', 'update', 'count'],
   list: {
+    removeUnusedAttributes: false,
     before: (findOptions, args, context, info) => {
       if (typeof findOptions.where === 'undefined') {
         findOptions.where = {}
@@ -38,9 +39,11 @@ graphqlSchemaDeclaration.user = {
       return findOptions
     },
     after: (result, args, context, info) => {
-      for (const user of result) {
-        if (user.name === 'Test 5 c 2') {
-          user.name = `Mr ${user.name}`
+      if (result && typeof result.length !== 'undefined') {
+        for (const user of result) {
+          if (user.name === 'Test 5 c 2') {
+            user.name = `Mr ${user.name}`
+          }
         }
       }
     
@@ -92,6 +95,7 @@ graphqlSchemaDeclaration.company = {
   model: models.company,
   actions: ['list', 'create'],
   list: {
+    removeUnusedAttributes: false,
     before: (findOptions, args, context, info) => {
       if (typeof findOptions.where === 'undefined') {
         findOptions.where = {}

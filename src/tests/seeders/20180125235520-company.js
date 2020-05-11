@@ -10,7 +10,8 @@ module.exports = {
     let companies = [...Array(50)].map((u, index) => ({
       id: index + 1,
       name: `Company ${index + 1}`,
-      companyTypeId: index % 4
+      companyTypeId: index % 4,
+      managerId: index % 2 === 0 ? 5 : 10
     }))
 
     companies = companies.map(timestamp) // Add timestamps
