@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.4.0...v5.5.0) (2020-05-11)
+
+
+### Features
+
+* Remove unused attributes now handles HasMany relationship. ([ba48972](https://github.com/teamstarter/graphql-sequelize-generator/commit/ba48972))
+
+
+
 ## [5.4.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.3.0...v5.4.0) (2020-04-21)
 
 

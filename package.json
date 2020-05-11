@@ -1,6 +1,6 @@
 {
   "name": "graphql-sequelize-generator",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "description": "A set of tools to easily generate a Graphql API from sequelize models.",
   "keywords": [
     "graphql",
