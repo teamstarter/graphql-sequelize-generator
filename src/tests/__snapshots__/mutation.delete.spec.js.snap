@@ -4,10 +4,13 @@ exports[`Test the delete mutation Check that you can delete an entity 1`] = `1`;
 
 exports[`Test the delete mutation Check that you can delete an entity 2`] = `
 Array [
+  "listGlobalBefore",
   "listBefore",
   "listAfter",
+  "deleteGlobalBefore",
   "deleteBefore",
   "deleteAfter",
+  "listGlobalBefore",
   "listBefore",
   "listAfter",
 ]

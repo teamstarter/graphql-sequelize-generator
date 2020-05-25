@@ -25,6 +25,22 @@ const generateMutationDelete = (
   },
   resolve: async (source, args, context, info) => {
     let where = { id: args.id }
+
+    if (graphqlModelDeclaration.before) {
+      const beforeList =
+        typeof graphqlModelDeclaration.before.length !== 'undefined'
+          ? graphqlModelDeclaration.before
+          : [graphqlModelDeclaration.before]
+
+      for (const before of beforeList) {
+        const handle = globalPreCallback('deleteGlobalBefore')
+        await before(args, context, info)
+        if (handle) {
+          handle()
+        }
+      }
+    }
+
     if (
       graphqlModelDeclaration.delete &&
       graphqlModelDeclaration.delete.before

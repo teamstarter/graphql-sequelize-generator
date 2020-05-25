@@ -31,6 +31,22 @@ const generateMutationUpdate = (
   },
   resolve: async (source, args, context, info) => {
     let data = args[modelName]
+
+    if (graphqlModelDeclaration.before) {
+      const beforeList =
+        typeof graphqlModelDeclaration.before.length !== 'undefined'
+          ? graphqlModelDeclaration.before
+          : [graphqlModelDeclaration.before]
+
+      for (const before of beforeList) {
+        const handle = globalPreCallback('updateGlobalBefore')
+        await before(args, context, info)
+        if (handle) {
+          handle()
+        }
+      }
+    }
+
     if (
       graphqlModelDeclaration.update &&
       graphqlModelDeclaration.update.before

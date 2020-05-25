@@ -54,11 +54,7 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
         modelSort.as = model.associations[associationName].as
       }
 
-      processedOrder.push([
-        modelSort,
-        parts[1],
-        direction
-      ])
+      processedOrder.push([modelSort, parts[1], direction])
     } else {
       // Virtual field must be sorted using quotes
       // as they are not real fields.
@@ -164,12 +160,15 @@ const createResolver = (
     graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.before
       ? graphqlTypeDeclaration.list.before
       : undefined
-  const listAfter =  graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.after
+  const listAfter =
+    graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.after
       ? graphqlTypeDeclaration.list.after
       : undefined
 
   return resolver(relation || graphqlTypeDeclaration.model, {
-    contextToOptions: graphqlTypeDeclaration.list ? graphqlTypeDeclaration.list.contextToOptions : undefined,
+    contextToOptions: graphqlTypeDeclaration.list
+      ? graphqlTypeDeclaration.list.contextToOptions
+      : undefined,
     before: async (findOptions, args, context, info) => {
       const processedFindOptions = argsAdvancedProcessing(
         findOptions,
@@ -179,6 +178,21 @@ const createResolver = (
         graphqlTypeDeclaration.model,
         models
       )
+
+      if (graphqlTypeDeclaration.before) {
+        const beforeList =
+          typeof graphqlTypeDeclaration.before.length !== 'undefined'
+            ? graphqlTypeDeclaration.before
+            : [graphqlTypeDeclaration.before]
+
+        for (const before of beforeList) {
+          const handle = globalPreCallback('listGlobalBefore')
+          await before(args, context, info)
+          if (handle) {
+            handle()
+          }
+        }
+      }
 
       if (listBefore) {
         const handle = globalPreCallback('listBefore')
@@ -191,19 +205,30 @@ const createResolver = (
         if (handle) {
           handle()
         }
-        return graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.removeUnusedAttributes === false ? result : removeUnusedAttributes(result, info, graphqlTypeDeclaration.model, models)
+        return graphqlTypeDeclaration.list &&
+          graphqlTypeDeclaration.list.removeUnusedAttributes === false
+          ? result
+          : removeUnusedAttributes(
+              result,
+              info,
+              graphqlTypeDeclaration.model,
+              models
+            )
       }
-      return graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.removeUnusedAttributes === false ? processedFindOptions : removeUnusedAttributes(processedFindOptions, info, graphqlTypeDeclaration.model, models)
+      return graphqlTypeDeclaration.list &&
+        graphqlTypeDeclaration.list.removeUnusedAttributes === false
+        ? processedFindOptions
+        : removeUnusedAttributes(
+            processedFindOptions,
+            info,
+            graphqlTypeDeclaration.model,
+            models
+          )
     },
     after: async (result, args, context, info) => {
       if (listAfter) {
         const handle = globalPreCallback('listAfter')
-        const modifiedResult = await listAfter(
-          result,
-          args,
-          context,
-          info
-        )
+        const modifiedResult = await listAfter(result, args, context, info)
         if (handle) {
           handle()
         }

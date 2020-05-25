@@ -71,8 +71,9 @@ Object {
 
 exports[`Test the count resolvers Check that you can query a custom list resolver 1`] = `
 Array [
-  "listBefore",
+  "listGlobalBefore",
   "countBefore",
+  "listBefore",
   "listAfter",
 ]
 `;
