@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.6.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.5.0...v5.6.0) (2020-05-25)
+
+
+### Bug Fixes
+
+* Add the global hook to the count resolver. ([b3e9acf](https://github.com/teamstarter/graphql-sequelize-generator/commit/b3e9acf))
+
+
+### Features
+
+* Add global hooks that works on all actions. ([af1bcf6](https://github.com/teamstarter/graphql-sequelize-generator/commit/af1bcf6))
+* Disable subscriptions by default ([9407893](https://github.com/teamstarter/graphql-sequelize-generator/commit/9407893))
+
+
+
 ## [5.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.4.0...v5.5.0) (2020-05-11)
 
 
