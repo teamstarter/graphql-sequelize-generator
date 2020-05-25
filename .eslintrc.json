@@ -1,5 +1,9 @@
 {
-  "extends": ["standard", "prettier", "prettier/standard"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:prettier/recommended"
+  ],
   "env": {
     "browser": true,
     "node": true,
@@ -7,7 +11,7 @@
     "es6": true,
     "jest": true
   },
-  "plugins": ["standard"],
+  "plugins": ["react", "standard"],
   // Required for using import outside of top-level
   // See https://github.com/eslint/eslint/issues/7764
   // and https://stackoverflow.com/questions/39158552/ignore-eslint-error-import-and-export-may-only-appear-at-the-top-level
