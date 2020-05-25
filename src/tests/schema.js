@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-vars */
+// We disable this rule as we want to always show all the arguments of each functions
+// so that the API is easier to understand
+
 const { GraphQLObjectType, GraphQLString, GraphQLList } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
@@ -13,7 +17,7 @@ const models = require('./models')
 
 // If you want to enable the dataloader everywhere, you can do this:
 // From https://github.com/mickhansen/graphql-sequelize#options
-resolver.contextToOptions = {[EXPECTED_OPTIONS_KEY]: EXPECTED_OPTIONS_KEY}
+resolver.contextToOptions = { [EXPECTED_OPTIONS_KEY]: EXPECTED_OPTIONS_KEY }
 
 const graphqlSchemaDeclaration = {}
 const types = generateModelTypes(models)
@@ -27,6 +31,33 @@ graphqlSchemaDeclaration.companyType = {
 graphqlSchemaDeclaration.user = {
   model: models.user,
   actions: ['list', 'create', 'delete', 'update', 'count'],
+  subscriptions: ['create', 'update'],
+  before: [
+    (args, context, info) => {
+      // Global before hook only have args, context and info.
+      // You can use many functions or just one.
+
+      // Use it if you need to do something before each enpoint
+      if (!context.bootDate) {
+        throw new Error('Boot date is missing!')
+      }
+
+      if (info.xxx) {
+        throw new Error('Xxx is provided when it should not!')
+      }
+
+      // Typical usage:
+      // * Protect an endpoint
+      // * Verify entity existance
+
+      // ex:
+      // if (!context.user.role !== 'admin') {
+      //   throw new Error('You must be admin to use this endpoint!')
+      // }
+
+      // The function returns nothing
+    }
+  ],
   list: {
     removeUnusedAttributes: false,
     before: (findOptions, args, context, info) => {
@@ -46,9 +77,16 @@ graphqlSchemaDeclaration.user = {
           }
         }
       }
-    
+
       return result
     },
+    subscriptionFilter: (payload, args, context) => {
+      // Exemple of subscription check
+      if (context.user.role !== 'admin') {
+        return false
+      }
+      return true
+    }
   },
   // The followings hooks are just here to demo their signatures.
   // They are not required and can be omited if you don't need them.
@@ -110,7 +148,6 @@ graphqlSchemaDeclaration.company = {
   }
 }
 
-
 graphqlSchemaDeclaration.department = {
   model: models.department,
   actions: ['list', 'create'],
@@ -134,7 +171,9 @@ graphqlSchemaDeclaration.department = {
       if (source && source.dataValues && source.dataValues.id) {
         // Example of dataloader used for a query
         // This call will be taken in account by the dataloader
-        return source.getDepartments({[EXPECTED_OPTIONS_KEY]: context[EXPECTED_OPTIONS_KEY]})
+        return source.getDepartments({
+          [EXPECTED_OPTIONS_KEY]: context[EXPECTED_OPTIONS_KEY]
+        })
       }
 
       // Do not do that in production!
@@ -155,7 +194,7 @@ graphqlSchemaDeclaration.location = {
     resolver: async () => {
       // You can specify you own count if needed
       const result = await models.sequelize.query(
-        `SELECT count(*) as "count" FROM location`, 
+        `SELECT count(*) as "count" FROM location`,
         { type: models.sequelize.QueryTypes.SELECT }
       )
       return result && result[0] ? result[0].count : 0
@@ -267,11 +306,18 @@ module.exports = globalPreCallback => ({
         // Connection is provided when a webSocket is connected.
         if (connection) {
           // check connection for metadata
-          return {...connection.context, [EXPECTED_OPTIONS_KEY]: contextDataloader}
+          return {
+            ...connection.context,
+            [EXPECTED_OPTIONS_KEY]: contextDataloader
+          }
         }
 
         // This is an example of context manipulation.
-        return { ...req, bootDate: '2017-01-01', [EXPECTED_OPTIONS_KEY]: contextDataloader }
+        return {
+          ...req,
+          bootDate: '2017-01-01',
+          [EXPECTED_OPTIONS_KEY]: contextDataloader
+        }
       },
       // Example of socket security hook.
       subscriptions: {

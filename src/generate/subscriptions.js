@@ -1,6 +1,12 @@
 const { withFilter } = require('graphql-subscriptions')
 const { GraphQLInt, GraphQLObjectType } = require('graphql')
 
+const availableActions = ['create', 'update', 'delete']
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 const generateSubscriptions = (
   graphqlSchemaDeclaration,
   types,
@@ -12,54 +18,33 @@ const generateSubscriptions = (
       if (!graphqlSchemaDeclaration[modelName]) {
         return subscriptions
       }
-      const actions = graphqlSchemaDeclaration[modelName].actions || [
-        'create',
-        'update',
-        'delete'
-      ]
 
       const subscriptionsEnabled =
         typeof graphqlSchemaDeclaration[modelName].subscriptions !== 'undefined'
           ? graphqlSchemaDeclaration[modelName].subscriptions
-          : actions
+          : []
 
-      if (subscriptionsEnabled.includes('create')) {
-        subscriptions[`${modelName}Created`] = {
-          type: outputType,
-          args: {
-            id: { type: GraphQLInt }
-          },
-          subscribe: withFilter(
-            () => pubSubInstance.asyncIterator(`${modelName}Created`),
-            (payload, args) => true // @todo add a hook
-          )
+      availableActions.forEach(action => {
+        if (subscriptionsEnabled.includes(action)) {
+          // ex: name = "userUpdated"
+          const name = `${modelName}${capitalizeFirstLetter(action)}d`
+          subscriptions[name] = {
+            type: outputType,
+            args: {
+              id: { type: GraphQLInt }
+            },
+            subscribe: withFilter(
+              () => pubSubInstance.asyncIterator(name),
+              graphqlSchemaDeclaration[modelName][action] &&
+                graphqlSchemaDeclaration[modelName][action].subscriptionFilter
+                ? graphqlSchemaDeclaration[modelName][action].subscriptionFilter
+                : () => true
+            )
+          }
         }
-      }
-      if (subscriptionsEnabled.includes('update')) {
-        subscriptions[`${modelName}Updated`] = {
-          type: outputType,
-          args: {
-            id: { type: GraphQLInt }
-          },
-          subscribe: withFilter(
-            () => pubSubInstance.asyncIterator(`${modelName}Updated`),
-            (payload, args) => true // @todo add a hook
-          )
-        }
-      }
-      if (subscriptionsEnabled.includes('delete')) {
-        subscriptions[`${modelName}Deleted`] = {
-          type: outputType,
-          args: {
-            id: { type: GraphQLInt }
-          },
-          subscribe: withFilter(
-            () => pubSubInstance.asyncIterator(`${modelName}Deleted`),
-            (payload, args) => true // @todo add a hook
-          )
-        }
-      }
+      })
 
+      /** Subscription an be manually added */
       if (graphqlSchemaDeclaration[modelName].additionalSubscriptions) {
         Object.keys(
           graphqlSchemaDeclaration[modelName].additionalSubscriptions
