@@ -5,18 +5,19 @@ const timestamp = entry =>
     updatedAt: new Date('2007-07-12 00:04:22')
   })
 
-const userPerCompany = 250
+const baseUserPerCompany = 10
 const departmentPerCompany = 5
 
 module.exports = {
   up: function (queryInterface, Sequelize) {
     let users = []
     for (let companyId = 0; companyId < 50; companyId++) {
+      const totalUsers = baseUserPerCompany * (companyId + 1)
       users = [
         ...users,
-        ...[...Array(userPerCompany)].map((u, index) => ({
-          id: userPerCompany * companyId + 1 + index,
-          name: `Test ${userPerCompany * companyId + 1 + index} c 2`,
+        ...[...Array(totalUsers)].map((u, index) => ({
+          id: totalUsers * companyId + 1 + index,
+          name: `Test ${totalUsers * companyId + 1 + index} c 2`,
           companyId: companyId + 1,
           departmentId: companyId * departmentPerCompany + 1 + ((index + 1) % 5)
         }))

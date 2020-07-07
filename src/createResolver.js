@@ -1,5 +1,5 @@
 const { resolver } = require('graphql-sequelize')
-const Sequelize = require('sequelize')
+const removeUnusedAttributes = require('./removeUnusedAttributes')
 
 const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
   if (typeof findOptions.order === 'undefined') {
@@ -7,20 +7,21 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
   }
   const processedOrder = []
 
-  const checkForAssociationSort = singleOrder => {
+  const checkForAssociationSort = (singleOrder, index) => {
     // When the comas is used, graphql-sequelize will not handle the 'reverse:' command.
     // We have to implement it ourselves.
     let field = null
     // By default we take the direction detected by GraphQL-sequelize
     // It will be 'ASC' if 'reverse:' was not specified.
-    let direction = findOptions.order[0][1]
+    // But this will only work for the first field.
+    let direction = index === 0 ? findOptions.order[0][1] : 'ASC'
     // When reverse is not already removed by graphql-sequelize
     // we try to detect it ourselves. Happens for multiple fields sort.
     if (singleOrder.search('reverse:') === 0) {
-      field = singleOrder.slice(8)
+      field = singleOrder.slice(8).trim()
       direction = 'DESC'
     } else {
-      field = singleOrder
+      field = singleOrder.trim()
     }
 
     // if there is exactly one dot, we check for associations
@@ -35,14 +36,25 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
       if (typeof findOptions.include === 'undefined') {
         findOptions.include = []
       }
-      findOptions.include.push({
+
+      const modelInclude = {
         model: model.associations[associationName].target
-      })
-      processedOrder.push([
-        model.associations[associationName].target,
-        parts[1],
-        direction
-      ])
+      }
+
+      if (model.associations[associationName].as) {
+        modelInclude.as = model.associations[associationName].as
+      }
+
+      findOptions.include.push(modelInclude)
+
+      const modelSort = { model: model.associations[associationName].target }
+      // When sorting by a associated table, the alias must be specified
+      // if defined in the association definition.
+      if (model.associations[associationName].as) {
+        modelSort.as = model.associations[associationName].as
+      }
+
+      processedOrder.push([modelSort, parts[1], direction])
     } else {
       // Virtual field must be sorted using quotes
       // as they are not real fields.
@@ -50,8 +62,10 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
         model.rawAttributes[field] &&
         model.rawAttributes[field].type.key === 'VIRTUAL'
       ) {
-        // model.rawAttributes[field].fieldName is used to avoid code-injection.
-        field = Sequelize.literal(`\`${model.rawAttributes[field].fieldName}\``)
+        // When a virtual field is used, we must sort with the expression and not
+        // the name of the field, as it is not compatible with multiple database engines.
+        // IE : Sorting by virtual field is inefficient if using sub-queries.
+        field = model.rawAttributes[field].type.fields[0][0]
       }
       processedOrder.push([field, direction])
     }
@@ -73,12 +87,12 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
   findOptions.order.map(order => {
     // Handle multiple sort fields.
     if (order[0].search(',') === -1) {
-      checkForAssociationSort(order[0])
+      checkForAssociationSort(order[0], 0)
       return
     }
     const multipleOrder = order[0].split(',')
-    for (const singleOrder of multipleOrder) {
-      checkForAssociationSort(singleOrder)
+    for (const index in multipleOrder) {
+      checkForAssociationSort(multipleOrder[index], parseInt(index))
     }
   })
   findOptions.order = processedOrder
@@ -146,7 +160,15 @@ const createResolver = (
     graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.before
       ? graphqlTypeDeclaration.list.before
       : undefined
+  const listAfter =
+    graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.after
+      ? graphqlTypeDeclaration.list.after
+      : undefined
+
   return resolver(relation || graphqlTypeDeclaration.model, {
+    contextToOptions: graphqlTypeDeclaration.list
+      ? graphqlTypeDeclaration.list.contextToOptions
+      : undefined,
     before: async (findOptions, args, context, info) => {
       const processedFindOptions = argsAdvancedProcessing(
         findOptions,
@@ -157,9 +179,23 @@ const createResolver = (
         models
       )
 
+      if (graphqlTypeDeclaration.before) {
+        const beforeList =
+          typeof graphqlTypeDeclaration.before.length !== 'undefined'
+            ? graphqlTypeDeclaration.before
+            : [graphqlTypeDeclaration.before]
+
+        for (const before of beforeList) {
+          const handle = globalPreCallback('listGlobalBefore')
+          await before(args, context, info)
+          if (handle) {
+            handle()
+          }
+        }
+      }
+
       if (listBefore) {
-        let handle = null
-        handle = globalPreCallback('listBefore')
+        const handle = globalPreCallback('listBefore')
         const result = await listBefore(
           processedFindOptions,
           args,
@@ -169,9 +205,36 @@ const createResolver = (
         if (handle) {
           handle()
         }
-        return result
+        return graphqlTypeDeclaration.list &&
+          graphqlTypeDeclaration.list.removeUnusedAttributes === false
+          ? result
+          : removeUnusedAttributes(
+              result,
+              info,
+              graphqlTypeDeclaration.model,
+              models
+            )
       }
-      return processedFindOptions
+      return graphqlTypeDeclaration.list &&
+        graphqlTypeDeclaration.list.removeUnusedAttributes === false
+        ? processedFindOptions
+        : removeUnusedAttributes(
+            processedFindOptions,
+            info,
+            graphqlTypeDeclaration.model,
+            models
+          )
+    },
+    after: async (result, args, context, info) => {
+      if (listAfter) {
+        const handle = globalPreCallback('listAfter')
+        const modifiedResult = await listAfter(result, args, context, info)
+        if (handle) {
+          handle()
+        }
+        return modifiedResult
+      }
+      return result
     }
   })
 }

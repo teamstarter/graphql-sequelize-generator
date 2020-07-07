@@ -8,203 +8,11 @@ Array [
     "users": Array [
       Object {
         "id": 5,
-        "name": "Test 5 c 2",
+        "name": "Mr Test 5 c 2",
       },
       Object {
         "id": 10,
         "name": "Test 10 c 2",
-      },
-      Object {
-        "id": 15,
-        "name": "Test 15 c 2",
-      },
-      Object {
-        "id": 20,
-        "name": "Test 20 c 2",
-      },
-      Object {
-        "id": 25,
-        "name": "Test 25 c 2",
-      },
-      Object {
-        "id": 30,
-        "name": "Test 30 c 2",
-      },
-      Object {
-        "id": 35,
-        "name": "Test 35 c 2",
-      },
-      Object {
-        "id": 40,
-        "name": "Test 40 c 2",
-      },
-      Object {
-        "id": 45,
-        "name": "Test 45 c 2",
-      },
-      Object {
-        "id": 50,
-        "name": "Test 50 c 2",
-      },
-      Object {
-        "id": 55,
-        "name": "Test 55 c 2",
-      },
-      Object {
-        "id": 60,
-        "name": "Test 60 c 2",
-      },
-      Object {
-        "id": 65,
-        "name": "Test 65 c 2",
-      },
-      Object {
-        "id": 70,
-        "name": "Test 70 c 2",
-      },
-      Object {
-        "id": 75,
-        "name": "Test 75 c 2",
-      },
-      Object {
-        "id": 80,
-        "name": "Test 80 c 2",
-      },
-      Object {
-        "id": 85,
-        "name": "Test 85 c 2",
-      },
-      Object {
-        "id": 90,
-        "name": "Test 90 c 2",
-      },
-      Object {
-        "id": 95,
-        "name": "Test 95 c 2",
-      },
-      Object {
-        "id": 100,
-        "name": "Test 100 c 2",
-      },
-      Object {
-        "id": 105,
-        "name": "Test 105 c 2",
-      },
-      Object {
-        "id": 110,
-        "name": "Test 110 c 2",
-      },
-      Object {
-        "id": 115,
-        "name": "Test 115 c 2",
-      },
-      Object {
-        "id": 120,
-        "name": "Test 120 c 2",
-      },
-      Object {
-        "id": 125,
-        "name": "Test 125 c 2",
-      },
-      Object {
-        "id": 130,
-        "name": "Test 130 c 2",
-      },
-      Object {
-        "id": 135,
-        "name": "Test 135 c 2",
-      },
-      Object {
-        "id": 140,
-        "name": "Test 140 c 2",
-      },
-      Object {
-        "id": 145,
-        "name": "Test 145 c 2",
-      },
-      Object {
-        "id": 150,
-        "name": "Test 150 c 2",
-      },
-      Object {
-        "id": 155,
-        "name": "Test 155 c 2",
-      },
-      Object {
-        "id": 160,
-        "name": "Test 160 c 2",
-      },
-      Object {
-        "id": 165,
-        "name": "Test 165 c 2",
-      },
-      Object {
-        "id": 170,
-        "name": "Test 170 c 2",
-      },
-      Object {
-        "id": 175,
-        "name": "Test 175 c 2",
-      },
-      Object {
-        "id": 180,
-        "name": "Test 180 c 2",
-      },
-      Object {
-        "id": 185,
-        "name": "Test 185 c 2",
-      },
-      Object {
-        "id": 190,
-        "name": "Test 190 c 2",
-      },
-      Object {
-        "id": 195,
-        "name": "Test 195 c 2",
-      },
-      Object {
-        "id": 200,
-        "name": "Test 200 c 2",
-      },
-      Object {
-        "id": 205,
-        "name": "Test 205 c 2",
-      },
-      Object {
-        "id": 210,
-        "name": "Test 210 c 2",
-      },
-      Object {
-        "id": 215,
-        "name": "Test 215 c 2",
-      },
-      Object {
-        "id": 220,
-        "name": "Test 220 c 2",
-      },
-      Object {
-        "id": 225,
-        "name": "Test 225 c 2",
-      },
-      Object {
-        "id": 230,
-        "name": "Test 230 c 2",
-      },
-      Object {
-        "id": 235,
-        "name": "Test 235 c 2",
-      },
-      Object {
-        "id": 240,
-        "name": "Test 240 c 2",
-      },
-      Object {
-        "id": 245,
-        "name": "Test 245 c 2",
-      },
-      Object {
-        "id": 250,
-        "name": "Test 250 c 2",
       },
     ],
   },
@@ -237,7 +45,7 @@ Array [
           "id": 1,
         },
         "id": 5,
-        "name": "Test 5 c 2",
+        "name": "Mr Test 5 c 2",
       },
       Object {
         "department": Object {
@@ -245,342 +53,6 @@ Array [
         },
         "id": 10,
         "name": "Test 10 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 15,
-        "name": "Test 15 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 20,
-        "name": "Test 20 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 25,
-        "name": "Test 25 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 30,
-        "name": "Test 30 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 35,
-        "name": "Test 35 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 40,
-        "name": "Test 40 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 45,
-        "name": "Test 45 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 50,
-        "name": "Test 50 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 55,
-        "name": "Test 55 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 60,
-        "name": "Test 60 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 65,
-        "name": "Test 65 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 70,
-        "name": "Test 70 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 75,
-        "name": "Test 75 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 80,
-        "name": "Test 80 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 85,
-        "name": "Test 85 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 90,
-        "name": "Test 90 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 95,
-        "name": "Test 95 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 100,
-        "name": "Test 100 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 105,
-        "name": "Test 105 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 110,
-        "name": "Test 110 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 115,
-        "name": "Test 115 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 120,
-        "name": "Test 120 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 125,
-        "name": "Test 125 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 130,
-        "name": "Test 130 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 135,
-        "name": "Test 135 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 140,
-        "name": "Test 140 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 145,
-        "name": "Test 145 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 150,
-        "name": "Test 150 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 155,
-        "name": "Test 155 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 160,
-        "name": "Test 160 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 165,
-        "name": "Test 165 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 170,
-        "name": "Test 170 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 175,
-        "name": "Test 175 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 180,
-        "name": "Test 180 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 185,
-        "name": "Test 185 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 190,
-        "name": "Test 190 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 195,
-        "name": "Test 195 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 200,
-        "name": "Test 200 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 205,
-        "name": "Test 205 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 210,
-        "name": "Test 210 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 215,
-        "name": "Test 215 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 220,
-        "name": "Test 220 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 225,
-        "name": "Test 225 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 230,
-        "name": "Test 230 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 235,
-        "name": "Test 235 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 240,
-        "name": "Test 240 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 245,
-        "name": "Test 245 c 2",
-      },
-      Object {
-        "department": Object {
-          "id": 1,
-        },
-        "id": 250,
-        "name": "Test 250 c 2",
       },
     ],
   },
@@ -598,6 +70,31 @@ Array [
     "id": 7,
     "name": "Company 7",
     "users": Array [],
+  },
+]
+`;
+
+exports[`Test the API queries Check that you can sort by virtual fields in any order: All companies sorted by userCount desc and name asc. 1`] = `
+Array [
+  Object {
+    "id": 7,
+    "name": "Company 7",
+    "userCount": 70,
+  },
+  Object {
+    "id": 5,
+    "name": "Company 5",
+    "userCount": 50,
+  },
+  Object {
+    "id": 3,
+    "name": "Company 3",
+    "userCount": 30,
+  },
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "userCount": 10,
   },
 ]
 `;
@@ -695,6 +192,64 @@ Array [
       },
     ],
     "message": "Cannot query field \\"company\\" on type \\"department\\". Did you mean \\"companyId\\"?",
+  },
+]
+`;
+
+exports[`Test the API queries Sorting can ignore spacing typoes: All companies sorted by userCount desc and name asc. 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "userCount": 10,
+  },
+  Object {
+    "id": 3,
+    "name": "Company 3",
+    "userCount": 30,
+  },
+  Object {
+    "id": 5,
+    "name": "Company 5",
+    "userCount": 50,
+  },
+  Object {
+    "id": 7,
+    "name": "Company 7",
+    "userCount": 70,
+  },
+]
+`;
+
+exports[`Test the API queries Sorting work on secondary field and associated fields: All companies sorted by userCount desc and name asc. 1`] = `
+Array [
+  Object {
+    "id": 5,
+    "name": "Company 5",
+    "type": null,
+    "userCount": 50,
+  },
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "type": null,
+    "userCount": 10,
+  },
+  Object {
+    "id": 7,
+    "name": "Company 7",
+    "type": Object {
+      "id": 2,
+    },
+    "userCount": 70,
+  },
+  Object {
+    "id": 3,
+    "name": "Company 3",
+    "type": Object {
+      "id": 2,
+    },
+    "userCount": 30,
   },
 ]
 `;

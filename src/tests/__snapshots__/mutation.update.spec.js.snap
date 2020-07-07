@@ -2,11 +2,16 @@
 
 exports[`Test the create mutation Check that you can create a new instance of one entity 1`] = `
 Array [
+  "listGlobalBefore",
   "listBefore",
+  "listAfter",
   "listBefore",
+  "updateGlobalBefore",
   "updateBefore",
   "updateAfter",
+  "listGlobalBefore",
   "listBefore",
+  "listAfter",
   "listBefore",
 ]
 `;
@@ -27,7 +32,7 @@ Array [
       "name": "Company 1",
     },
     "id": 5,
-    "name": "Test 5 c 2",
+    "name": "Mr Test 5 c 2",
   },
 ]
 `;
