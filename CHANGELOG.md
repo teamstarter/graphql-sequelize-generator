@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [6.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.6.0...v6.0.0) (2020-07-07)
+
+
+### chore
+
+* Upgrade dependencies. ([00da4b6](https://github.com/teamstarter/graphql-sequelize-generator/commit/00da4b6))
+
+
+### BREAKING CHANGES
+
+* Peer dependencies upgraded.
+
+
+
 ## [5.6.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.5.0...v5.6.0) (2020-05-25)
 
 
