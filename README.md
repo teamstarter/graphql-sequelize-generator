@@ -3,7 +3,7 @@
 Graphql-Sequelize-Generator (GSG) is a set of tools that will allow you to
 easily generate a GraphQL API from your sequelize models.
 
-It is a very good fit for POC and fast MVP creation, while also scaling pretty well thanks to (dataloader-sequelize)[https://github.com/mickhansen/dataloader-sequelize].
+It's a very good fit for POCs and MVPs, while also scaling pretty well thanks to [dataloader-sequelize](https://github.com/mickhansen/dataloader-sequelize).
 
 ## What can I do with GSG?
 
@@ -17,7 +17,7 @@ The tools provided by this library will allow you to:
 - Counts for each model can also be generated.
 - Subscriptions auto-generated for mutations.
 - Add custom fields/resolvers on auto-generated types.
-- Easy integration with (dataloader-sequelize)[https://github.com/mickhansen/dataloader-sequelize]
+- Easy integration with [dataloader-sequelize](https://github.com/mickhansen/dataloader-sequelize)
 
 ## Getting started
 
@@ -27,7 +27,7 @@ Add the lib and the peer dependencies:
 $ yarn add graphql-sequelize-generator graphql sequelize graphql-sequelize
 ```
 
-/!\ Caution: GSG requires at least Node v9.11.2 or greater as it is using async/await.
+⚠️ Caution: GSG requires at least Node v9.11.2 or greater as it is using async/await.
 
 Then you will be ready to add a GraphQL API to your express server with only a few lines of code:
 
