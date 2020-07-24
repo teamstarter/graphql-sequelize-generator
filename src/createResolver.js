@@ -179,6 +179,25 @@ const createResolver = (
         models
       )
 
+      if (
+        graphqlTypeDeclaration.list &&
+        graphqlTypeDeclaration.list.enforceMaxLimit
+      ) {
+        if (
+          // If the limit is not set, nullish or bigger than the max limit
+          // we enforce it.
+          (!findOptions.limit ||
+            findOptions.limit > graphqlTypeDeclaration.list.enforceMaxLimit) &&
+          // Except if the limit is not on the root query
+          // This is because the limit of sub-Object linked with BelongsToMany is currently not possible
+          // See associationsFields.js L46
+          info.parentType &&
+          info.parentType.name === 'Root_Query'
+        ) {
+          findOptions.limit = graphqlTypeDeclaration.list.enforceMaxLimit
+        }
+      }
+
       if (graphqlTypeDeclaration.before) {
         const beforeList =
           typeof graphqlTypeDeclaration.before.length !== 'undefined'

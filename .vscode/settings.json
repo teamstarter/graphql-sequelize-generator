@@ -27,5 +27,8 @@
     "source.fixAll.eslint": true
   },
   "eslint.validate": ["javascript", "javascriptreact"],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "jest.runAllTestsFirst": false,
+  "jest.autoEnable": false,
+  "jest.showCoverageOnLoad": false
 }

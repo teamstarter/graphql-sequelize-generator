@@ -105,7 +105,9 @@ describe('Test the API queries', () => {
       .set('userId', 1)
     expect(response.body.errors).toBeUndefined()
     const companies = response.body.data.companies
-    expect(companies).toMatchSnapshot('All companies sorted by userCount desc and name asc.')
+    expect(companies).toMatchSnapshot(
+      'All companies sorted by userCount desc and name asc.'
+    )
   })
 
   it('Sorting can ignore spacing typoes', async () => {
@@ -124,7 +126,9 @@ describe('Test the API queries', () => {
       .set('userId', 1)
     expect(response.body.errors).toBeUndefined()
     const companies = response.body.data.companies
-    expect(companies).toMatchSnapshot('All companies sorted by userCount desc and name asc.')
+    expect(companies).toMatchSnapshot(
+      'All companies sorted by userCount desc and name asc.'
+    )
   })
 
   it('Sorting work on secondary field and associated fields', async () => {
@@ -146,7 +150,9 @@ describe('Test the API queries', () => {
       .set('userId', 1)
     expect(response.body.errors).toBeUndefined()
     const companies = response.body.data.companies
-    expect(companies).toMatchSnapshot('All companies sorted by userCount desc and name asc.')
+    expect(companies).toMatchSnapshot(
+      'All companies sorted by userCount desc and name asc.'
+    )
   })
 
   it('One can exclude an associated model', async () => {
@@ -218,5 +224,63 @@ describe('Test the API queries', () => {
       .set('userId', 1)
     expect(responseSuccess.body.errors).toBeUndefined()
     expect(responseSuccess.body.data).toMatchSnapshot()
+  })
+
+  it('Limit can be enforced.', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getLocations {
+            locations: location {
+              id
+            }
+          }
+          &operationName=getLocations`
+      )
+      .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
+    expect(response.body.data.locations.length).toBe(2)
+
+    const responseSmaller = await request(server)
+      .get(
+        `/graphql?query=
+          query getLocations {
+            locations: location(limit: 1) {
+              id
+            }
+          }
+          &operationName=getLocations`
+      )
+      .set('userId', 1)
+    expect(responseSmaller.body.errors).toBeUndefined()
+    expect(responseSmaller.body.data.locations.length).toBe(1)
+
+    const responseTooBig = await request(server)
+      .get(
+        `/graphql?query=
+          query getLocations {
+            locations: location(limit: 100) {
+              id
+            }
+          }
+          &operationName=getLocations`
+      )
+      .set('userId', 1)
+    expect(responseTooBig.body.errors).toBeUndefined()
+    expect(responseTooBig.body.data.locations.length).toBe(2)
+
+    const responseNull = await request(server)
+      .get(
+        `/graphql?query=
+          query getLocations {
+            locations: location(limit: null) {
+              id
+            }
+          }
+          &operationName=getLocations`
+      )
+      .set('userId', 1)
+    expect(responseNull.body.errors).toBeUndefined()
+    expect(responseNull.body.data.locations.length).toBe(2)
   })
 })
