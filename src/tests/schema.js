@@ -60,6 +60,7 @@ graphqlSchemaDeclaration.user = {
   ],
   list: {
     removeUnusedAttributes: false,
+    enforceMaxLimit: false,
     before: (findOptions, args, context, info) => {
       if (typeof findOptions.where === 'undefined') {
         findOptions.where = {}
@@ -190,6 +191,9 @@ graphqlSchemaDeclaration.department = {
 graphqlSchemaDeclaration.location = {
   model: models.location,
   actions: ['list', 'count'],
+  list: {
+    enforceMaxLimit: 2
+  },
   count: {
     resolver: async () => {
       // You can specify you own count if needed

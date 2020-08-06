@@ -4,7 +4,7 @@ const generateMutationCreate = require('./mutationCreateResolver')
 const generateMutationDelete = require('./mutationDeleteResolver')
 const generateMutationUpdate = require('./mutationUpdateResolver')
 
-function wrapMutationsResolver (mutations, globalPreCallback) {
+function wrapMutationsResolver(mutations, globalPreCallback) {
   const wrappedMutations = {}
 
   Object.keys(mutations).forEach(mutationKey => {
@@ -58,14 +58,14 @@ const generateMutation = (
         graphqlSchemaDeclaration[modelName].create.resolve
           ? graphqlSchemaDeclaration[modelName].create
           : generateMutationCreate(
-            modelName,
-            inputType,
-            outputType,
-            model,
-            graphqlSchemaDeclaration[modelName],
-            globalPreCallback,
-            pubSubInstance
-          )
+              modelName,
+              inputType,
+              outputType,
+              model,
+              graphqlSchemaDeclaration[modelName],
+              globalPreCallback,
+              pubSubInstance
+            )
     }
     if (actions.includes('update')) {
       mutations[modelName + 'Update'] =
@@ -73,15 +73,15 @@ const generateMutation = (
         graphqlSchemaDeclaration[modelName].update.resolve
           ? graphqlSchemaDeclaration[modelName].update
           : generateMutationUpdate(
-            modelName,
-            inputType,
-            outputType,
-            model,
-            graphqlSchemaDeclaration[modelName],
-            models,
-            globalPreCallback,
-            pubSubInstance
-          )
+              modelName,
+              inputType,
+              outputType,
+              model,
+              graphqlSchemaDeclaration[modelName],
+              models,
+              globalPreCallback,
+              pubSubInstance
+            )
     }
     if (actions.includes('delete')) {
       mutations[modelName + 'Delete'] =
@@ -89,14 +89,14 @@ const generateMutation = (
         graphqlSchemaDeclaration[modelName].delete.resolve
           ? graphqlSchemaDeclaration[modelName].delete
           : generateMutationDelete(
-            modelName,
-            inputType,
-            outputType,
-            graphqlSchemaDeclaration[modelName],
-            models,
-            globalPreCallback,
-            pubSubInstance
-          )
+              modelName,
+              inputType,
+              outputType,
+              graphqlSchemaDeclaration[modelName],
+              models,
+              globalPreCallback,
+              pubSubInstance
+            )
     }
 
     if (graphqlSchemaDeclaration[modelName].additionalMutations) {
