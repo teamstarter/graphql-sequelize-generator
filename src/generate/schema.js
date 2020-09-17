@@ -10,6 +10,16 @@ const generateSchema = ({
   globalPreCallback = () => null,
   pubSubInstance
 }) => {
+  const mutationExists =
+    !!customMutations ||
+    Object.values(graphqlSchemaDeclaration).some(type => {
+      if (type.actions) {
+        return ['create', 'delete', 'update'].some(action =>
+          type.actions.includes(action)
+        )
+      }
+    })
+
   const definition = {
     query: generateQueryRootResolver(
       graphqlSchemaDeclaration,
@@ -17,15 +27,17 @@ const generateSchema = ({
       models,
       globalPreCallback
     ),
-    mutation: generateMutation(
-      graphqlSchemaDeclaration,
-      types.inputTypes,
-      types.outputTypes,
-      models,
-      globalPreCallback,
-      customMutations,
-      pubSubInstance
-    )
+    ...(mutationExists && {
+      mutation: generateMutation(
+        graphqlSchemaDeclaration,
+        types.inputTypes,
+        types.outputTypes,
+        models,
+        globalPreCallback,
+        customMutations,
+        pubSubInstance
+      )
+    })
   }
 
   // Do not generate subscriptions if no ways of propagating information is defined.
