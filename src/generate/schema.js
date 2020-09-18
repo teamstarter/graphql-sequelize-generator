@@ -18,6 +18,7 @@ const generateSchema = ({
           type.actions.includes(action)
         )
       }
+      return !!type.additionalMutations
     })
 
   const definition = {
