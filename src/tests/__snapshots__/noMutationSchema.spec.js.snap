@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the creation a schema without mutations A schema can be created without mutations: All companies 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Corporation",
+  },
+  Object {
+    "id": 2,
+    "name": "Nonprofit Corporation",
+  },
+  Object {
+    "id": 3,
+    "name": "Trust",
+  },
+  Object {
+    "id": 4,
+    "name": "Association",
+  },
+]
+`;

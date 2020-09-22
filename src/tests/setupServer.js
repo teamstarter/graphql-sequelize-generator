@@ -11,7 +11,7 @@ const createServer = async (options = {}, globalPreCallback = () => null) => {
   }
   const { server } = setupServer(globalPreCallback)
   server.applyMiddleware({ app, path: '/graphql' })
-  const serverHttp = await new Promise((resolve, reject) => {
+  const serverHttp = await new Promise(resolve => {
     const newServer = http
       .createServer(options, app)
       .listen(process.env.PORT || 8080, () => {
@@ -22,9 +22,7 @@ const createServer = async (options = {}, globalPreCallback = () => null) => {
 }
 
 const closeServer = async server => {
-  await Promise.all([
-    new Promise((resolve, reject) => server.close(() => resolve()))
-  ])
+  await Promise.all([new Promise(resolve => server.close(() => resolve()))])
 }
 
 const resetDb = async () => {
