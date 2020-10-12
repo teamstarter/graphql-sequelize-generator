@@ -21,7 +21,11 @@ const generateMutationDelete = (
   type: GraphQLInt,
   description: `Delete a ${modelName}`,
   args: {
-    id: { type: new GraphQLNonNull(GraphQLInt) }
+    id: { type: new GraphQLNonNull(GraphQLInt) },
+    ...(graphqlModelDeclaration.create &&
+    graphqlModelDeclaration.create.extraArg
+      ? graphqlModelDeclaration.create.extraArg
+      : {}),
   },
   resolve: async (source, args, context, info) => {
     let where = { id: args.id }
@@ -65,12 +69,12 @@ const generateMutationDelete = (
     }
 
     const rowDeleted = await graphqlModelDeclaration.model.destroy({
-      where
+      where,
     }) // Returns the number of rows affected (0 or 1)
 
     if (pubSubInstance) {
       pubSubInstance.publish(`${modelName}Deleted`, {
-        [`${modelName}Deleted`]: entity.get()
+        [`${modelName}Deleted`]: entity.get(),
       })
     }
 
@@ -91,7 +95,7 @@ const generateMutationDelete = (
       }
     }
     return rowDeleted
-  }
+  },
 })
 
 module.exports = generateMutationDelete
