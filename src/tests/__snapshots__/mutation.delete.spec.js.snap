@@ -1,5 +1,41 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test the delete mutation Check that you can add extra arguments 1`] = `1`;
+
+exports[`Test the delete mutation Check that you can add extra arguments 2`] = `
+Array [
+  "listGlobalBefore",
+  "listBefore",
+  "listAfter",
+  "deleteGlobalBefore",
+  "deleteBefore",
+  "deleteAfter",
+  "listGlobalBefore",
+  "listBefore",
+  "listAfter",
+]
+`;
+
+exports[`Test the delete mutation Check that you can add extra arguments 3`] = `
+Array [
+  Object {
+    "id": 1,
+    "message": "The User id = 5 was successfully deleted",
+  },
+]
+`;
+
+exports[`Test the delete mutation Check that you can add extra arguments: The user 5 should not exist anymore 1`] = `
+Array [
+  Object {
+    "id": 5,
+    "name": "Mr Test 5 c 2",
+  },
+]
+`;
+
+exports[`Test the delete mutation Check that you can add extra arguments: The user 5 should not exist anymore 2`] = `Array []`;
+
 exports[`Test the delete mutation Check that you can delete an entity 1`] = `1`;
 
 exports[`Test the delete mutation Check that you can delete an entity 2`] = `
