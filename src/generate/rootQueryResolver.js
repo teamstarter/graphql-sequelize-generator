@@ -30,32 +30,46 @@ function getModelsFields(
       )
     }
 
-    // @todo counts should only be added if configured in the schema declaration
-    return {
-      ...fields,
-      // LIST RESOLVER
-      [modelType.name]: generateListResolver(
-        modelType,
-        modelTypeName,
-        allSchemaDeclarations,
-        outputTypes,
-        models,
-        globalPreCallback
-      ),
-      // COUNT RESOLVER
-      [`${modelType.name}Count`]: {
-        type: GraphQLInt,
-        args: {
-          ...defaultArgs(schemaDeclaration.model),
-          ...defaultListArgs()
-        },
-        resolve: generateCountResolver(
-          schemaDeclaration.model,
-          schemaDeclaration,
-          globalPreCallback
-        )
-      }
-    }
+    let result =
+      schemaDeclaration.actions.indexOf('count') > -1
+        ? {
+            ...fields,
+            // LIST RESOLVER
+            [modelType.name]: generateListResolver(
+              modelType,
+              modelTypeName,
+              allSchemaDeclarations,
+              outputTypes,
+              models,
+              globalPreCallback
+            ),
+            // COUNT RESOLVER
+            [`${modelType.name}Count`]: {
+              type: GraphQLInt,
+              args: {
+                ...defaultArgs(schemaDeclaration.model),
+                ...defaultListArgs()
+              },
+              resolve: generateCountResolver(
+                schemaDeclaration.model,
+                schemaDeclaration,
+                globalPreCallback
+              )
+            }
+          }
+        : {
+            ...fields,
+            // LIST RESOLVER
+            [modelType.name]: generateListResolver(
+              modelType,
+              modelTypeName,
+              allSchemaDeclarations,
+              outputTypes,
+              models,
+              globalPreCallback
+            )
+          }
+    return result
   }, {})
 }
 

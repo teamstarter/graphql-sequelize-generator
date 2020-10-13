@@ -92,3 +92,7 @@ Object {
   "userCount": 2,
 }
 `;
+
+exports[`Test the count resolvers Check that you cannot query the count resolver if it is not defined 1`] = `[Error: cannot GET /graphql?query=%0A%20%20%20%20%20%20%20%20%20%20query%20getLogCount%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20logCount%0A%20%20%20%20%20%20%20%20%20%20%7D (400)]`;
+
+exports[`Test the count resolvers Check that you cannot query the count resolver if it is not defined 2`] = `Array []`;
