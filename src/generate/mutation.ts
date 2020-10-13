@@ -1,15 +1,11 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'GraphQLObj... Remove this comment to see the full error message
 const { GraphQLObjectType } = require('graphql')
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMu... Remove this comment to see the full error message
 const generateMutationCreate = require('./mutationCreateResolver')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMu... Remove this comment to see the full error message
 const generateMutationDelete = require('./mutationDeleteResolver')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMu... Remove this comment to see the full error message
 const generateMutationUpdate = require('./mutationUpdateResolver')
 
 function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
-  const wrappedMutations = {}
+  const wrappedMutations: any = {}
 
   Object.keys(mutations).forEach(mutationKey => {
     const mutation = mutations[mutationKey]
@@ -18,7 +14,6 @@ function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
         `A resolve attribute is required for custom mutations. Please provide one for [${mutationKey}]`
       )
     }
-    // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
     wrappedMutations[mutationKey] = {
       ...mutation,
       resolve: async (source: any, args: any, context: any, info: any) => {
@@ -34,8 +29,7 @@ function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
   return wrappedMutations
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMu... Remove this comment to see the full error message
-const generateMutation = (
+export const generateMutation = (
   graphqlSchemaDeclaration: any,
   inputTypes: any,
   outputTypes: any,
@@ -128,5 +122,3 @@ const generateMutation = (
     }
   })
 }
-
-module.exports = generateMutation

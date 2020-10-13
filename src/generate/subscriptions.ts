@@ -1,5 +1,4 @@
 const { withFilter } = require('graphql-subscriptions')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'GraphQLInt... Remove this comment to see the full error message
 const { GraphQLInt, GraphQLObjectType } = require('graphql')
 
 const availableActions = ['create', 'update', 'delete']
@@ -8,14 +7,13 @@ function capitalizeFirstLetter(string: any) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateSu... Remove this comment to see the full error message
-const generateSubscriptions = (
+export const generateSubscriptions = (
   graphqlSchemaDeclaration: any,
   types: any,
   pubSubInstance: any
 ) => {
   const fields = Object.keys(types.inputTypes).reduce(
-    (subscriptions, modelName) => {
+    (subscriptions: any, modelName: string) => {
       const outputType = types.outputTypes[modelName]
       if (!graphqlSchemaDeclaration[modelName]) {
         return subscriptions
@@ -30,7 +28,6 @@ const generateSubscriptions = (
         if (subscriptionsEnabled.includes(action)) {
           // ex: name = "userUpdated"
           const name = `${modelName}${capitalizeFirstLetter(action)}d`
-          // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
           subscriptions[name] = {
             type: outputType,
             args: {
@@ -53,7 +50,6 @@ const generateSubscriptions = (
           graphqlSchemaDeclaration[modelName].additionalSubscriptions
         ).map(
           key =>
-            // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
             (subscriptions[key] =
               graphqlSchemaDeclaration[modelName].additionalSubscriptions[key])
         )
@@ -64,7 +60,6 @@ const generateSubscriptions = (
     {}
   )
 
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   if (Object.values(fields).length === 0) {
     return undefined
   }
@@ -74,5 +69,3 @@ const generateSubscriptions = (
     fields
   })
 }
-
-module.exports = generateSubscriptions

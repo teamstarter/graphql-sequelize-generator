@@ -1,11 +1,8 @@
 const generateQueryRootResolver = require('./rootQueryResolver')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateSu... Remove this comment to see the full error message
 const generateSubscriptions = require('./subscriptions')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMu... Remove this comment to see the full error message
 const generateMutation = require('./mutation')
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateSc... Remove this comment to see the full error message
-const generateSchema = ({
+export const generateSchema = ({
   graphqlSchemaDeclaration,
   types,
   models,
@@ -15,7 +12,6 @@ const generateSchema = ({
 }: any) => {
   const mutationExists =
     !!customMutations ||
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     Object.values(graphqlSchemaDeclaration).some((type: any) => {
       if (type.actions) {
         return ['create', 'delete', 'update'].some(action =>
@@ -25,7 +21,7 @@ const generateSchema = ({
       return !!type.additionalMutations
     })
 
-  const definition = {
+  const definition: any = {
     query: generateQueryRootResolver(
       graphqlSchemaDeclaration,
       types.outputTypes,
@@ -47,7 +43,6 @@ const generateSchema = ({
 
   // Do not generate subscriptions if no ways of propagating information is defined.
   if (pubSubInstance) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'subscription' does not exist on type '{ ... Remove this comment to see the full error message
     definition.subscription = generateSubscriptions(
       graphqlSchemaDeclaration,
       types,
@@ -57,5 +52,3 @@ const generateSchema = ({
 
   return definition
 }
-
-module.exports = generateSchema

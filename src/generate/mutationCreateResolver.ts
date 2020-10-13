@@ -1,4 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'GraphQLNon... Remove this comment to see the full error message
+import { PubSub } from 'graphql-subscriptions'
+
 const { GraphQLNonNull } = require('graphql')
 /**
  * Generates a create mutation operation
@@ -10,15 +11,14 @@ const { GraphQLNonNull } = require('graphql')
  * @param {*} graphqlModelDeclaration
  * @param {PubSub} pubSubInstance
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMu... Remove this comment to see the full error message
-const generateMutationCreate = (
+export const generateMutationCreate = (
   modelName: any,
   inputType: any,
   outputType: any,
   model: any,
   graphqlModelDeclaration: any,
   globalPreCallback: any,
-  pubSubInstance = null
+  pubSubInstance: PubSub = new PubSub()
 ) => ({
   type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
   description: `Create a ${modelName}`,
@@ -81,7 +81,6 @@ const generateMutationCreate = (
       }
 
       if (pubSubInstance) {
-        // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         pubSubInstance.publish(`${modelName}Created`, {
           [`${modelName}Created`]: updatedEntity.get()
         })
@@ -91,7 +90,6 @@ const generateMutationCreate = (
     }
 
     if (pubSubInstance) {
-      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       pubSubInstance.publish(`${modelName}Created`, {
         [`${modelName}Created`]: newEntity.get()
       })
@@ -100,5 +98,3 @@ const generateMutationCreate = (
     return newEntity
   }
 })
-
-module.exports = generateMutationCreate

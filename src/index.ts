@@ -8,7 +8,7 @@ const {
 
 const removeUnusedAttributes = require('./removeUnusedAttributes')
 
-module.exports = {
+export {
   // Functions to help generating a schema
   generateApolloServer,
   generateSchema,

@@ -1,8 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'GraphQLLis... Remove this comment to see the full error message
 const { GraphQLList, GraphQLString, GraphQLInt } = require('graphql')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'attributeF... Remove this comment to see the full error message
 const { attributeFields } = require('graphql-sequelize')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createReso... Remove this comment to see the full error message
 const createResolver = require('../createResolver')
 const debug = require('debug')('gsg')
 
@@ -43,7 +40,8 @@ const generateAssociationField = (
         name: 'order',
         type: GraphQLString
       }
-    ]
+    ],
+    resolve: null
   }
 
   if (relation.associationType === 'HasMany') {
@@ -56,7 +54,6 @@ const generateAssociationField = (
   }
 
   if (resolver) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'resolve' does not exist on type '{ type:... Remove this comment to see the full error message
     field.resolve = resolver
   }
 
@@ -72,8 +69,7 @@ const generateAssociationField = (
  * @param {*} associations A collection of sequelize associations
  * @param {*} types Existing `GraphQLObjectType` types, created from all the Sequelize models
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateAs... Remove this comment to see the full error message
-const generateAssociationsFields = (associations: any, types: any) => {
+export const generateAssociationsFields = (associations: any, types: any) => {
   const fields = {}
   for (const associationName in associations) {
     // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
@@ -85,8 +81,7 @@ const generateAssociationsFields = (associations: any, types: any) => {
   return fields
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'injectAsso... Remove this comment to see the full error message
-const injectAssociations = (
+export const injectAssociations = (
   modelGraphQLType: any,
   graphqlSchemaDeclaration: any,
   outputTypes: any,
@@ -107,7 +102,8 @@ const injectAssociations = (
   if (Object.keys(associations).length === 0) {
     return modelGraphQLType
   }
-  const associationsFields = {}
+
+  const associationsFields: any = {}
   for (const associationName in associations) {
     if (!graphqlSchemaDeclaration[associations[associationName].target.name]) {
       debug(
@@ -115,7 +111,6 @@ const injectAssociations = (
       )
       continue
     }
-    // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
     associationsFields[associationName] = generateAssociationField(
       associations[associationName],
       outputTypes,
@@ -134,7 +129,7 @@ const injectAssociations = (
   // We have to mutate the original field, as type names must be unique
   // We cannot return a new type as the type may have already been used
   // In previous models.
-  let baseFields = {}
+  let baseFields: any = {}
   if (typeof graphqlSchemaDeclaration[modelName] !== 'undefined') {
     baseFields = attributeFields(graphqlSchemaDeclaration[modelName].model, {
       allowNull: false,
@@ -155,28 +150,28 @@ const injectAssociations = (
   const defaultFields = modelGraphQLType.getFields()
   // The default fields needs to be filtered as attributeFields will
   // not contain the fields that are not defined in the models files.
-  const fields = Object.keys(defaultFields).reduce((acc, field) => {
-    if (
-      !graphqlSchemaDeclaration[modelName].excludeFields ||
-      !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
-    ) {
-      // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
-      acc[field] = defaultFields[field]
-    }
-    return acc
-  }, {})
+  const fields = Object.keys(defaultFields).reduce(
+    (acc: any, field: string) => {
+      if (
+        !graphqlSchemaDeclaration[modelName].excludeFields ||
+        !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
+      ) {
+        acc[field] = defaultFields[field]
+      }
+      return acc
+    },
+    {}
+  )
 
   for (const field in baseFields) {
     if (
       !graphqlSchemaDeclaration[modelName].excludeFields ||
       !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
     ) {
-      // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
       fields[field] = {
         name: field,
         isDeprecated: false,
         args: [],
-        // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
         ...baseFields[field]
       }
     }
@@ -188,7 +183,6 @@ const injectAssociations = (
       !graphqlSchemaDeclaration[modelName].excludeFields ||
       !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
     ) {
-      // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
       fields[field] = associationsFields[field]
     }
   }
@@ -197,5 +191,3 @@ const injectAssociations = (
 
   return modelGraphQLType
 }
-
-module.exports = { injectAssociations, generateAssociationsFields }

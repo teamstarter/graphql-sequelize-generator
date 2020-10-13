@@ -1,6 +1,6 @@
 const { argsToFindOptions } = require('graphql-sequelize')
 
-module.exports = function countResolver(
+export function countResolver(
   model: any,
   schemaDeclaration: any,
   globalPreCallback: any
@@ -57,5 +57,5 @@ module.exports = function countResolver(
     return model.count(
       argsToFindOptions.default(args, Object.keys(model.rawAttributes))
     )
-  };
+  }
 }

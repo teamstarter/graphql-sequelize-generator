@@ -1,4 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'GraphQLInt... Remove this comment to see the full error message
+import { PubSub } from 'graphql-subscriptions'
+
 const { GraphQLInt, GraphQLNonNull } = require('graphql')
 /**
  * Generates a delete mutation operation
@@ -10,15 +11,14 @@ const { GraphQLInt, GraphQLNonNull } = require('graphql')
  * @param {*} models
  * @param {PubSub} pubSubInstance
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMu... Remove this comment to see the full error message
-const generateMutationDelete = (
+export const generateMutationDelete = (
   modelName: any,
   inputType: any,
   outputType: any,
   graphqlModelDeclaration: any,
   models: any,
   globalPreCallback: any,
-  pubSubInstance = null
+  pubSubInstance: PubSub = new PubSub()
 ) => ({
   type: GraphQLInt,
   description: `Delete a ${modelName}`,
@@ -75,7 +75,6 @@ const generateMutationDelete = (
     }) // Returns the number of rows affected (0 or 1)
 
     if (pubSubInstance) {
-      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       pubSubInstance.publish(`${modelName}Deleted`, {
         [`${modelName}Deleted`]: entity.get()
       })
@@ -100,5 +99,3 @@ const generateMutationDelete = (
     return rowDeleted
   }
 })
-
-module.exports = generateMutationDelete

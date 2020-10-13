@@ -1,13 +1,19 @@
 const { resolver } = require('graphql-sequelize')
 const removeUnusedAttributes = require('./removeUnusedAttributes')
 
-const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
+const allowOrderOnAssociations = (
+  findOptions: any,
+  args: any,
+  context: any,
+  info: any,
+  model: any
+) => {
   if (typeof findOptions.order === 'undefined') {
     return findOptions
   }
-  const processedOrder = []
+  const processedOrder: any = []
 
-  const checkForAssociationSort = (singleOrder, index) => {
+  const checkForAssociationSort = (singleOrder: any, index: any) => {
     // When the comas is used, graphql-sequelize will not handle the 'reverse:' command.
     // We have to implement it ourselves.
     let field = null
@@ -37,7 +43,7 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
         findOptions.include = []
       }
 
-      const modelInclude = {
+      const modelInclude: any = {
         model: model.associations[associationName].target
       }
 
@@ -47,7 +53,9 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
 
       findOptions.include.push(modelInclude)
 
-      const modelSort = { model: model.associations[associationName].target }
+      const modelSort: any = {
+        model: model.associations[associationName].target
+      }
       // When sorting by a associated table, the alias must be specified
       // if defined in the association definition.
       if (model.associations[associationName].as) {
@@ -84,7 +92,7 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
    * to
    * order = [['id', 'ASC'], ['fullname', 'DESC']
    */
-  findOptions.order.map(order => {
+  findOptions.order.map((order: any) => {
     // Handle multiple sort fields.
     if (order[0].search(',') === -1) {
       checkForAssociationSort(order[0], 0)
@@ -100,12 +108,12 @@ const allowOrderOnAssociations = (findOptions, args, context, info, model) => {
 }
 
 const argsAdvancedProcessing = (
-  findOptions,
-  args,
-  context,
-  info,
-  model,
-  models
+  findOptions: any,
+  args: any,
+  context: any,
+  info: any,
+  model: any,
+  models: any
 ) => {
   findOptions = allowOrderOnAssociations(
     findOptions,
@@ -130,10 +138,10 @@ const argsAdvancedProcessing = (
   return findOptions
 }
 
-const createResolver = (
-  graphqlTypeDeclaration,
-  models,
-  globalPreCallback,
+export const createResolver = (
+  graphqlTypeDeclaration: any,
+  models: any,
+  globalPreCallback: any,
   relation = null
 ) => {
   if (
@@ -141,7 +149,7 @@ const createResolver = (
     graphqlTypeDeclaration.list &&
     graphqlTypeDeclaration.list.resolver
   ) {
-    return async (source, args, context, info) => {
+    return async (source: any, args: any, context: any, info: any) => {
       const customResolverHandle = globalPreCallback('customListBefore')
       const customResult = await graphqlTypeDeclaration.list.resolver(
         source,
@@ -169,7 +177,7 @@ const createResolver = (
     contextToOptions: graphqlTypeDeclaration.list
       ? graphqlTypeDeclaration.list.contextToOptions
       : undefined,
-    before: async (findOptions, args, context, info) => {
+    before: async (findOptions: any, args: any, context: any, info: any) => {
       const processedFindOptions = argsAdvancedProcessing(
         findOptions,
         args,
@@ -244,7 +252,7 @@ const createResolver = (
             models
           )
     },
-    after: async (result, args, context, info) => {
+    after: async (result: any, args: any, context: any, info: any) => {
       if (listAfter) {
         const handle = globalPreCallback('listAfter')
         const modifiedResult = await listAfter(result, args, context, info)

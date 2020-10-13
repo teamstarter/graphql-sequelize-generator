@@ -8,11 +8,11 @@ const { simplifyAST } = require('graphql-sequelize')
  * @param {*} info
  * @param {Array<string>} keep An array of all the attributes to keep
  */
-module.exports = function removeUnusedAttributes(
-  findOptions,
-  info,
-  currentModel,
-  models,
+export function removeUnusedAttributes(
+  findOptions: any,
+  info: any,
+  currentModel: any,
+  models: any,
   keep = []
 ) {
   const { fieldNodes } = info
@@ -21,7 +21,7 @@ module.exports = function removeUnusedAttributes(
   }
   const ast = simplifyAST(fieldNodes[0], info)
 
-  const linkFields = []
+  const linkFields: any = []
   /**
    * This reduce is made to add the attributes required to fetch
    * sub objects. This part of the code not responsible for the parents.

@@ -1,4 +1,3 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateGr... Remove this comment to see the full error message
 const generateGraphQLType = require('./graphQLType')
 /**
  * Returns a collection of `GraphQLObjectType` generated from Sequelize models.
@@ -8,8 +7,7 @@ const generateGraphQLType = require('./graphQLType')
  * @param {*} models The sequelize models used to create the types
  */
 // This function is exported
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMo... Remove this comment to see the full error message
-const generateModelTypes = (models: any) => {
+export const generateModelTypes = (models: any) => {
   const outputTypes = {}
   const inputTypes = {}
   for (const modelName in models) {
@@ -27,5 +25,3 @@ const generateModelTypes = (models: any) => {
   }
   return { outputTypes, inputTypes }
 }
-
-module.exports = generateModelTypes
