@@ -21,7 +21,11 @@ const generateMutationDelete = (
   type: GraphQLInt,
   description: `Delete a ${modelName}`,
   args: {
-    id: { type: new GraphQLNonNull(GraphQLInt) }
+    id: { type: new GraphQLNonNull(GraphQLInt) },
+    ...(graphqlModelDeclaration.delete &&
+    graphqlModelDeclaration.delete.extraArg
+      ? graphqlModelDeclaration.delete.extraArg
+      : {})
   },
   resolve: async (source, args, context, info) => {
     let where = { id: args.id }
