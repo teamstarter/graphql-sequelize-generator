@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'GraphQLNon... Remove this comment to see the full error message
 const { GraphQLNonNull } = require('graphql')
 /**
  * Generates a update mutation operation
@@ -10,14 +11,15 @@ const { GraphQLNonNull } = require('graphql')
  * @param {*} models
  * @param {PubSub} pubSubInstance
  */
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMu... Remove this comment to see the full error message
 const generateMutationUpdate = (
-  modelName,
-  inputType,
-  outputType,
-  model,
-  graphqlModelDeclaration,
-  models,
-  globalPreCallback,
+  modelName: any,
+  inputType: any,
+  outputType: any,
+  model: any,
+  graphqlModelDeclaration: any,
+  models: any,
+  globalPreCallback: any,
   pubSubInstance = null
 ) => ({
   type: outputType,
@@ -29,7 +31,7 @@ const generateMutationUpdate = (
       ? graphqlModelDeclaration.update.extraArg
       : {})
   },
-  resolve: async (source, args, context, info) => {
+  resolve: async (source: any, args: any, context: any, info: any) => {
     let data = args[modelName]
 
     if (graphqlModelDeclaration.before) {
@@ -91,6 +93,7 @@ const generateMutationUpdate = (
       }
 
       if (pubSubInstance) {
+        // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         pubSubInstance.publish(`${modelName}Updated`, {
           [`${modelName}Updated`]: updatedEntity.get()
         })
@@ -100,6 +103,7 @@ const generateMutationUpdate = (
     }
 
     if (pubSubInstance) {
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       pubSubInstance.publish(`${modelName}Updated`, {
         [`${modelName}Updated`]: entity.get()
       })

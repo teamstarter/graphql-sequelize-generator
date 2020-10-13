@@ -1,14 +1,16 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'GraphQLObj... Remove this comment to see the full error message
 const { GraphQLObjectType, GraphQLInt } = require('graphql')
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'defaultArg... Remove this comment to see the full error message
 const { defaultArgs, defaultListArgs } = require('graphql-sequelize')
 
 const generateCountResolver = require('./countResolver')
 const generateListResolver = require('./listResolver')
 
 function getModelsFields(
-  allSchemaDeclarations,
-  outputTypes,
-  models,
-  globalPreCallback
+  allSchemaDeclarations: any,
+  outputTypes: any,
+  models: any,
+  globalPreCallback: any
 ) {
   return Object.keys(outputTypes).reduce((fields, modelTypeName) => {
     const modelType = outputTypes[modelTypeName]
@@ -73,7 +75,7 @@ function getModelsFields(
   }, {})
 }
 
-function getCustomEndpoints(allSchemaDeclarations, outputTypes, models) {
+function getCustomEndpoints(allSchemaDeclarations: any, outputTypes: any, models: any) {
   return Object.keys(allSchemaDeclarations).reduce((fields, endpointKey) => {
     // We ignore all endpoints matching a model type.
     if (outputTypes[endpointKey]) {
@@ -99,10 +101,10 @@ function getCustomEndpoints(allSchemaDeclarations, outputTypes, models) {
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
 module.exports = function generateQueryRootResolver(
-  allSchemaDeclarations,
-  outputTypes,
-  models,
-  globalPreCallback
+  allSchemaDeclarations: any,
+  outputTypes: any,
+  models: any,
+  globalPreCallback: any
 ) {
   // Endpoints depending on a model
   const modelFields = getModelsFields(

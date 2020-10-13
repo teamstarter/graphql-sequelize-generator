@@ -1,7 +1,11 @@
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'GraphQLLis... Remove this comment to see the full error message
 const { GraphQLList } = require('graphql')
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'defaultArg... Remove this comment to see the full error message
 const { defaultArgs, defaultListArgs } = require('graphql-sequelize')
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createReso... Remove this comment to see the full error message
 const createResolver = require('../createResolver')
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'injectAsso... Remove this comment to see the full error message
 const { injectAssociations } = require('./associationsFields')
 /**
  * Returns a root `GraphQLObjectType` used as query for `GraphQLSchema`.
@@ -11,12 +15,12 @@ const { injectAssociations } = require('./associationsFields')
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
 module.exports = function generateListResolver(
-  modelType,
-  modelTypeName,
-  allSchemaDeclarations,
-  outputTypes,
-  models,
-  globalPreCallback
+  modelType: any,
+  modelTypeName: any,
+  allSchemaDeclarations: any,
+  outputTypes: any,
+  models: any,
+  globalPreCallback: any
 ) {
   const schemaDeclaration = allSchemaDeclarations[modelType.name]
 
