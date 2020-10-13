@@ -1,12 +1,12 @@
-const {
+import {
   generateApolloServer,
   generateSchema,
   generateModelTypes,
   injectAssociations,
   generateCount
-} = require('./generate')
+} from './generate'
 
-const removeUnusedAttributes = require('./removeUnusedAttributes')
+import removeUnusedAttributes from './removeUnusedAttributes'
 
 export {
   // Functions to help generating a schema

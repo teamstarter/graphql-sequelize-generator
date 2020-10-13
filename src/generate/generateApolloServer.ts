@@ -1,9 +1,9 @@
-const { GraphQLSchema } = require('graphql')
+import { GraphQLSchema } from 'graphql'
 const { ApolloServer } = require('apollo-server-express')
 
-const generateSchema = require('./schema')
+import generateSchema from './schema'
 
-export const generateApolloServer = ({
+export default function generateApolloServer({
   graphqlSchemaDeclaration,
   customMutations,
   types,
@@ -11,7 +11,7 @@ export const generateApolloServer = ({
   apolloServerOptions = {},
   pubSubInstance = null,
   globalPreCallback = () => null
-}: any) => {
+}: any) {
   const graphqlSchema = new GraphQLSchema(
     generateSchema({
       graphqlSchemaDeclaration,

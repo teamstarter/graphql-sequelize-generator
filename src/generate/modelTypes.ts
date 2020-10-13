@@ -1,4 +1,5 @@
-const generateGraphQLType = require('./graphQLType')
+import generateGraphQLType from './graphQLType'
+
 /**
  * Returns a collection of `GraphQLObjectType` generated from Sequelize models.
  *
@@ -7,9 +8,9 @@ const generateGraphQLType = require('./graphQLType')
  * @param {*} models The sequelize models used to create the types
  */
 // This function is exported
-export const generateModelTypes = (models: any) => {
-  const outputTypes = {}
-  const inputTypes = {}
+export default function generateModelTypes(models: any) {
+  const outputTypes: any = {}
+  const inputTypes: any = {}
   for (const modelName in models) {
     const model = models[modelName]
     // Only our models, not Sequelize nor sequelize
@@ -17,9 +18,7 @@ export const generateModelTypes = (models: any) => {
       Object.prototype.hasOwnProperty.call(model, 'name') &&
       modelName !== 'Sequelize'
     ) {
-      // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
       outputTypes[modelName] = generateGraphQLType(model, outputTypes)
-      // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
       inputTypes[modelName] = generateGraphQLType(model, inputTypes, true)
     }
   }

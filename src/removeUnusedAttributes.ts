@@ -1,4 +1,4 @@
-const { simplifyAST } = require('graphql-sequelize')
+import { simplifyAST } from 'graphql-sequelize'
 
 /**
  * This functions returns the findOptions for a findAll/One with only the attributes required in the info.
@@ -8,7 +8,7 @@ const { simplifyAST } = require('graphql-sequelize')
  * @param {*} info
  * @param {Array<string>} keep An array of all the attributes to keep
  */
-export function removeUnusedAttributes(
+export default function removeUnusedAttributes(
   findOptions: any,
   info: any,
   currentModel: any,

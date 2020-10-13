@@ -1,15 +1,15 @@
-const generateQueryRootResolver = require('./rootQueryResolver')
-const generateSubscriptions = require('./subscriptions')
-const generateMutation = require('./mutation')
+import generateQueryRootResolver from './rootQueryResolver'
+import generateSubscriptions from './subscriptions'
+import generateMutation from './mutation'
 
-export const generateSchema = ({
+export default function generateSchema({
   graphqlSchemaDeclaration,
   types,
   models,
   customMutations,
   globalPreCallback = () => null,
   pubSubInstance
-}: any) => {
+}: any) {
   const mutationExists =
     !!customMutations ||
     Object.values(graphqlSchemaDeclaration).some((type: any) => {

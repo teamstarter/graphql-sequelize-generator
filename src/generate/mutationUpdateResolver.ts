@@ -1,6 +1,6 @@
 import { PubSub } from 'graphql-subscriptions'
+import { GraphQLNonNull } from 'graphql'
 
-const { GraphQLNonNull } = require('graphql')
 /**
  * Generates a update mutation operation
  *
@@ -12,7 +12,7 @@ const { GraphQLNonNull } = require('graphql')
  * @param {*} models
  * @param {PubSub} pubSubInstance
  */
-export const generateMutationUpdate = (
+export default function generateMutationUpdate(
   modelName: any,
   inputType: any,
   outputType: any,
@@ -20,93 +20,95 @@ export const generateMutationUpdate = (
   graphqlModelDeclaration: any,
   models: any,
   globalPreCallback: any,
-  pubSubInstance: PubSub = new PubSub()
-) => ({
-  type: outputType,
-  description: `Update a ${modelName}`,
-  args: {
-    [modelName]: { type: new GraphQLNonNull(inputType) },
-    ...(graphqlModelDeclaration.update &&
-    graphqlModelDeclaration.update.extraArg
-      ? graphqlModelDeclaration.update.extraArg
-      : {})
-  },
-  resolve: async (source: any, args: any, context: any, info: any) => {
-    let data = args[modelName]
+  pubSubInstance: PubSub | null = new PubSub()
+) {
+  return {
+    type: outputType,
+    description: `Update a ${modelName}`,
+    args: {
+      [modelName]: { type: new GraphQLNonNull(inputType) },
+      ...(graphqlModelDeclaration.update &&
+      graphqlModelDeclaration.update.extraArg
+        ? graphqlModelDeclaration.update.extraArg
+        : {})
+    },
+    resolve: async (source: any, args: any, context: any, info: any) => {
+      let data = args[modelName]
 
-    if (graphqlModelDeclaration.before) {
-      const beforeList =
-        typeof graphqlModelDeclaration.before.length !== 'undefined'
-          ? graphqlModelDeclaration.before
-          : [graphqlModelDeclaration.before]
+      if (graphqlModelDeclaration.before) {
+        const beforeList =
+          typeof graphqlModelDeclaration.before.length !== 'undefined'
+            ? graphqlModelDeclaration.before
+            : [graphqlModelDeclaration.before]
 
-      for (const before of beforeList) {
-        const handle = globalPreCallback('updateGlobalBefore')
-        await before(args, context, info)
-        if (handle) {
-          handle()
+        for (const before of beforeList) {
+          const handle = globalPreCallback('updateGlobalBefore')
+          await before(args, context, info)
+          if (handle) {
+            handle()
+          }
         }
       }
-    }
 
-    if (
-      graphqlModelDeclaration.update &&
-      graphqlModelDeclaration.update.before
-    ) {
-      const beforeHandle = globalPreCallback('updateBefore')
-      data = await graphqlModelDeclaration.update.before(
-        source,
-        args,
-        context,
-        info
-      )
-      if (beforeHandle) {
-        beforeHandle()
+      if (
+        graphqlModelDeclaration.update &&
+        graphqlModelDeclaration.update.before
+      ) {
+        const beforeHandle = globalPreCallback('updateBefore')
+        data = await graphqlModelDeclaration.update.before(
+          source,
+          args,
+          context,
+          info
+        )
+        if (beforeHandle) {
+          beforeHandle()
+        }
       }
-    }
 
-    const entity = await models[modelName].findOne({ where: { id: data.id } })
+      const entity = await models[modelName].findOne({ where: { id: data.id } })
 
-    if (!entity) {
-      throw new Error(`${modelName} not found.`)
-    }
+      if (!entity) {
+        throw new Error(`${modelName} not found.`)
+      }
 
-    const snapshotBeforeUpdate = { ...entity.get({ plain: true }) }
-    await entity.update(data)
-    await entity.reload()
+      const snapshotBeforeUpdate = { ...entity.get({ plain: true }) }
+      await entity.update(data)
+      await entity.reload()
 
-    if (
-      graphqlModelDeclaration.update &&
-      graphqlModelDeclaration.update.after
-    ) {
-      const afterHandle = globalPreCallback('updateAfter')
-      const updatedEntity = await graphqlModelDeclaration.update.after(
-        entity,
-        snapshotBeforeUpdate,
-        source,
-        args,
-        context,
-        info
-      )
-      if (afterHandle) {
-        afterHandle()
+      if (
+        graphqlModelDeclaration.update &&
+        graphqlModelDeclaration.update.after
+      ) {
+        const afterHandle = globalPreCallback('updateAfter')
+        const updatedEntity = await graphqlModelDeclaration.update.after(
+          entity,
+          snapshotBeforeUpdate,
+          source,
+          args,
+          context,
+          info
+        )
+        if (afterHandle) {
+          afterHandle()
+        }
+
+        if (pubSubInstance) {
+          pubSubInstance.publish(`${modelName}Updated`, {
+            [`${modelName}Updated`]: updatedEntity.get()
+          })
+        }
+
+        return updatedEntity
       }
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Updated`, {
-          [`${modelName}Updated`]: updatedEntity.get()
+          [`${modelName}Updated`]: entity.get()
         })
       }
 
-      return updatedEntity
+      return entity
     }
-
-    if (pubSubInstance) {
-      pubSubInstance.publish(`${modelName}Updated`, {
-        [`${modelName}Updated`]: entity.get()
-      })
-    }
-
-    return entity
   }
-})
+}

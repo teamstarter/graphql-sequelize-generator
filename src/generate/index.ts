@@ -1,11 +1,11 @@
-const generateMutationCreate = require('./mutationCreateResolver')
-const generateMutationUpdate = require('./mutationUpdateResolver')
-const generateMutationDelete = require('./mutationDeleteResolver')
-const generateCount = require('./countResolver')
-const generateModelTypes = require('./modelTypes')
-const generateGraphQLType = require('./graphQLType')
-const generateSchema = require('./schema')
-const generateApolloServer = require('./generateApolloServer')
+import generateMutationCreate from './mutationCreateResolver'
+import generateMutationUpdate from './mutationUpdateResolver'
+import generateMutationDelete from './mutationDeleteResolver'
+import generateCount from './countResolver'
+import generateModelTypes from './modelTypes'
+import generateGraphQLType from './graphQLType'
+import generateSchema from './schema'
+import generateApolloServer from './generateApolloServer'
 const {
   injectAssociations,
   generateAssociationsFields

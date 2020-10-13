@@ -7,11 +7,11 @@ function capitalizeFirstLetter(string: any) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-export const generateSubscriptions = (
+export default function generateSubscriptions(
   graphqlSchemaDeclaration: any,
   types: any,
   pubSubInstance: any
-) => {
+) {
   const fields = Object.keys(types.inputTypes).reduce(
     (subscriptions: any, modelName: string) => {
       const outputType = types.outputTypes[modelName]

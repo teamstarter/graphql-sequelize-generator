@@ -1,7 +1,9 @@
-const { GraphQLList, GraphQLString, GraphQLInt } = require('graphql')
-const { attributeFields } = require('graphql-sequelize')
-const createResolver = require('../createResolver')
-const debug = require('debug')('gsg')
+import { GraphQLList, GraphQLString, GraphQLInt } from 'graphql'
+import { attributeFields } from 'graphql-sequelize'
+import createResolver from '../createResolver'
+import _debug from 'debug'
+
+const debug = _debug('gsg')
 
 const generateAssociationField = (
   relation: any,
@@ -40,8 +42,7 @@ const generateAssociationField = (
         name: 'order',
         type: GraphQLString
       }
-    ],
-    resolve: null
+    ]
   }
 
   if (relation.associationType === 'HasMany') {
@@ -54,6 +55,7 @@ const generateAssociationField = (
   }
 
   if (resolver) {
+    // @ts-ignore
     field.resolve = resolver
   }
 

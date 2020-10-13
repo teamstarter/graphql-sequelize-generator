@@ -1,8 +1,8 @@
-const { GraphQLList } = require('graphql')
-const { defaultArgs, defaultListArgs } = require('graphql-sequelize')
+import { GraphQLList } from 'graphql'
+import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
 
-const createResolver = require('../createResolver')
-const { injectAssociations } = require('./associationsFields')
+import createResolver from '../createResolver'
+import { injectAssociations } from './associationsFields'
 /**
  * Returns a root `GraphQLObjectType` used as query for `GraphQLSchema`.
  *
@@ -10,7 +10,7 @@ const { injectAssociations } = require('./associationsFields')
  * from Sequelize models.
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
-export function generateListResolver(
+export default function generateListResolver(
   modelType: any,
   modelTypeName: any,
   allSchemaDeclarations: any,

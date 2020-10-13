@@ -32,12 +32,12 @@ $ yarn add graphql-sequelize-generator graphql sequelize graphql-sequelize
 Then you will be ready to add a GraphQL API to your express server with only a few lines of code:
 
 ```javascript
-const express = require('express')
+import express from 'express'
 const {
   generateModelTypes,
   generateGraphqlExpressMiddleware
 } = require('graphql-sequelize-generator')
-const models = require('./models')
+import models from './models'
 
 const types = generateModelTypes(models)
 

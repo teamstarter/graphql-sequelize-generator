@@ -1,6 +1,6 @@
 import { PubSub } from 'graphql-subscriptions'
+import { GraphQLNonNull } from 'graphql'
 
-const { GraphQLNonNull } = require('graphql')
 /**
  * Generates a create mutation operation
  *
@@ -11,90 +11,92 @@ const { GraphQLNonNull } = require('graphql')
  * @param {*} graphqlModelDeclaration
  * @param {PubSub} pubSubInstance
  */
-export const generateMutationCreate = (
+export default function generateMutationCreate(
   modelName: any,
   inputType: any,
   outputType: any,
   model: any,
   graphqlModelDeclaration: any,
   globalPreCallback: any,
-  pubSubInstance: PubSub = new PubSub()
-) => ({
-  type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
-  description: `Create a ${modelName}`,
-  args: {
-    [modelName]: { type: new GraphQLNonNull(inputType) },
-    ...(graphqlModelDeclaration.create &&
-    graphqlModelDeclaration.create.extraArg
-      ? graphqlModelDeclaration.create.extraArg
-      : {})
-  },
-  resolve: async (source: any, args: any, context: any, info: any) => {
-    let attributes = args[modelName]
+  pubSubInstance: PubSub | null = new PubSub()
+) {
+  return {
+    type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
+    description: `Create a ${modelName}`,
+    args: {
+      [modelName]: { type: new GraphQLNonNull(inputType) },
+      ...(graphqlModelDeclaration.create &&
+      graphqlModelDeclaration.create.extraArg
+        ? graphqlModelDeclaration.create.extraArg
+        : {})
+    },
+    resolve: async (source: any, args: any, context: any, info: any) => {
+      let attributes = args[modelName]
 
-    if (graphqlModelDeclaration.before) {
-      const beforeList =
-        typeof graphqlModelDeclaration.before.length !== 'undefined'
-          ? graphqlModelDeclaration.before
-          : [graphqlModelDeclaration.before]
+      if (graphqlModelDeclaration.before) {
+        const beforeList =
+          typeof graphqlModelDeclaration.before.length !== 'undefined'
+            ? graphqlModelDeclaration.before
+            : [graphqlModelDeclaration.before]
 
-      for (const before of beforeList) {
-        const handle = globalPreCallback('createGlobalBefore')
-        await before(args, context, info)
-        if (handle) {
-          handle()
+        for (const before of beforeList) {
+          const handle = globalPreCallback('createGlobalBefore')
+          await before(args, context, info)
+          if (handle) {
+            handle()
+          }
         }
       }
-    }
 
-    if (
-      graphqlModelDeclaration.create &&
-      graphqlModelDeclaration.create.before
-    ) {
-      const beforeHandle = globalPreCallback('createBefore')
-      attributes = await graphqlModelDeclaration.create.before(
-        source,
-        args,
-        context,
-        info
-      )
-      if (beforeHandle) {
-        beforeHandle()
+      if (
+        graphqlModelDeclaration.create &&
+        graphqlModelDeclaration.create.before
+      ) {
+        const beforeHandle = globalPreCallback('createBefore')
+        attributes = await graphqlModelDeclaration.create.before(
+          source,
+          args,
+          context,
+          info
+        )
+        if (beforeHandle) {
+          beforeHandle()
+        }
       }
-    }
-    const newEntity = await model.create(attributes)
+      const newEntity = await model.create(attributes)
 
-    if (
-      graphqlModelDeclaration.create &&
-      graphqlModelDeclaration.create.after
-    ) {
-      const afterHandle = globalPreCallback('createAfter')
-      const updatedEntity = await graphqlModelDeclaration.create.after(
-        newEntity,
-        source,
-        args,
-        context,
-        info
-      )
-      if (afterHandle) {
-        afterHandle()
+      if (
+        graphqlModelDeclaration.create &&
+        graphqlModelDeclaration.create.after
+      ) {
+        const afterHandle = globalPreCallback('createAfter')
+        const updatedEntity = await graphqlModelDeclaration.create.after(
+          newEntity,
+          source,
+          args,
+          context,
+          info
+        )
+        if (afterHandle) {
+          afterHandle()
+        }
+
+        if (pubSubInstance) {
+          pubSubInstance.publish(`${modelName}Created`, {
+            [`${modelName}Created`]: updatedEntity.get()
+          })
+        }
+
+        return updatedEntity
       }
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Created`, {
-          [`${modelName}Created`]: updatedEntity.get()
+          [`${modelName}Created`]: newEntity.get()
         })
       }
 
-      return updatedEntity
+      return newEntity
     }
-
-    if (pubSubInstance) {
-      pubSubInstance.publish(`${modelName}Created`, {
-        [`${modelName}Created`]: newEntity.get()
-      })
-    }
-
-    return newEntity
   }
-})
+}

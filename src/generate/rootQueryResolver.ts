@@ -1,8 +1,8 @@
-const { GraphQLObjectType, GraphQLInt } = require('graphql')
-const { defaultArgs, defaultListArgs } = require('graphql-sequelize')
+import { GraphQLObjectType, GraphQLInt } from 'graphql'
+import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
 
-const generateCountResolver = require('./countResolver')
-const generateListResolver = require('./listResolver')
+import generateCountResolver from './countResolver'
+import generateListResolver from './listResolver'
 
 function getModelsFields(
   allSchemaDeclarations: any,
@@ -102,7 +102,7 @@ function getCustomEndpoints(
  * from Sequelize models.
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
-export function generateQueryRootResolver(
+export default function generateQueryRootResolver(
   allSchemaDeclarations: any,
   outputTypes: any,
   models: any,

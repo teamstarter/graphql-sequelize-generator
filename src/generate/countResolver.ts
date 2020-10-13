@@ -1,6 +1,6 @@
-const { argsToFindOptions } = require('graphql-sequelize')
+import { argsToFindOptions } from 'graphql-sequelize'
 
-export function countResolver(
+export default function countResolver(
   model: any,
   schemaDeclaration: any,
   globalPreCallback: any

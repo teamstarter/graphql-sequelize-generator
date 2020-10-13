@@ -1,5 +1,5 @@
-const { resolver } = require('graphql-sequelize')
-const removeUnusedAttributes = require('./removeUnusedAttributes')
+import { resolver } from 'graphql-sequelize'
+import removeUnusedAttributes from './removeUnusedAttributes'
 
 const allowOrderOnAssociations = (
   findOptions: any,
@@ -138,12 +138,12 @@ const argsAdvancedProcessing = (
   return findOptions
 }
 
-export const createResolver = (
+export default function createResolver(
   graphqlTypeDeclaration: any,
   models: any,
   globalPreCallback: any,
   relation = null
-) => {
+) {
   if (
     graphqlTypeDeclaration &&
     graphqlTypeDeclaration.list &&
@@ -265,5 +265,3 @@ export const createResolver = (
     }
   })
 }
-
-module.exports = createResolver
