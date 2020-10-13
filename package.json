@@ -40,6 +40,7 @@
     "sqlite3": "^4.2.0",
     "standard-version": "^6.0.1",
     "supertest": "^3.0.0",
+    "ts-node-dev": "^1.0.0-pre.63",
     "umzug": "^2.1.0"
   },
   "scripts": {
@@ -59,7 +60,8 @@
     "apollo-server-express": "2.15.1",
     "debug": "^4.1.1",
     "graphql-subscriptions": "^1.1.0",
-    "subscriptions-transport-ws": "^0.9.5"
+    "subscriptions-transport-ws": "^0.9.5",
+    "typescript": "^4.0.3"
   },
   "jest": {
     "verbose": true,
