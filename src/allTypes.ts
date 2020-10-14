@@ -62,7 +62,12 @@ export type MutationList = {
   [key: string]: CustomMutationConfiguration
 }
 
-export type ListBeforeHook = (
+export type GlobalBeforeHook = (
+  args: Args,
+  context: Context,
+  info: Info
+) => void
+export type QueryBeforeHook = (
   findOptions: FindOptions,
   args: Args,
   context: Context,
@@ -113,8 +118,9 @@ export type modelDeclarationType = {
   actions?: ActionList
   additionalMutations?: MutationList
   excludeFromRoot?: boolean
+  before?: GlobalBeforeHook[]
   list?: {
-    before?: ListBeforeHook
+    before?: QueryBeforeHook
   }
   create?: {
     before?: MutationBeforeHook
@@ -127,6 +133,10 @@ export type modelDeclarationType = {
   delete?: {
     before?: DeleteBeforeHook
     after?: DeleteAfterHook
+  }
+  count?: {
+    before?: QueryBeforeHook
+    resolver?: () => Promise<any>
   }
 }
 

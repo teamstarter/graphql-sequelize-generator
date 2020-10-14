@@ -1,15 +1,20 @@
 import { GraphQLObjectType, GraphQLInt } from 'graphql'
 import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
-import { graphqlSchemaDeclarationType } from '../allTypes'
+import {
+  GlobalPreCallback,
+  graphqlSchemaDeclarationType,
+  OutputTypes,
+  SequelizeModels
+} from '../allTypes'
 
 import generateCountResolver from './countResolver'
 import generateListResolver from './listResolver'
 
 function getModelsFields(
   allSchemaDeclarations: graphqlSchemaDeclarationType,
-  outputTypes: any,
-  models: any,
-  globalPreCallback: any
+  outputTypes: OutputTypes,
+  models: SequelizeModels,
+  globalPreCallback: GlobalPreCallback
 ) {
   return Object.keys(outputTypes).reduce((fields, modelTypeName) => {
     const modelType = outputTypes[modelTypeName]
