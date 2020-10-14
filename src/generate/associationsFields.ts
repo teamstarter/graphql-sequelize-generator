@@ -3,11 +3,18 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLType,
-  GraphQLScalarType
+  GraphQLScalarType,
+  GraphQLObjectType
 } from 'graphql'
 import { attributeFields } from 'graphql-sequelize'
 import createResolver from '../createResolver'
 import _debug from 'debug'
+import {
+  GlobalPreCallback,
+  graphqlSchemaDeclarationType,
+  OutputTypes,
+  SequelizeModels
+} from '../allTypes'
 
 const debug = _debug('gsg')
 
@@ -99,23 +106,23 @@ export function generateAssociationsFields(associations: string[], types: any) {
 }
 
 export function injectAssociations(
-  modelGraphQLType: any,
-  graphqlSchemaDeclaration: any,
-  outputTypes: any,
-  models: any,
-  globalPreCallback: any,
+  modelGraphQLType: GraphQLObjectType,
+  graphqlSchemaDeclaration: graphqlSchemaDeclarationType,
+  outputTypes: OutputTypes,
+  models: SequelizeModels,
+  globalPreCallback: GlobalPreCallback,
   proxyModelName = null
-): GraphQLType {
+): GraphQLObjectType {
   const modelName = proxyModelName || modelGraphQLType.name
   if (Object.keys(modelName).length === 0) {
     throw new Error(
       'Associations cannot be injected if no models were provided.'
     )
   }
-
+  // @ts-ignore
   outputTypes[modelName].associationsInjected = true
 
-  const associations = models[modelName].associations
+  const associations: any = models[modelName].associations
   if (Object.keys(associations).length === 0) {
     return modelGraphQLType
   }
@@ -165,14 +172,14 @@ export function injectAssociations(
   // make sure to not call injectAssociations in the middle of the fields definitions generation.
   // The model Types must already be generated.
   const defaultFields = modelGraphQLType.getFields()
+  // This is a hack as typscript cannot check it properly when in the if statement.
+  const excludedFields = graphqlSchemaDeclaration[modelName].excludeFields || []
+
   // The default fields needs to be filtered as attributeFields will
   // not contain the fields that are not defined in the models files.
   const fields = Object.keys(defaultFields).reduce(
     (acc: any, field: string) => {
-      if (
-        !graphqlSchemaDeclaration[modelName].excludeFields ||
-        !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
-      ) {
+      if (!excludedFields.includes(field)) {
         acc[field] = defaultFields[field]
       }
       return acc
@@ -181,10 +188,7 @@ export function injectAssociations(
   )
 
   for (const field in baseFields) {
-    if (
-      !graphqlSchemaDeclaration[modelName].excludeFields ||
-      !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
-    ) {
+    if (!excludedFields.includes(field)) {
       fields[field] = {
         name: field,
         isDeprecated: false,
@@ -196,14 +200,15 @@ export function injectAssociations(
 
   for (const field in associationsFields) {
     // One can also exclude generated field
-    if (
-      !graphqlSchemaDeclaration[modelName].excludeFields ||
-      !graphqlSchemaDeclaration[modelName].excludeFields.includes(field)
-    ) {
+
+    if (!excludedFields.includes(field)) {
       fields[field] = associationsFields[field]
     }
   }
 
+  // Due to the lack of API on the Graphql object we have to overwrite a private field
+  // as this action is not needed by the users of the lib, we just "Hide it under the rug".
+  // @ts-ignore
   modelGraphQLType._fields = fields
 
   return modelGraphQLType

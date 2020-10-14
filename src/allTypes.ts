@@ -9,6 +9,9 @@ import {
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
 export type ActionList = Array<Action>
 
+export type Subscription = 'create' | 'delete' | 'update'
+export type SubscriptionList = Array<Subscription>
+
 export type SequelizeModel = typeof Model & {
   new (values?: object, options?: BuildOptions): any
 }
@@ -116,8 +119,10 @@ export type graphqlSchemaDeclarationType = {
 export type modelDeclarationType = {
   model: SequelizeModel
   actions?: ActionList
+  subscriptions?: SubscriptionList
   additionalMutations?: MutationList
   excludeFromRoot?: boolean
+  excludeFields?: string[]
   before?: GlobalBeforeHook[]
   list?: {
     before?: QueryBeforeHook

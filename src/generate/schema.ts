@@ -1,10 +1,10 @@
+import { GraphQLSchemaConfig } from 'graphql'
+import { PubSub } from 'graphql-subscriptions'
+
 import generateQueryRootResolver from './rootQueryResolver'
 import generateSubscriptions from './subscriptions'
 import generateMutation from './mutation'
-import { PubSub } from 'graphql-subscriptions'
-
 import type {GlobalPreCallback, graphqlSchemaDeclarationType, MutationList, SequelizeModels, Types} from '../allTypes'
-import { GraphQLSchemaConfig } from 'graphql'
 
 export default function generateSchema({
   graphqlSchemaDeclaration,

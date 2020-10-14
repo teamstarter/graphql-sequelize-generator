@@ -1,4 +1,5 @@
 import { simplifyAST } from 'graphql-sequelize'
+import { FindOptions, Info, SequelizeModel, SequelizeModels } from './allTypes'
 
 /**
  * This functions returns the findOptions for a findAll/One with only the attributes required in the info.
@@ -9,10 +10,10 @@ import { simplifyAST } from 'graphql-sequelize'
  * @param {Array<string>} keep An array of all the attributes to keep
  */
 export default function removeUnusedAttributes(
-  findOptions: any,
-  info: any,
-  currentModel: any,
-  models: any,
+  findOptions: FindOptions,
+  info: Info,
+  currentModel: SequelizeModel,
+  models: SequelizeModels,
   keep = []
 ) {
   const { fieldNodes } = info
@@ -50,7 +51,8 @@ export default function removeUnusedAttributes(
     if (Object.keys(ast.fields[attribute].fields).length > 0) {
       // If the field is an entity we check if we find the association
       if (models[currentModel.name].associations[attribute]) {
-        const association = models[currentModel.name].associations[attribute]
+        const association: any =
+          models[currentModel.name].associations[attribute]
         // If so we add the foreignKey to the list of fields to fetch.
         // Without it the sub-entities will not be fetched
         if (
