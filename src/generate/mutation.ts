@@ -4,6 +4,7 @@ import { GraphQLInputObjectType, GraphQLObjectType } from 'graphql'
 import generateMutationCreate from './mutationCreateResolver'
 import generateMutationDelete from './mutationDeleteResolver'
 import generateMutationUpdate from './mutationUpdateResolver'
+import { InputTypes, OutputTypes } from '../allTypes'
 
 function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
   const wrappedMutations: any = {}
@@ -32,8 +33,8 @@ function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
 
 export default function generateMutation(
   graphqlSchemaDeclaration: any,
-  inputTypes: { [key: string]: GraphQLInputObjectType },
-  outputTypes: { [key: string]: GraphQLObjectType },
+  inputTypes: InputTypes,
+  outputTypes: OutputTypes,
   models: any,
   globalPreCallback: any,
   customMutations = {},

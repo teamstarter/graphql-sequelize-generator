@@ -1,4 +1,10 @@
 import { Model, Sequelize, BuildOptions } from 'sequelize/types'
+import {
+  GraphQLScalarType,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLInputObjectType
+} from 'graphql'
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
 export type ActionList = Array<Action>
@@ -11,7 +17,10 @@ export type Args = any
 
 export type Context = any
 
-export type OutputType = any
+export type Types = {
+  inputTypes: InputTypes
+  outputTypes: OutputTypes
+}
 
 export type Info = any
 
@@ -22,10 +31,12 @@ export type Where = any
 export type FindOptions = any
 
 export type OutputTypes = {
-  [key: string]: OutputType
+  [key: string]: GraphQLObjectType
 }
 
-import { GraphQLScalarType, GraphQLNonNull } from 'graphql'
+export type InputTypes = {
+  [key: string]: GraphQLInputObjectType
+}
 
 export type EnpointArg = {
   type: GraphQLScalarType | GraphQLNonNull<any>
@@ -41,7 +52,7 @@ export type CustomResolver = (
 ) => Promise<any>
 
 export type CustomMutationConfiguration = {
-  type: OutputType
+  type: GraphQLObjectType
   description?: string
   args: EndpointArgs
   resolve: CustomResolver
@@ -118,3 +129,7 @@ export type modelDeclarationType = {
     after?: DeleteAfterHook
   }
 }
+
+export type SequelizeModels = { [key: string]: SequelizeModel }
+
+export type GlobalPreCallback = (name: string) => Function | null
