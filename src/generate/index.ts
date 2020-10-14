@@ -6,10 +6,10 @@ import generateModelTypes from './modelTypes'
 import generateGraphQLType from './graphQLType'
 import generateSchema from './schema'
 import generateApolloServer from './generateApolloServer'
-const {
+import {
   injectAssociations,
   generateAssociationsFields
-} = require('./associationsFields')
+} from './associationsFields'
 
 export {
   generateModelTypes,

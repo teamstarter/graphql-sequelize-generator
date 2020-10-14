@@ -12,9 +12,7 @@ import { GraphQLInt, GraphQLNonNull } from 'graphql'
  * @param {PubSub} pubSubInstance
  */
 export default function generateMutationDelete(
-  modelName: any,
-  inputType: any,
-  outputType: any,
+  modelName: string,
   graphqlModelDeclaration: any,
   models: any,
   globalPreCallback: any,

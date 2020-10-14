@@ -1,5 +1,5 @@
-const { withFilter } = require('graphql-subscriptions')
-const { GraphQLInt, GraphQLObjectType } = require('graphql')
+import { GraphQLInt, GraphQLObjectType } from 'graphql'
+import { PubSub, withFilter } from 'graphql-subscriptions'
 
 const availableActions = ['create', 'update', 'delete']
 
@@ -10,8 +10,8 @@ function capitalizeFirstLetter(string: any) {
 export default function generateSubscriptions(
   graphqlSchemaDeclaration: any,
   types: any,
-  pubSubInstance: any
-) {
+  pubSubInstance: PubSub
+): GraphQLObjectType | undefined {
   const fields = Object.keys(types.inputTypes).reduce(
     (subscriptions: any, modelName: string) => {
       const outputType = types.outputTypes[modelName]

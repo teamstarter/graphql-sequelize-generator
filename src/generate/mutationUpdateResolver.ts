@@ -1,5 +1,9 @@
 import { PubSub } from 'graphql-subscriptions'
-import { GraphQLNonNull } from 'graphql'
+import {
+  GraphQLInputObjectType,
+  GraphQLNonNull,
+  GraphQLObjectType
+} from 'graphql'
 
 /**
  * Generates a update mutation operation
@@ -13,10 +17,9 @@ import { GraphQLNonNull } from 'graphql'
  * @param {PubSub} pubSubInstance
  */
 export default function generateMutationUpdate(
-  modelName: any,
-  inputType: any,
-  outputType: any,
-  model: any,
+  modelName: string,
+  inputType: GraphQLInputObjectType,
+  outputType: GraphQLObjectType,
   graphqlModelDeclaration: any,
   models: any,
   globalPreCallback: any,

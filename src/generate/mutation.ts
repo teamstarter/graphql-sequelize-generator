@@ -1,4 +1,5 @@
-import { GraphQLObjectType } from 'graphql'
+import { PubSub } from 'graphql-subscriptions'
+import { GraphQLInputObjectType, GraphQLObjectType } from 'graphql'
 
 import generateMutationCreate from './mutationCreateResolver'
 import generateMutationDelete from './mutationDeleteResolver'
@@ -31,12 +32,12 @@ function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
 
 export default function generateMutation(
   graphqlSchemaDeclaration: any,
-  inputTypes: any,
-  outputTypes: any,
+  inputTypes: { [key: string]: GraphQLInputObjectType },
+  outputTypes: { [key: string]: GraphQLObjectType },
   models: any,
   globalPreCallback: any,
   customMutations = {},
-  pubSubInstance = null
+  pubSubInstance: PubSub | null = new PubSub()
 ) {
   const fields = Object.keys(inputTypes).reduce(
     (mutations: any, modelName: string) => {
@@ -77,7 +78,6 @@ export default function generateMutation(
                 modelName,
                 inputType,
                 outputType,
-                model,
                 graphqlSchemaDeclaration[modelName],
                 models,
                 globalPreCallback,
@@ -91,8 +91,6 @@ export default function generateMutation(
             ? graphqlSchemaDeclaration[modelName].delete
             : generateMutationDelete(
                 modelName,
-                inputType,
-                outputType,
                 graphqlSchemaDeclaration[modelName],
                 models,
                 globalPreCallback,

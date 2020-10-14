@@ -1,11 +1,12 @@
 import { GraphQLObjectType, GraphQLInt } from 'graphql'
 import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
+import { graphqlSchemaDeclarationType } from '../allTypes'
 
 import generateCountResolver from './countResolver'
 import generateListResolver from './listResolver'
 
 function getModelsFields(
-  allSchemaDeclarations: any,
+  allSchemaDeclarations: graphqlSchemaDeclarationType,
   outputTypes: any,
   models: any,
   globalPreCallback: any
@@ -31,13 +32,13 @@ function getModelsFields(
     }
 
     let result =
+      schemaDeclaration.actions &&
       schemaDeclaration.actions.indexOf('count') > -1
         ? {
             ...fields,
             // LIST RESOLVER
             [modelType.name]: generateListResolver(
               modelType,
-              modelTypeName,
               allSchemaDeclarations,
               outputTypes,
               models,
@@ -62,7 +63,6 @@ function getModelsFields(
             // LIST RESOLVER
             [modelType.name]: generateListResolver(
               modelType,
-              modelTypeName,
               allSchemaDeclarations,
               outputTypes,
               models,
@@ -103,7 +103,7 @@ function getCustomEndpoints(
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
 export default function generateQueryRootResolver(
-  allSchemaDeclarations: any,
+  allSchemaDeclarations: graphqlSchemaDeclarationType,
   outputTypes: any,
   models: any,
   globalPreCallback: any

@@ -1,4 +1,4 @@
-import { GraphQLList } from 'graphql'
+import { GraphQLList, GraphQLType } from 'graphql'
 import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
 
 import createResolver from '../createResolver'
@@ -12,12 +12,15 @@ import { injectAssociations } from './associationsFields'
  */
 export default function generateListResolver(
   modelType: any,
-  modelTypeName: any,
   allSchemaDeclarations: any,
   outputTypes: any,
   models: any,
   globalPreCallback: any
-) {
+): {
+  type: GraphQLList<GraphQLType>
+  args: any
+  resolve: any
+} {
   const schemaDeclaration = allSchemaDeclarations[modelType.name]
 
   if (!schemaDeclaration.model) {

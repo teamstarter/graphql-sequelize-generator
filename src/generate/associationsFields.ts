@@ -1,18 +1,34 @@
-import { GraphQLList, GraphQLString, GraphQLInt } from 'graphql'
+import {
+  GraphQLList,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLType,
+  GraphQLScalarType
+} from 'graphql'
 import { attributeFields } from 'graphql-sequelize'
 import createResolver from '../createResolver'
 import _debug from 'debug'
 
 const debug = _debug('gsg')
 
-const generateAssociationField = (
+function generateAssociationField(
   relation: any,
   types: any,
-  graphqlSchemaDeclaration: any,
-  models: any,
-  globalPreCallback: any,
+  graphqlSchemaDeclaration?: any,
+  models?: any,
+  globalPreCallback?: any,
   resolver = null
-) => {
+): {
+  type: GraphQLList<GraphQLType>
+  isDeprecated: boolean
+  associationsInjected: boolean
+  name: string
+  args: {
+    name: string
+    type: GraphQLScalarType
+  }[]
+  resolve?: any
+} {
   const newBaseType =
     graphqlSchemaDeclaration &&
     !types[relation.target.name].associationsInjected
@@ -71,10 +87,9 @@ const generateAssociationField = (
  * @param {*} associations A collection of sequelize associations
  * @param {*} types Existing `GraphQLObjectType` types, created from all the Sequelize models
  */
-export const generateAssociationsFields = (associations: any, types: any) => {
-  const fields = {}
+export function generateAssociationsFields(associations: string[], types: any) {
+  const fields: { [key: string]: any } = {}
   for (const associationName in associations) {
-    // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
     fields[associationName] = generateAssociationField(
       associations[associationName],
       types
@@ -83,14 +98,14 @@ export const generateAssociationsFields = (associations: any, types: any) => {
   return fields
 }
 
-export const injectAssociations = (
+export function injectAssociations(
   modelGraphQLType: any,
   graphqlSchemaDeclaration: any,
   outputTypes: any,
   models: any,
   globalPreCallback: any,
   proxyModelName = null
-) => {
+): GraphQLType {
   const modelName = proxyModelName || modelGraphQLType.name
   if (Object.keys(modelName).length === 0) {
     throw new Error(

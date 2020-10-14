@@ -2,6 +2,8 @@ import generateQueryRootResolver from './rootQueryResolver'
 import generateSubscriptions from './subscriptions'
 import generateMutation from './mutation'
 
+import type {graphqlSchemaDeclarationType} from '../allTypes'
+
 export default function generateSchema({
   graphqlSchemaDeclaration,
   types,
@@ -9,7 +11,14 @@ export default function generateSchema({
   customMutations,
   globalPreCallback = () => null,
   pubSubInstance
-}: any) {
+}: {
+  graphqlSchemaDeclaration: graphqlSchemaDeclarationType
+  types: any
+  models: any
+  customMutations: any
+  globalPreCallback?: any
+  pubSubInstance: any
+}) {
   const mutationExists =
     !!customMutations ||
     Object.values(graphqlSchemaDeclaration).some((type: any) => {

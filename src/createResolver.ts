@@ -1,13 +1,7 @@
 import { resolver } from 'graphql-sequelize'
 import removeUnusedAttributes from './removeUnusedAttributes'
 
-const allowOrderOnAssociations = (
-  findOptions: any,
-  args: any,
-  context: any,
-  info: any,
-  model: any
-) => {
+function allowOrderOnAssociations(findOptions: any, model: any) {
   if (typeof findOptions.order === 'undefined') {
     return findOptions
   }
@@ -115,13 +109,7 @@ const argsAdvancedProcessing = (
   model: any,
   models: any
 ) => {
-  findOptions = allowOrderOnAssociations(
-    findOptions,
-    args,
-    context,
-    info,
-    model
-  )
+  findOptions = allowOrderOnAssociations(findOptions, model)
 
   // When an association uses a scope, we have to add it to the where condition by default.
   if (
