@@ -1,5 +1,6 @@
 import { simplifyAST } from 'graphql-sequelize'
-import { FindOptions, Info, SequelizeModel, SequelizeModels } from './allTypes'
+import { FindOptions } from 'sequelize/types'
+import { SequelizeModel, SequelizeModels, TInfo } from './allTypes'
 
 /**
  * This functions returns the findOptions for a findAll/One with only the attributes required in the info.
@@ -11,11 +12,11 @@ import { FindOptions, Info, SequelizeModel, SequelizeModels } from './allTypes'
  */
 export default function removeUnusedAttributes(
   findOptions: FindOptions,
-  info: Info,
+  info: TInfo,
   currentModel: SequelizeModel,
   models: SequelizeModels,
   keep = []
-) {
+): FindOptions {
   const { fieldNodes } = info
   if (!fieldNodes) {
     return findOptions

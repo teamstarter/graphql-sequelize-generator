@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "@types/debug": "^4.1.5",
+    "@types/express-serve-static-core": "^4.17.13",
     "apollo-server-express": "2.15.1",
     "debug": "^4.1.1",
     "graphql-subscriptions": "^1.1.0",
@@ -69,5 +70,8 @@
   "jest": {
     "verbose": true,
     "testURL": "http://localhost/"
+  },
+  "resolutions": {
+    "@types/express-serve-static-core": "^4.17.13"
   }
 }

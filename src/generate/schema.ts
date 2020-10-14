@@ -19,7 +19,7 @@ export default function generateSchema({
   models: SequelizeModels
   customMutations: MutationList
   globalPreCallback?: GlobalPreCallback
-  pubSubInstance: PubSub
+  pubSubInstance: PubSub | null
 }): GraphQLSchemaConfig {
   const mutationExists =
     !!customMutations ||

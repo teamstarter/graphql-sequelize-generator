@@ -1,6 +1,14 @@
 import { GraphQLSchema } from 'graphql'
-const { ApolloServer } = require('apollo-server-express')
+import { PubSub } from 'graphql-subscriptions'
+import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
 
+import {
+  GlobalPreCallback,
+  graphqlSchemaDeclarationType,
+  MutationList,
+  SequelizeModels,
+  Types
+} from '../allTypes'
 import generateSchema from './schema'
 
 export default function generateApolloServer({
@@ -11,7 +19,15 @@ export default function generateApolloServer({
   apolloServerOptions = {},
   pubSubInstance = null,
   globalPreCallback = () => null
-}: any) {
+}: {
+  graphqlSchemaDeclaration: graphqlSchemaDeclarationType
+  customMutations: MutationList
+  types: Types
+  models: SequelizeModels
+  apolloServerOptions: ApolloServerExpressConfig
+  pubSubInstance: PubSub | null
+  globalPreCallback: GlobalPreCallback
+}): ApolloServer {
   const graphqlSchema = new GraphQLSchema(
     generateSchema({
       graphqlSchemaDeclaration,

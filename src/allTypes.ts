@@ -1,10 +1,12 @@
-import { Model, Sequelize, BuildOptions } from 'sequelize/types'
+import { Model, Sequelize, BuildOptions, FindOptions } from 'sequelize/types'
 import {
   GraphQLScalarType,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLInputObjectType,
-  GraphQLType
+  GraphQLType,
+  GraphQLFieldConfig,
+  GraphQLFieldResolver
 } from 'graphql'
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
@@ -17,11 +19,12 @@ export type SequelizeModel = typeof Model & {
   new (values?: object, options?: BuildOptions): any
 }
 
-export type Args = any
-
 export type ExtraArg = { [key: string]: { type: GraphQLType } }
 
-export type Context = any
+export type TSource = any
+export type TArgs = { [key: string]: any }
+export type TContext = any
+export type TInfo = any
 
 export type Payload = any
 
@@ -30,15 +33,11 @@ export type Types = {
   outputTypes: OutputTypes
 }
 
-export type Info = any
-
 export type EntityProperties = any
 
 export type ListResult = any[]
 
 export type Where = any
-
-export type FindOptions = any
 
 export type OutputTypes = {
   [key: string]: GraphQLObjectType
@@ -57,8 +56,8 @@ export type EndpointArgs = {
 
 export type CustomResolver = (
   source: any,
-  args: Args,
-  context: Context
+  args: TArgs,
+  context: TContext
 ) => Promise<any>
 
 export type CustomMutationConfiguration = {
@@ -76,7 +75,7 @@ export type CustomSubscriptionConfiguration = {
   type: GraphQLObjectType
   description?: string
   args: EndpointArgs
-  resolve: CustomResolver
+  subcribe: GraphQLFieldResolver<TSource, TContext, TArgs>
 }
 
 export type SubscriptionList = {
@@ -84,66 +83,66 @@ export type SubscriptionList = {
 }
 
 export type GlobalBeforeHook = (
-  args: Args,
-  context: Context,
-  info: Info
+  args: TArgs,
+  context: TContext,
+  info: TInfo
 ) => void
 export type QueryBeforeHook = (
   findOptions: FindOptions,
-  args: Args,
-  context: Context,
-  info: Info
+  args: TArgs,
+  context: TContext,
+  info: TInfo
 ) => FindOptions
 export type ListAfterHook = (
   result: ListResult,
-  args: Args,
-  context: Context,
-  info: Info
+  args: TArgs,
+  context: TContext,
+  info: TInfo
 ) => ListResult
 export type MutationBeforeHook = (
   findOptions: FindOptions,
-  args: Args,
-  context: Context,
-  info: Info
+  args: TArgs,
+  context: TContext,
+  info: TInfo
 ) => EntityProperties
 export type CreateAfterHook = (
   newEntity: any,
   source: any,
-  args: Args,
-  context: Context,
-  info: Info
+  args: TArgs,
+  context: TContext,
+  info: TInfo
 ) => any
 export type UpdateAfterHook = (
   newEntity: any,
   entitySnapshotBeforeUpdate: any,
   source: any,
-  args: Args,
-  context: Context,
-  info: Info
+  args: TArgs,
+  context: TContext,
+  info: TInfo
 ) => any
 export type DeleteBeforeHook = (
   where: Where,
   findOptions: FindOptions,
-  args: Args,
-  context: Context,
-  info: Info
+  args: TArgs,
+  context: TContext,
+  info: TInfo
 ) => Where
 export type DeleteAfterHook = (
   oldEntitySnapshot: any,
   source: any,
-  args: Args,
-  context: Context,
-  info: Info
+  args: TArgs,
+  context: TContext,
+  info: TInfo
 ) => any
 
 export type SubscriptionFilterHook = (
   payload: Payload,
-  args: Args,
-  context: Context
+  args: TArgs,
+  context: TContext
 ) => boolean
 
 export type graphqlSchemaDeclarationType = {
-  [key: string]: modelDeclarationType
+  [key: string]: modelDeclarationType | GraphQLFieldConfig<any, any, any>
 }
 
 export type modelDeclarationType = {
@@ -160,6 +159,7 @@ export type modelDeclarationType = {
     extraArg?: ExtraArg
     before?: QueryBeforeHook
     after?: ListAfterHook
+    resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
   }
   create?: {
     extraArg?: ExtraArg
@@ -182,7 +182,7 @@ export type modelDeclarationType = {
   count?: {
     extraArg?: ExtraArg
     before?: QueryBeforeHook
-    resolver?: () => Promise<any>
+    resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
   }
 }
 

@@ -12,6 +12,7 @@ import _debug from 'debug'
 import {
   GlobalPreCallback,
   graphqlSchemaDeclarationType,
+  modelDeclarationType,
   OutputTypes,
   SequelizeModels
 } from '../allTypes'
@@ -154,10 +155,13 @@ export function injectAssociations(
   // We cannot return a new type as the type may have already been used
   // In previous models.
   let baseFields: any = {}
-  if (typeof graphqlSchemaDeclaration[modelName] !== 'undefined') {
-    baseFields = attributeFields(graphqlSchemaDeclaration[modelName].model, {
+  const modelDefinition = <modelDeclarationType>(
+    graphqlSchemaDeclaration[modelName]
+  )
+  if (typeof modelDefinition !== 'undefined') {
+    baseFields = attributeFields(modelDefinition.model, {
       allowNull: false,
-      exclude: graphqlSchemaDeclaration[modelName].excludeFields
+      exclude: modelDefinition.excludeFields
     })
   }
 
@@ -173,7 +177,7 @@ export function injectAssociations(
   // The model Types must already be generated.
   const defaultFields = modelGraphQLType.getFields()
   // This is a hack as typscript cannot check it properly when in the if statement.
-  const excludedFields = graphqlSchemaDeclaration[modelName].excludeFields || []
+  const excludedFields = modelDefinition.excludeFields || []
 
   // The default fields needs to be filtered as attributeFields will
   // not contain the fields that are not defined in the models files.
