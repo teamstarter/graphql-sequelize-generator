@@ -149,7 +149,7 @@ Array [
         "line": 3,
       },
     ],
-    "message": "Cannot query field \\"companySetting\\" on type \\"Root_Query\\". Did you mean \\"companyCount\\", \\"companyType\\", \\"company\\", or \\"companyTypeCount\\"?",
+    "message": "Cannot query field \\"companySetting\\" on type \\"Root_Query\\". Did you mean \\"companyType\\" or \\"company\\"?",
   },
 ]
 `;

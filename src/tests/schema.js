@@ -17,7 +17,7 @@ const {
   generateSchema,
   generateModelTypes,
   injectAssociations
-} = require('./../generate')
+} = require('./../../lib/generate')
 const models = require('./models')
 
 // If you want to enable the dataloader everywhere, you can do this:
