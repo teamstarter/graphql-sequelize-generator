@@ -21,12 +21,12 @@ export default function generateApolloServer({
   globalPreCallback = () => null
 }: {
   graphqlSchemaDeclaration: graphqlSchemaDeclarationType
-  customMutations: MutationList
   types: Types
   models: SequelizeModels
-  apolloServerOptions: ApolloServerExpressConfig
-  pubSubInstance: PubSub | null
-  globalPreCallback: GlobalPreCallback
+  customMutations?: MutationList
+  apolloServerOptions?: ApolloServerExpressConfig
+  pubSubInstance?: PubSub | null
+  globalPreCallback?: GlobalPreCallback
 }): ApolloServer {
   const graphqlSchema = new GraphQLSchema(
     generateSchema({

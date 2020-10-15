@@ -22,7 +22,7 @@ export default function generateMutationCreate(
   model: any,
   graphqlModelDeclaration: any,
   globalPreCallback: any,
-  pubSubInstance: PubSub | null = new PubSub()
+  pubSubInstance: PubSub | null = null
 ) {
   return {
     type: outputType, // what is returned by resolve, must be of type GraphQLObjectType

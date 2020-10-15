@@ -16,7 +16,7 @@ export default function generateMutationDelete(
   graphqlModelDeclaration: any,
   models: any,
   globalPreCallback: any,
-  pubSubInstance: PubSub | null = new PubSub()
+  pubSubInstance: PubSub | null = null
 ) {
   return {
     type: GraphQLInt,

@@ -23,7 +23,7 @@ export default function generateMutationUpdate(
   graphqlModelDeclaration: any,
   models: any,
   globalPreCallback: any,
-  pubSubInstance: PubSub | null = new PubSub()
+  pubSubInstance: PubSub | null = null
 ) {
   return {
     type: outputType,

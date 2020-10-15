@@ -38,7 +38,7 @@ export default function generateMutation(
   models: any,
   globalPreCallback: any,
   customMutations = {},
-  pubSubInstance: PubSub | null = new PubSub()
+  pubSubInstance: PubSub | null = null
 ) {
   const fields = Object.keys(inputTypes).reduce(
     (mutations: any, modelName: string) => {
