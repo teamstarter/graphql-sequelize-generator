@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.0.0...v7.1.0) (2020-10-15)
+
+
+### Bug Fixes
+
+* **delete:** Add the missing extra args option on the delete resolver. ([53dc5a6](https://github.com/teamstarter/graphql-sequelize-generator/commit/53dc5a6))
+
+
+### Features
+
+* **API:** Move to Typescript ([498cffa](https://github.com/teamstarter/graphql-sequelize-generator/commit/498cffa))
+
+
+
 ## [7.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v6.1.0...v7.0.0) (2020-09-22)
 
 
