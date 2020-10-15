@@ -10,7 +10,7 @@
     "express"
   ],
   "main": "./lib/index.js",
-  "types": "./types.d.ts",
+  "types": "./src/index.d.ts",
   "repository": "git@github.com:teamstarter/graphql-sequelize-generator.git",
   "author": "vincent desmares <vincent.desmares@gmail.com>",
   "license": "BSD-3-Clause",

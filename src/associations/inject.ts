@@ -20,7 +20,7 @@ export default function injectAssociations(
   outputTypes: OutputTypes,
   models: SequelizeModels,
   globalPreCallback: GlobalPreCallback,
-  proxyModelName = null
+  proxyModelName: string | null = null
 ): GraphQLObjectType {
   const modelName = proxyModelName || modelGraphQLType.name
   if (Object.keys(modelName).length === 0) {

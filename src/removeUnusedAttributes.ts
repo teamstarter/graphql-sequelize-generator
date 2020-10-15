@@ -15,7 +15,7 @@ export default function removeUnusedAttributes(
   info: TInfo,
   currentModel: SequelizeModel,
   models: SequelizeModels,
-  keep = []
+  keep: Array<string> = []
 ): FindOptions {
   const { fieldNodes } = info
   if (!fieldNodes) {
