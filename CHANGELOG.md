@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v6.1.0...v7.0.0) (2020-09-22)
+
+
+* Allow schema without mutations (#18) ([1b0238b](https://github.com/teamstarter/graphql-sequelize-generator/commit/1b0238b)), closes [#18](https://github.com/teamstarter/graphql-sequelize-generator/issues/18) [#13](https://github.com/teamstarter/graphql-sequelize-generator/issues/13)
+
+
+### BREAKING CHANGES
+
+* Upgrade many libraries.
+
+
+
 ## [6.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v6.0.1...v6.1.0) (2020-07-24)
 
 
