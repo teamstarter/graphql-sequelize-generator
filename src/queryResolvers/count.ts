@@ -3,7 +3,7 @@ import {
   GlobalPreCallback,
   modelDeclarationType,
   SequelizeModel
-} from '../allTypes'
+} from '../types/allTypes'
 
 export default function countResolver(
   model: SequelizeModel,

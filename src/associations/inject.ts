@@ -1,112 +1,20 @@
-import {
-  GraphQLList,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLType,
-  GraphQLScalarType,
-  GraphQLObjectType
-} from 'graphql'
-import { attributeFields } from 'graphql-sequelize'
-import createResolver from '../createResolver'
 import _debug from 'debug'
+import { GraphQLObjectType } from 'graphql'
+import { attributeFields } from 'graphql-sequelize'
+
 import {
   GlobalPreCallback,
   graphqlSchemaDeclarationType,
   modelDeclarationType,
   OutputTypes,
   SequelizeModels
-} from '../allTypes'
+} from '../types/allTypes'
+import createResolver from '../createResolver'
+import generateAssociationField from './field'
 
 const debug = _debug('gsg')
 
-function generateAssociationField(
-  relation: any,
-  types: any,
-  graphqlSchemaDeclaration?: any,
-  models?: any,
-  globalPreCallback?: any,
-  resolver = null
-): {
-  type: GraphQLList<GraphQLType>
-  isDeprecated: boolean
-  associationsInjected: boolean
-  name: string
-  args: {
-    name: string
-    type: GraphQLScalarType
-  }[]
-  resolve?: any
-} {
-  const newBaseType =
-    graphqlSchemaDeclaration &&
-    !types[relation.target.name].associationsInjected
-      ? injectAssociations(
-          types[relation.target.name],
-          graphqlSchemaDeclaration,
-          types,
-          models,
-          globalPreCallback
-        )
-      : types[relation.target.name]
-
-  const type =
-    relation.associationType === 'BelongsToMany' ||
-    relation.associationType === 'HasMany'
-      ? new GraphQLList(newBaseType)
-      : newBaseType
-
-  const field = {
-    type,
-    isDeprecated: false,
-    associationsInjected: true,
-    name: relation.as,
-    args: [
-      {
-        // An arg with the key order will automatically be converted to a order on the target
-        name: 'order',
-        type: GraphQLString
-      }
-    ]
-  }
-
-  if (relation.associationType === 'HasMany') {
-    // Limit and offset will only work for HasMany relation ship
-    // Having the limit on the include will trigger a "Only HasMany associations support include.separate" error.
-    // While sequelize N:M associations are not supported with hasMany. So BelongsToMany relationships
-    // cannot be limited in a subquery. If you want to query them, make a custom resolver, or create a view.
-    field.args.push({ name: 'limit', type: GraphQLInt })
-    field.args.push({ name: 'offset', type: GraphQLInt })
-  }
-
-  if (resolver) {
-    // @ts-ignore
-    field.resolve = resolver
-  }
-
-  return field
-}
-
-/**
- * Returns the association fields of an entity.
- *
- * It iterates over all the associations and produces an object compatible with GraphQL-js.
- * BelongsToMany and HasMany associations are represented as a `GraphQLList` whereas a BelongTo
- * is simply an instance of a type.
- * @param {*} associations A collection of sequelize associations
- * @param {*} types Existing `GraphQLObjectType` types, created from all the Sequelize models
- */
-export function generateAssociationsFields(associations: string[], types: any) {
-  const fields: { [key: string]: any } = {}
-  for (const associationName in associations) {
-    fields[associationName] = generateAssociationField(
-      associations[associationName],
-      types
-    )
-  }
-  return fields
-}
-
-export function injectAssociations(
+export default function injectAssociations(
   modelGraphQLType: GraphQLObjectType,
   graphqlSchemaDeclaration: graphqlSchemaDeclarationType,
   outputTypes: OutputTypes,

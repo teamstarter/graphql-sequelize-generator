@@ -6,10 +6,10 @@ import {
   modelDeclarationType,
   OutputTypes,
   SequelizeModels
-} from '../allTypes'
+} from '../types/allTypes'
 
-import generateCountResolver from './countResolver'
-import generateListResolver from './listResolver'
+import generateCountResolver from '../queryResolvers/count'
+import generateListResolver from '../queryResolvers/list'
 
 function getModelsFields(
   allSchemaDeclarations: graphqlSchemaDeclarationType,

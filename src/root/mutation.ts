@@ -1,10 +1,10 @@
 import { PubSub } from 'graphql-subscriptions'
 import { GraphQLInputObjectType, GraphQLObjectType } from 'graphql'
 
-import generateMutationCreate from './mutationCreateResolver'
-import generateMutationDelete from './mutationDeleteResolver'
-import generateMutationUpdate from './mutationUpdateResolver'
-import { InputTypes, OutputTypes } from '../allTypes'
+import generateMutationCreate from '../mutationResolvers/create'
+import generateMutationDelete from '../mutationResolvers/delete'
+import generateMutationUpdate from '../mutationResolvers/update'
+import { InputTypes, OutputTypes } from '../types/allTypes'
 
 function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
   const wrappedMutations: any = {}

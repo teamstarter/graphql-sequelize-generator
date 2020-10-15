@@ -1,7 +1,7 @@
 const { GraphQLInputObjectType, GraphQLObjectType } = require('graphql')
 const { attributeFields } = require('graphql-sequelize')
 
-import { generateAssociationsFields } from './associationsFields'
+import generateAssociationsFields from '../associations/fields'
 /**
  * Returns a new `GraphQLObjectType` created from a sequelize model.
  *

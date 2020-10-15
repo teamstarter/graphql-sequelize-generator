@@ -2,7 +2,7 @@ import { GraphQLList, GraphQLType } from 'graphql'
 import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
 
 import createResolver from '../createResolver'
-import { injectAssociations } from './associationsFields'
+import injectAssociations from '../associations/inject'
 /**
  * Returns a root `GraphQLObjectType` used as query for `GraphQLSchema`.
  *

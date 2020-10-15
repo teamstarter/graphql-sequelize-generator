@@ -1,12 +1,9 @@
-import {
-  generateApolloServer,
-  generateSchema,
-  generateModelTypes,
-  injectAssociations,
-  generateCount
-} from './generate'
-
+import injectAssociations from './associations/inject'
+import generateApolloServer from './generateApolloServer'
 import removeUnusedAttributes from './removeUnusedAttributes'
+import generateSchema from './schema'
+import generateModelTypes from './generateTypes/modelTypes'
+import generateCount from './queryResolvers/count'
 
 export {
   // Functions to help generating a schema

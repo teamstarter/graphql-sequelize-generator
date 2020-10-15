@@ -1,6 +1,6 @@
 import { simplifyAST } from 'graphql-sequelize'
 import { FindOptions } from 'sequelize/types'
-import { SequelizeModel, SequelizeModels, TInfo } from './allTypes'
+import { SequelizeModel, SequelizeModels, TInfo } from './types/allTypes'
 
 /**
  * This functions returns the findOptions for a findAll/One with only the attributes required in the info.
