@@ -2,7 +2,12 @@
 // We disable this rule as we want to always show all the arguments of each functions
 // so that the API is easier to understand
 
-const { GraphQLObjectType, GraphQLString, GraphQLList } = require('graphql')
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLList,
+  GraphQLBoolean
+} = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
 const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
@@ -12,7 +17,7 @@ const {
   generateSchema,
   generateModelTypes,
   injectAssociations
-} = require('./../generate')
+} = require('./../../lib/generate')
 const models = require('./models')
 
 // If you want to enable the dataloader everywhere, you can do this:
@@ -119,12 +124,21 @@ graphqlSchemaDeclaration.user = {
     }
   },
   delete: {
+    extraArg: { log: { type: GraphQLBoolean } },
     before: (where, source, args, context, info) => {
       // You can restrict the creation if needed
       return where
     },
     after: async (deletedEntity, source, args, context, info) => {
       // You can log what happened here
+      if (args.log) {
+        const date = Date.now()
+        await models.log.create({
+          message: `The User id = ${args.id} was successfully deleted`,
+          createdAt: date,
+          updatedAt: date
+        })
+      }
       return deletedEntity
     }
   }
@@ -228,6 +242,11 @@ const OddUser = new GraphQLObjectType({
     handleAdditionalFields: { type: GraphQLString }
   }
 })
+
+graphqlSchemaDeclaration.log = {
+  model: models.log,
+  actions: ['list', 'create']
+}
 
 // Testing the many to many relationships
 graphqlSchemaDeclaration.tag = {

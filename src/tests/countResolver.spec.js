@@ -65,4 +65,18 @@ describe('Test the count resolvers', () => {
     expect(response.body.data).toMatchSnapshot('Users ids should only be odd.')
     expect(trace).toMatchSnapshot()
   })
+
+  it('Check that you cannot query the count resolver if it is not defined', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getLogCount {
+              logCount
+          }`
+      )
+      .set('logId', 1)
+    expect(response.body.data).toBeUndefined()
+    expect(response.error).toMatchSnapshot()
+    expect(trace).toMatchSnapshot()
+  })
 })
