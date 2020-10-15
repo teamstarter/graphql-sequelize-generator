@@ -4,7 +4,7 @@ import { GraphQLInputObjectType, GraphQLObjectType } from 'graphql'
 import generateMutationCreate from '../mutationResolvers/create'
 import generateMutationDelete from '../mutationResolvers/delete'
 import generateMutationUpdate from '../mutationResolvers/update'
-import { InputTypes, OutputTypes } from '../types/allTypes'
+import { InputTypes, OutputTypes } from '../../types'
 
 function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
   const wrappedMutations: any = {}

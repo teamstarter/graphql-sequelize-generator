@@ -8,7 +8,7 @@ import {
   modelDeclarationType,
   OutputTypes,
   SequelizeModels
-} from '../types/allTypes'
+} from '../../types'
 import createResolver from '../createResolver'
 import generateAssociationField from './field'
 

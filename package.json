@@ -10,7 +10,7 @@
     "express"
   ],
   "main": "./lib/index.js",
-  "types": "./src/types/allTypes.ts",
+  "types": "./types.d.ts",
   "repository": "git@github.com:teamstarter/graphql-sequelize-generator.git",
   "author": "vincent desmares <vincent.desmares@gmail.com>",
   "license": "BSD-3-Clause",
@@ -51,6 +51,7 @@
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
     "start": "rm -f ./src/tests/data/main.db && node ./src/tests/testServer.js",
+    "build": "tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts",
     "release": "standard-version"
   },
   "peerDependencies": {

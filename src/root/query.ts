@@ -6,7 +6,7 @@ import {
   modelDeclarationType,
   OutputTypes,
   SequelizeModels
-} from '../types/allTypes'
+} from '../../types'
 
 import generateCountResolver from '../queryResolvers/count'
 import generateListResolver from '../queryResolvers/list'

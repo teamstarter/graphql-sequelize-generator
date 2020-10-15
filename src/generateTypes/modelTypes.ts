@@ -1,9 +1,4 @@
-import {
-  InputTypes,
-  OutputTypes,
-  SequelizeModels,
-  Types
-} from '../types/allTypes'
+import { InputTypes, OutputTypes, SequelizeModels, Types } from '../../types'
 import generateGraphQLType from './graphQLType'
 
 /**

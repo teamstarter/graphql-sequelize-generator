@@ -8,7 +8,7 @@ import {
   MutationList,
   SequelizeModels,
   Types
-} from './types/allTypes'
+} from '../types'
 import generateSchema from './schema'
 
 export default function generateApolloServer({
