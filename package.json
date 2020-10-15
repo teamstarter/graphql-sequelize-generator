@@ -9,7 +9,7 @@
     "api",
     "express"
   ],
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "repository": "git@github.com:teamstarter/graphql-sequelize-generator.git",
   "author": "vincent desmares <vincent.desmares@gmail.com>",
   "license": "BSD-3-Clause",
