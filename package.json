@@ -50,7 +50,7 @@
     "test": "NODE_ENV=test DEBUG=-* PORT=8282 jest -i",
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
-    "start": "rm -f ./src/tests/data/main.db && node ./src/tests/testServer.js",
+    "start": "rm -f ./src/tests/data/main.db && DEBUG=gsg node ./src/tests/testServer.js",
     "build": "tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts",
     "release": "standard-version"
   },

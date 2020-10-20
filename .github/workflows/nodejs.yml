@@ -29,9 +29,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: yarn test
+      - name: yarn, build, test
         run: |
           yarn 
+          yarn build
           yarn test
         env:
           DEBUG: -*

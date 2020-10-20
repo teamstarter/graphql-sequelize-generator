@@ -193,7 +193,6 @@ export default function createResolver(
           findOptions.limit = graphqlTypeDeclaration.list.enforceMaxLimit
         }
       }
-
       if (graphqlTypeDeclaration.before) {
         const beforeList =
           typeof graphqlTypeDeclaration.before.length !== 'undefined'
@@ -230,6 +229,7 @@ export default function createResolver(
               models
             )
       }
+
       return graphqlTypeDeclaration.list &&
         graphqlTypeDeclaration.list.removeUnusedAttributes === false
         ? processedFindOptions

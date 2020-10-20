@@ -1,10 +1,7 @@
 const request = require('supertest')
 const express = require('express')
 const http = require('spdy')
-const {
-  generateApolloServer,
-  generateModelTypes
-} = require('./../../lib/generate')
+const { generateApolloServer, generateModelTypes } = require('./../../lib')
 
 const { deleteTables } = require('./testDatabase.js')
 const { resetDb } = require('./setupServer')
