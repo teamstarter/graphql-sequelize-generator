@@ -61,4 +61,4 @@ server.applyMiddleware({
 
 # Manual
 
-Get started with [the online documentation](https://vincent-desmares.gitbook.io/graphql-sequelize-generator/)
+Get started with [the online documentation](https://teamstarter.github.io/gsg-documentation/)
