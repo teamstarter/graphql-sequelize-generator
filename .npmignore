@@ -3,6 +3,5 @@ assets
 .prettierrc
 *.log
 .nvmrc
-.travis.yml
 src/tests
 .vscode
