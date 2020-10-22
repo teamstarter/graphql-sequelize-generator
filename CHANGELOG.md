@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.1.5...v7.2.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* **CI:** Remove travis as we now use the Github actions. ([686b042](https://github.com/teamstarter/graphql-sequelize-generator/commit/686b042))
+* **prettier:** prettier configuration for typescript ([6e35f2d](https://github.com/teamstarter/graphql-sequelize-generator/commit/6e35f2d))
+
+
+### Features
+
+* **before-hook-control:** The absence of the before hook is controlled and signaled for each resolver and each model ([9bd7b10](https://github.com/teamstarter/graphql-sequelize-generator/commit/9bd7b10))
+* **ga-tests:** created the nodejs.yml file for github actions tests ([56ef757](https://github.com/teamstarter/graphql-sequelize-generator/commit/56ef757))
+
+
+
 ### [7.1.5](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.1.4...v7.1.5) (2020-10-15)
 
 
