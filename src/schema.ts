@@ -70,7 +70,7 @@ export default function generateSchema({
     )
   }
 
-  let resolverTab: string[] = ['list', 'create', 'update', 'delete', 'count']
+  const resolverTab: string[] = ['list', 'create', 'update', 'delete', 'count']
 
   Object.keys(graphqlSchemaDeclaration).forEach((key: string) => {
     const schema: any = graphqlSchemaDeclaration[key]
