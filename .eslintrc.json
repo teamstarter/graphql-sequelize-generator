@@ -1,0 +1,55 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
+  ],
+  "env": {
+    "browser": true,
+    "node": true,
+    "jasmine": true,
+    "es6": true,
+    "jest": true
+  },
+  "plugins": ["@typescript-eslint"],
+  // Required for using import outside of top-level
+  // See https://github.com/eslint/eslint/issues/7764
+  // and https://stackoverflow.com/questions/39158552/ignore-eslint-error-import-and-export-may-only-appear-at-the-top-level
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module",
+    "allowImportExportEverywhere": true,
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    // Tell ESlint to take in account the JSX for unused variable detection
+    "react/jsx-uses-vars": 2,
+    // Tell ESlint to not warn about React being unused
+    "react/jsx-uses-react": "error",
+    "semi": ["error", "never"],
+    "prettier/prettier": ["error", { "singleQuote": true }],
+    "@typescript-eslint/explicit-member-accessibility": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "react/display-name": 0,
+    "react/prop-types": 0,
+    // When it happens it's because of a lib API.
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { "ignoreRestSiblings": true }
+    ],
+    "@typescript-eslint/no-use-before-define": 0,
+    "react/no-unescaped-entities": 0,
+    "no-case-declarations": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "require-atomic-updates": 0,
+    "@typescript-eslint/no-var-requires": 0,
+    "@typescript-eslint/no-empty-function": 0
+  }
+}
