@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.11.8",
+    "@typescript-eslint/eslint-plugin": "^2.11.0",
     "babel-eslint": "^10.0.3",
     "dataloader-sequelize": "^2.1.2",
     "eslint": "6.6.0",
@@ -36,6 +37,8 @@
     "graphql-sequelize": "^9.4.0",
     "jest": "^24.9.0",
     "prettier": "^1.19.1",
+    "prettier-eslint": "^9.0.0",
+    "prettier-tslint": "^0.4.2",
     "sequelize": "5.22.3",
     "sequelize-cli": "^6.2.0",
     "spdy": "^3.4.7",
@@ -50,8 +53,8 @@
     "test": "NODE_ENV=test DEBUG=-* PORT=8282 jest -i",
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
-    "start": "rm -f ./src/tests/data/main.db && node ./src/tests/testServer.js",
-    "build": "tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts",
+    "start": "rm -f ./src/tests/data/main.db && DEBUG=gsg node ./src/tests/testServer.js",
+    "build": "rm -rf ./lib/* && tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts",
     "release": "standard-version"
   },
   "peerDependencies": {
@@ -63,6 +66,7 @@
   "dependencies": {
     "@types/debug": "^4.1.5",
     "@types/express-serve-static-core": "^4.17.13",
+    "@typescript-eslint/parser": "^4.5.0",
     "apollo-server-express": "2.15.1",
     "debug": "^4.1.1",
     "graphql-subscriptions": "^1.1.0",

@@ -17,7 +17,7 @@ const {
   generateSchema,
   generateModelTypes,
   injectAssociations
-} = require('./../../lib/generate')
+} = require('./../../lib')
 const models = require('./models')
 
 // If you want to enable the dataloader everywhere, you can do this:
@@ -349,14 +349,6 @@ module.exports = globalPreCallback => ({
         }
       }
     },
-    pubSubInstance
-  }),
-  schema: generateSchema({
-    graphqlSchemaDeclaration,
-    types,
-    models,
-    globalPreCallback,
-    customMutations,
     pubSubInstance
   })
 })
