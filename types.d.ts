@@ -192,7 +192,9 @@ export type ModelDeclarationType = {
   }
 }
 
-export type SequelizeModels = { [key: string]: SequelizeModel }
+export type SequelizeModels = { [key: string]: SequelizeModel } & {
+  sequelize: Sequelize
+}
 
 export type GlobalPreCallback = (name: string) => Function | null
 
