@@ -5,11 +5,13 @@ import {
   GraphQLString,
   GraphQLInt
 } from 'graphql'
+import { Association } from 'sequelize/types'
 import { injectAssociations } from '..'
+import { OutputTypes } from '../../types'
 
 export default function generateAssociationField(
-  relation: any,
-  types: any,
+  relation: Association,
+  types: OutputTypes,
   graphqlSchemaDeclaration?: any,
   models?: any,
   globalPreCallback?: any,
@@ -27,6 +29,7 @@ export default function generateAssociationField(
 } {
   const newBaseType =
     graphqlSchemaDeclaration &&
+    // @ts-ignore
     !types[relation.target.name].associationsInjected
       ? injectAssociations(
           types[relation.target.name],
@@ -71,5 +74,6 @@ export default function generateAssociationField(
     field.resolve = resolver
   }
 
+  // @ts-ignore
   return field
 }

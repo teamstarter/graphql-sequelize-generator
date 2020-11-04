@@ -1,3 +1,4 @@
+import { Associations } from '../../types'
 import generateAssociationField from './field'
 
 /**
@@ -10,7 +11,7 @@ import generateAssociationField from './field'
  * @param {*} types Existing `GraphQLObjectType` types, created from all the Sequelize models
  */
 export default function generateAssociationsFields(
-  associations: string[],
+  associations: Associations,
   types: any
 ) {
   const fields: { [key: string]: any } = {}

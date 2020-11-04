@@ -1,4 +1,9 @@
-import { InputTypes, OutputTypes, SequelizeModels, Types } from '../../types'
+import {
+  InputTypes,
+  OutputTypes,
+  SequelizeModels,
+  InAndOutTypes
+} from '../../types'
 import generateGraphQLType from './graphQLType'
 
 /**
@@ -9,7 +14,9 @@ import generateGraphQLType from './graphQLType'
  * @param {*} models The sequelize models used to create the types
  */
 // This function is exported
-export default function generateModelTypes(models: SequelizeModels): Types {
+export default function generateModelTypes(
+  models: SequelizeModels
+): InAndOutTypes {
   const outputTypes: OutputTypes = {}
   const inputTypes: InputTypes = {}
   for (const modelName in models) {
