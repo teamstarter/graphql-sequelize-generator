@@ -63,10 +63,43 @@ export default function generateMutationCreate(
           context,
           info
         )
+
+        if (!attributes) {
+          throw new Error(
+            'The before hook must always return the create method first parameter.'
+          )
+        }
+
         if (beforeHandle) {
           beforeHandle()
         }
       }
+
+      if (
+        graphqlModelDeclaration.create &&
+        graphqlModelDeclaration.create.preventDuplicateOnAttributes
+      ) {
+        const preventDuplicateAttributes = await graphqlModelDeclaration.create.preventDuplicateOnAttributes()
+        const filters = Object.keys(attributes).reduce(
+          (acc: any, key: string) => {
+            if (preventDuplicateAttributes.includes(key)) {
+              acc[key] = attributes[key]
+            }
+
+            return acc
+          },
+          {}
+        )
+
+        const entityDuplicate = await model.findOne({
+          where: filters
+        })
+
+        if (entityDuplicate) {
+          return entityDuplicate
+        }
+      }
+
       const newEntity = await model.create(attributes)
 
       if (
