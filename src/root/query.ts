@@ -2,8 +2,8 @@ import { GraphQLObjectType, GraphQLInt, GraphQLFieldConfig } from 'graphql'
 import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
 import {
   GlobalPreCallback,
-  graphqlSchemaDeclarationType,
-  modelDeclarationType,
+  GraphqlSchemaDeclarationType,
+  ModelDeclarationType,
   OutputTypes,
   SequelizeModels
 } from '../../types'
@@ -12,22 +12,23 @@ import generateCountResolver from '../queryResolvers/count'
 import generateListResolver from '../queryResolvers/list'
 
 function getModelsFields(
-  allSchemaDeclarations: graphqlSchemaDeclarationType,
+  allSchemaDeclarations: GraphqlSchemaDeclarationType,
   outputTypes: OutputTypes,
   models: SequelizeModels,
   globalPreCallback: GlobalPreCallback
 ) {
   return Object.keys(outputTypes).reduce((fields, modelTypeName) => {
     const modelType = outputTypes[modelTypeName]
-    const schemaDeclaration = <modelDeclarationType>(
-      allSchemaDeclarations[modelType.name]
-    )
+    const schemaDeclaration = allSchemaDeclarations[
+      modelType.name
+    ] as ModelDeclarationType
 
     if (typeof schemaDeclaration === 'undefined') {
       // If a model is not defined, we just ignore it.
       return fields
     }
 
+    // eslint-disable-next-line no-prototype-builtins
     if (!schemaDeclaration.hasOwnProperty('model')) {
       throw new Error(
         `You provided an empty/undefined model for the endpoint ${modelType}. Please provide a Sequelize model.`
@@ -40,7 +41,7 @@ function getModelsFields(
       return fields
     }
 
-    let result =
+    const result =
       schemaDeclaration.actions &&
       schemaDeclaration.actions.indexOf('count') > -1
         ? {
@@ -83,9 +84,8 @@ function getModelsFields(
 }
 
 function getCustomEndpoints(
-  allSchemaDeclarations: graphqlSchemaDeclarationType,
-  outputTypes: OutputTypes,
-  models: any
+  allSchemaDeclarations: GraphqlSchemaDeclarationType,
+  outputTypes: OutputTypes
 ) {
   return Object.keys(allSchemaDeclarations).reduce((fields, endpointKey) => {
     // We ignore all endpoints matching a model type.
@@ -93,9 +93,9 @@ function getCustomEndpoints(
       return fields
     }
 
-    const endpointDeclaration = <GraphQLFieldConfig<any, any, any>>(
-      allSchemaDeclarations[endpointKey]
-    )
+    const endpointDeclaration = allSchemaDeclarations[
+      endpointKey
+    ] as GraphQLFieldConfig<any, any, any>
 
     // @todo counts should only be added if configured in the schema declaration
     return {
@@ -114,7 +114,7 @@ function getCustomEndpoints(
  * @param {*} models The sequelize models used to create the root `GraphQLSchema`
  */
 export default function generateQueryRootResolver(
-  allSchemaDeclarations: graphqlSchemaDeclarationType,
+  allSchemaDeclarations: GraphqlSchemaDeclarationType,
   outputTypes: any,
   models: any,
   globalPreCallback: any
@@ -128,11 +128,7 @@ export default function generateQueryRootResolver(
   )
 
   // Custom endpoints, without models specified.
-  const customEndpoints = getCustomEndpoints(
-    allSchemaDeclarations,
-    outputTypes,
-    models
-  )
+  const customEndpoints = getCustomEndpoints(allSchemaDeclarations, outputTypes)
 
   const modelsKeys = Object.keys(modelFields)
   Object.keys(customEndpoints).filter(value => {

@@ -7,10 +7,10 @@ import generateSubscriptions from './root/subscriptions'
 import generateMutation from './root/mutation'
 import {
   GlobalPreCallback,
-  graphqlSchemaDeclarationType,
+  GraphqlSchemaDeclarationType,
   MutationList,
   SequelizeModels,
-  Types
+  InAndOutTypes
 } from '../types'
 
 const debug = _debug('gsg')
@@ -23,8 +23,8 @@ export default function generateSchema({
   globalPreCallback = () => null,
   pubSubInstance
 }: {
-  graphqlSchemaDeclaration: graphqlSchemaDeclarationType
-  types: Types
+  graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
+  types: InAndOutTypes
   models: SequelizeModels
   customMutations?: MutationList
   globalPreCallback?: GlobalPreCallback

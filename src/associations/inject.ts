@@ -4,8 +4,8 @@ import { attributeFields } from 'graphql-sequelize'
 
 import {
   GlobalPreCallback,
-  graphqlSchemaDeclarationType,
-  modelDeclarationType,
+  GraphqlSchemaDeclarationType,
+  ModelDeclarationType,
   OutputTypes,
   SequelizeModels
 } from '../../types'
@@ -16,7 +16,7 @@ const debug = _debug('gsg')
 
 export default function injectAssociations(
   modelGraphQLType: GraphQLObjectType,
-  graphqlSchemaDeclaration: graphqlSchemaDeclarationType,
+  graphqlSchemaDeclaration: GraphqlSchemaDeclarationType,
   outputTypes: OutputTypes,
   models: SequelizeModels,
   globalPreCallback: GlobalPreCallback,
@@ -63,9 +63,10 @@ export default function injectAssociations(
   // We cannot return a new type as the type may have already been used
   // In previous models.
   let baseFields: any = {}
-  const modelDefinition = <modelDeclarationType>(
-    graphqlSchemaDeclaration[modelName]
-  )
+  const modelDefinition = graphqlSchemaDeclaration[
+    modelName
+  ] as ModelDeclarationType
+
   if (typeof modelDefinition !== 'undefined') {
     baseFields = attributeFields(modelDefinition.model, {
       allowNull: false,

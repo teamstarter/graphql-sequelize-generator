@@ -4,10 +4,10 @@ import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
 
 import {
   GlobalPreCallback,
-  graphqlSchemaDeclarationType,
+  GraphqlSchemaDeclarationType,
   MutationList,
   SequelizeModels,
-  Types
+  InAndOutTypes
 } from '../types'
 import generateSchema from './schema'
 
@@ -20,8 +20,8 @@ export default function generateApolloServer({
   pubSubInstance = null,
   globalPreCallback = () => null
 }: {
-  graphqlSchemaDeclaration: graphqlSchemaDeclarationType
-  types: Types
+  graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
+  types: InAndOutTypes
   models: SequelizeModels
   customMutations?: MutationList
   apolloServerOptions?: ApolloServerExpressConfig

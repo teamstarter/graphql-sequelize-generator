@@ -1,5 +1,5 @@
 import { PubSub } from 'graphql-subscriptions'
-import { GraphQLInputObjectType, GraphQLObjectType } from 'graphql'
+import { GraphQLObjectType } from 'graphql'
 
 import generateMutationCreate from '../mutationResolvers/create'
 import generateMutationDelete from '../mutationResolvers/delete'

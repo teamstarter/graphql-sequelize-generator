@@ -8,14 +8,14 @@ import { PubSub } from 'graphql-subscriptions'
 import { FindOptions } from 'sequelize/types'
 import {
   GlobalPreCallback,
-  graphqlSchemaDeclarationType,
-  modelDeclarationType,
+  GraphqlSchemaDeclarationType,
+  ModelDeclarationType,
   MutationList,
   OutputTypes,
   SequelizeModel,
   SequelizeModels,
   TInfo,
-  Types
+  InAndOutTypes
 } from '../types'
 
 export function generateApolloServer({
@@ -27,8 +27,8 @@ export function generateApolloServer({
   pubSubInstance,
   globalPreCallback
 }: {
-  graphqlSchemaDeclaration: graphqlSchemaDeclarationType
-  types: Types
+  graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
+  types: InAndOutTypes
   models: SequelizeModels
   customMutations?: MutationList
   apolloServerOptions?: ApolloServerExpressConfig
@@ -43,17 +43,17 @@ export function generateSchema({
   globalPreCallback,
   pubSubInstance
 }: {
-  graphqlSchemaDeclaration: graphqlSchemaDeclarationType
-  types: Types
+  graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
+  types: InAndOutTypes
   models: SequelizeModels
   customMutations: MutationList
   globalPreCallback?: GlobalPreCallback
   pubSubInstance: PubSub | null
 }): GraphQLSchemaConfig
-export function generateModelTypes(models: SequelizeModels): Types
+export function generateModelTypes(models: SequelizeModels): InAndOutTypes
 export function generateCount(
   model: SequelizeModel,
-  schemaDeclaration: modelDeclarationType,
+  schemaDeclaration: ModelDeclarationType,
   globalPreCallback: GlobalPreCallback
 ): GraphQLFieldResolver<any, any, any>
 export function removeUnusedAttributes(
@@ -61,11 +61,11 @@ export function removeUnusedAttributes(
   info: TInfo,
   currentModel: SequelizeModel,
   models: SequelizeModels,
-  keep: Array<String>
+  keep: Array<string>
 ): FindOptions
 export function injectAssociations(
   modelGraphQLType: GraphQLObjectType,
-  graphqlSchemaDeclaration: graphqlSchemaDeclarationType,
+  graphqlSchemaDeclaration: GraphqlSchemaDeclarationType,
   outputTypes: OutputTypes,
   models: SequelizeModels,
   globalPreCallback: GlobalPreCallback,
