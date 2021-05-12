@@ -1,13 +1,13 @@
 import { argsToFindOptions } from 'graphql-sequelize'
 import {
   GlobalPreCallback,
-  modelDeclarationType,
+  ModelDeclarationType,
   SequelizeModel
 } from '../../types'
 
 export default function countResolver(
   model: SequelizeModel,
-  schemaDeclaration: modelDeclarationType,
+  schemaDeclaration: ModelDeclarationType,
   globalPreCallback: GlobalPreCallback
 ) {
   const countResolver =

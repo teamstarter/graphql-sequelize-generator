@@ -1,4 +1,10 @@
-import { Model, Sequelize, BuildOptions, FindOptions } from 'sequelize/types'
+import {
+  Model,
+  Sequelize,
+  BuildOptions,
+  FindOptions,
+  Association
+} from 'sequelize/types'
 import {
   GraphQLScalarType,
   GraphQLNonNull,
@@ -28,7 +34,7 @@ export type TInfo = any
 
 export type Payload = any
 
-export type Types = {
+export type InAndOutTypes = {
   inputTypes: InputTypes
   outputTypes: OutputTypes
 }
@@ -143,11 +149,11 @@ export type SubscriptionFilterHook = (
 
 export type preventDuplicateOnAttributesHook = () => string[]
 
-export type graphqlSchemaDeclarationType = {
-  [key: string]: modelDeclarationType | GraphQLFieldConfig<any, any, any>
+export type GraphqlSchemaDeclarationType = {
+  [key: string]: ModelDeclarationType | GraphQLFieldConfig<any, any, any>
 }
 
-export type modelDeclarationType = {
+export type ModelDeclarationType = {
   model: SequelizeModel
   actions?: ActionList
   subscriptions?: EventList
@@ -167,7 +173,7 @@ export type modelDeclarationType = {
     extraArg?: ExtraArg
     before?: MutationBeforeHook
     after?: CreateAfterHook
-    subscriptionFilter: SubscriptionFilterHook
+    subscriptionFilter?: SubscriptionFilterHook
   }
   update?: {
     extraArg?: ExtraArg
@@ -180,7 +186,7 @@ export type modelDeclarationType = {
     extraArg?: ExtraArg
     before?: DeleteBeforeHook
     after?: DeleteAfterHook
-    subscriptionFilter: SubscriptionFilterHook
+    subscriptionFilter?: SubscriptionFilterHook
   }
   count?: {
     extraArg?: ExtraArg
@@ -189,6 +195,10 @@ export type modelDeclarationType = {
   }
 }
 
-export type SequelizeModels = { [key: string]: SequelizeModel }
+export type SequelizeModels = { [key: string]: SequelizeModel } & {
+  sequelize: Sequelize
+}
 
 export type GlobalPreCallback = (name: string) => Function | null
+
+export type Associations = { [key: string]: Association }

@@ -1,6 +1,6 @@
 {
   "name": "graphql-sequelize-generator",
-  "version": "7.1.5",
+  "version": "7.3.2",
   "description": "A set of tools to easily generate a Graphql API from sequelize models.",
   "keywords": [
     "graphql",
@@ -67,7 +67,7 @@
     "@types/debug": "^4.1.5",
     "@types/express-serve-static-core": "^4.17.13",
     "@typescript-eslint/parser": "^4.5.0",
-    "apollo-server-express": "2.15.1",
+    "apollo-server-express": "2.19.0",
     "debug": "^4.1.1",
     "graphql-subscriptions": "^1.1.0",
     "subscriptions-transport-ws": "^0.9.5",

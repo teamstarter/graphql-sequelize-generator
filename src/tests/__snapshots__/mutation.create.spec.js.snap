@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test the create mutation Check if you cannot duplicate entity according to attributes 1`] = `
+Object {
+  "userCreate": Object {
+    "id": 25001,
+    "name": "new user",
+  },
+}
+`;
+
 exports[`Test the create mutation Check that you can create a new instance of one entity 1`] = `
 Array [
   "listGlobalBefore",

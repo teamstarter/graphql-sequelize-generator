@@ -2,6 +2,19 @@ const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
 const { createServer, closeServer, resetDb } = require('./setupServer')
 
+const userCreate = user => ({
+  query: `mutation userCreate($user: userInput!) {
+    userCreate(user: $user) {
+      id
+      name
+    }
+  }`,
+  variables: {
+    user
+  },
+  operationName: null
+})
+
 /**
  * Starting the tests
  */
@@ -94,5 +107,34 @@ describe('Test the create mutation', () => {
     expect(response.body.data.user).not.toBeUndefined()
     expect(response.body.data.user).toMatchSnapshot('The new user')
     expect(trace).toMatchSnapshot()
+  })
+
+  it('Check if you cannot duplicate entity according to attributes', async () => {
+    const responseCreateJob = await request(server)
+      .post('/graphql')
+      .send(
+        userCreate({
+          name: 'new user',
+          departmentId: 1,
+          companyId: 1
+        })
+      )
+    expect(responseCreateJob.body.errors).toBeUndefined()
+    expect(responseCreateJob.body.data).toMatchSnapshot()
+
+    const responseSameCreateJob = await request(server)
+      .post('/graphql')
+      .send(
+        userCreate({
+          name: 'new user',
+          departmentId: 1,
+          companyId: 1
+        })
+      )
+
+    expect(responseCreateJob.body.errors).toBeUndefined()
+    expect(responseSameCreateJob.body.data).toStrictEqual(
+      responseCreateJob.body.data
+    )
   })
 })
