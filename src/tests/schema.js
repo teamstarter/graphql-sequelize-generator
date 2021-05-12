@@ -104,6 +104,9 @@ graphqlSchemaDeclaration.user = {
     after: async (newEntity, source, args, context, info) => {
       // You can log what happened here
       return newEntity
+    },
+    preventDuplicateOnAttributes: () => {
+      return ['name']
     }
   },
   update: {

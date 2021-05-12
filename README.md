@@ -5,6 +5,10 @@ easily generate a GraphQL API from your sequelize models.
 
 It's a very good fit for POCs and MVPs, while also scaling pretty well thanks to [dataloader-sequelize](https://github.com/mickhansen/dataloader-sequelize).
 
+## Manual
+
+Get started with **[the online documentation](https://teamstarter.github.io/gsg-documentation/)**
+
 ## What can I do with GSG?
 
 The tools provided by this library will allow you to:
@@ -59,6 +63,9 @@ server.applyMiddleware({
 })
 ```
 
-# Manual
+## Getting started with boilerplates
 
-Get started with [the online documentation](https://teamstarter.github.io/gsg-documentation/)
+You can easily start a project with graphql-sequelize-generator using these boilerplates:
+
+- In JavaScript : [GSG Boilerplate](https://github.com/teamstarter/gsg-boilerplate)
+- In TypeScript : [GSG Typescript Boilerplate](https://github.com/teamstarter/gsg-boilerplate-typescript)
