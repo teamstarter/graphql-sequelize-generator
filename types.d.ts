@@ -147,8 +147,6 @@ export type SubscriptionFilterHook = (
   context: TContext
 ) => boolean
 
-export type preventDuplicateOnAttributesHook = () => string[]
-
 export type GraphqlSchemaDeclarationType = {
   [key: string]: ModelDeclarationType | GraphQLFieldConfig<any, any, any>
 }
@@ -180,10 +178,9 @@ export type ModelDeclarationType = {
     before?: MutationBeforeHook
     after?: UpdateAfterHook
     subscriptionFilter: SubscriptionFilterHook
-    preventDuplicateOnAttributes?: preventDuplicateOnAttributesHook
+    preventDuplicateOnAttributes?: string[]
   }
   delete?: {
-    extraArg?: ExtraArg
     before?: DeleteBeforeHook
     after?: DeleteAfterHook
     subscriptionFilter?: SubscriptionFilterHook
