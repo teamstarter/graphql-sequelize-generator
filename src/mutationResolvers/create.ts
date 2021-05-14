@@ -79,7 +79,8 @@ export default function generateMutationCreate(
         graphqlModelDeclaration.create &&
         graphqlModelDeclaration.create.preventDuplicateOnAttributes
       ) {
-        const preventDuplicateAttributes = await graphqlModelDeclaration.create.preventDuplicateOnAttributes()
+        const preventDuplicateAttributes =
+          graphqlModelDeclaration.create.preventDuplicateOnAttributes
         const filters = Object.keys(attributes).reduce(
           (acc: any, key: string) => {
             if (preventDuplicateAttributes.includes(key)) {
