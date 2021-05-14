@@ -177,10 +177,10 @@ export type ModelDeclarationType = {
     extraArg?: ExtraArg
     before?: MutationBeforeHook
     after?: UpdateAfterHook
-    subscriptionFilter?: SubscriptionFilterHook
+    subscriptionFilter: SubscriptionFilterHook
+    preventDuplicateOnAttributes?: string[]
   }
   delete?: {
-    extraArg?: ExtraArg
     before?: DeleteBeforeHook
     after?: DeleteAfterHook
     subscriptionFilter?: SubscriptionFilterHook
