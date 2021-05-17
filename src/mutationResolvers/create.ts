@@ -92,6 +92,9 @@ export default function generateMutationCreate(
           {}
         )
 
+        console.log('filters')
+        console.log(filters)
+        console.log('==========')
         const entityDuplicate = await model.findOne({
           where: filters
         })
