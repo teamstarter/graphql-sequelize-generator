@@ -75,34 +75,34 @@ export default function generateMutationCreate(
         }
       }
 
-      if (
-        graphqlModelDeclaration.create &&
-        graphqlModelDeclaration.create.preventDuplicateOnAttributes
-      ) {
-        const preventDuplicateAttributes =
-          graphqlModelDeclaration.create.preventDuplicateOnAttributes
-        const filters = Object.keys(attributes).reduce(
-          (acc: any, key: string) => {
-            if (preventDuplicateAttributes.includes(key)) {
-              acc[key] = attributes[key]
-            }
+      // if (
+      //   graphqlModelDeclaration.create &&
+      //   graphqlModelDeclaration.create.preventDuplicateOnAttributes
+      // ) {
+      //   const preventDuplicateAttributes =
+      //     graphqlModelDeclaration.create.preventDuplicateOnAttributes
+      //   const filters = Object.keys(attributes).reduce(
+      //     (acc: any, key: string) => {
+      //       if (preventDuplicateAttributes.includes(key)) {
+      //         acc[key] = attributes[key]
+      //       }
 
-            return acc
-          },
-          {}
-        )
+      //       return acc
+      //     },
+      //     {}
+      //   )
 
-        console.log('filters')
-        console.log(filters)
-        console.log('==========')
-        const entityDuplicate = await model.findOne({
-          where: filters
-        })
+      //   console.log('filters')
+      //   console.log(filters)
+      //   console.log('==========')
+      //   const entityDuplicate = await model.findOne({
+      //     where: filters
+      //   })
 
-        if (entityDuplicate) {
-          return entityDuplicate
-        }
-      }
+      //   if (entityDuplicate) {
+      //     return entityDuplicate
+      //   }
+      // }
 
       const newEntity = await model.create(attributes)
 
