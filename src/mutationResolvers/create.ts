@@ -84,7 +84,7 @@ export default function generateMutationCreate(
         const filters = Object.keys(attributes).reduce(
           (acc: any, key: string) => {
             if (preventDuplicateAttributes.includes(key)) {
-              acc[key] = attributes[key]
+              acc[key] = attributes[key] ? attributes[key] : null
             }
 
             return acc
@@ -92,11 +92,8 @@ export default function generateMutationCreate(
           {}
         )
 
-        console.log('filters')
-        console.log(filters)
-        console.log('==========')
         const entityDuplicate = await model.findOne({
-          where: filters
+          where: filters ? filters : null
         })
 
         if (entityDuplicate) {
