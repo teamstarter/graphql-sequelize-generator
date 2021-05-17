@@ -179,6 +179,7 @@ export type ModelDeclarationType = {
     before?: MutationBeforeHook
     after?: UpdateAfterHook
     subscriptionFilter?: SubscriptionFilterHook
+
   }
   delete?: {
     before?: DeleteBeforeHook
