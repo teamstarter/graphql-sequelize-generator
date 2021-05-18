@@ -116,7 +116,8 @@ describe('Test the create mutation', () => {
         userCreate({
           name: 'new user',
           departmentId: 1,
-          companyId: 1
+          companyId: 1,
+          type: 'a'
         })
       )
     expect(responseCreateJob.body.errors).toBeUndefined()
@@ -128,7 +129,8 @@ describe('Test the create mutation', () => {
         userCreate({
           name: 'new user',
           departmentId: 1,
-          companyId: 1
+          companyId: 1,
+          type: 'a'
         })
       )
 
@@ -136,5 +138,19 @@ describe('Test the create mutation', () => {
     expect(responseSameCreateJob.body.data).toStrictEqual(
       responseCreateJob.body.data
     )
+  })
+
+  it('You can create user without specifying an attribute to prevent duplicate', async () => {
+    const responseCreateJob = await request(server)
+      .post('/graphql')
+      .send(
+        userCreate({
+          name: 'new user',
+          departmentId: 1,
+          companyId: 1
+        })
+      )
+    expect(responseCreateJob.body.errors).toBeUndefined()
+    expect(responseCreateJob.body.data).toMatchSnapshot()
   })
 })
