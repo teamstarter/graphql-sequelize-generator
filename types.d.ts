@@ -178,7 +178,8 @@ export type ModelDeclarationType = {
     extraArg?: ExtraArg
     before?: MutationBeforeHook
     after?: UpdateAfterHook
-    subscriptionFilter: SubscriptionFilterHook
+    subscriptionFilter?: SubscriptionFilterHook
+
   }
   delete?: {
     before?: DeleteBeforeHook
