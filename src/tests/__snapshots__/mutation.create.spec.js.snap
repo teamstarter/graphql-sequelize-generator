@@ -34,3 +34,12 @@ Object {
 exports[`Test the create mutation Check that you can create a new instance of one entity: The new user 1`] = `Array []`;
 
 exports[`Test the create mutation Check that you can create a new instance of one entity: User 12501 does not exists yet. 1`] = `Array []`;
+
+exports[`Test the create mutation You can create user without specifying an attribute to prevent duplicate 1`] = `
+Object {
+  "userCreate": Object {
+    "id": 25001,
+    "name": "new user",
+  },
+}
+`;
