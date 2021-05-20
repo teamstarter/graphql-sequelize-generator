@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.3.5](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.4...v7.3.5) (2021-05-20)
+
+
+
 ### [7.3.4](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.3...v7.3.4) (2021-05-17)
 
 
