@@ -70,7 +70,8 @@ export default function injectAssociations(
   if (typeof modelDefinition !== 'undefined') {
     baseFields = attributeFields(modelDefinition.model, {
       allowNull: false,
-      exclude: modelDefinition.excludeFields
+      exclude: modelDefinition.excludeFields,
+      commentToDescription: true
     })
   }
 

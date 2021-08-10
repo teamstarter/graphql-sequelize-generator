@@ -1,20 +1,23 @@
 'use strict'
-module.exports = function (sequelize, DataTypes) {
-  var Company = sequelize.define(
+module.exports = function(sequelize, DataTypes) {
+  const Company = sequelize.define(
     'company',
     {
       name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
+        comment: 'Name of the company.'
       },
       companyTypeId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        comment: 'Which type is the company.'
       },
       managerId: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        comment: 'Who is the manager of the company.'
       },
       userCount: {
         type: DataTypes.VIRTUAL(DataTypes.INTEGER, [
@@ -32,7 +35,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   )
 
-  Company.associate = function (models) {
+  Company.associate = function(models) {
     models.company.hasMany(models.user)
     models.company.hasMany(models.department)
     models.company.hasMany(models.location, {

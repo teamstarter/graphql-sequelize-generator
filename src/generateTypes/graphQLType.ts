@@ -20,7 +20,8 @@ export default function generateGraphQLType(
     name: isInput ? `${model.name}Input` : model.name,
     fields: () => ({
       ...attributeFields(model, {
-        allowNull: !!isInput
+        allowNull: !!isInput,
+        commentToDescription: true
       }),
       ...(isInput ? generateAssociationsFields(model.associations, types) : {})
     })
