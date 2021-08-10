@@ -1,6 +1,6 @@
 'use strict'
-module.exports = function (sequelize, DataTypes) {
-  var Location = sequelize.define(
+module.exports = function(sequelize, DataTypes) {
+  const Location = sequelize.define(
     'location',
     {
       name: {
@@ -18,7 +18,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   )
 
-  Location.associate = function (models) {
+  Location.associate = function(models) {
     models.location.belongsTo(models.company)
   }
   return Location

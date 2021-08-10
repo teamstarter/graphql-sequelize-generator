@@ -1,6 +1,6 @@
 'use strict'
-module.exports = function (sequelize, DataTypes) {
-  var CompanyType = sequelize.define(
+module.exports = function(sequelize, DataTypes) {
+  const CompanyType = sequelize.define(
     'companyType',
     {
       name: {

@@ -6,7 +6,7 @@ const timestamp = entry =>
   })
 
 module.exports = {
-  up: function (queryInterface, Sequelize) {
+  up: function(queryInterface, Sequelize) {
     let companyTypes = [
       {
         id: 1,
@@ -31,7 +31,7 @@ module.exports = {
     return queryInterface.bulkInsert('companyType', companyTypes, {})
   },
 
-  down: function (queryInterface, Sequelize) {
+  down: function(queryInterface, Sequelize) {
     return queryInterface.bulkDelete('companyType', null, {})
   }
 }

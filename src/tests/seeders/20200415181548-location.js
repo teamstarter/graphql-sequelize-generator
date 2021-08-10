@@ -8,7 +8,7 @@ const timestamp = entry =>
 const departmentPerCompany = 3
 
 module.exports = {
-  up: function (queryInterface, Sequelize) {
+  up: function(queryInterface, Sequelize) {
     let locations = []
     for (let companyId = 0; companyId < 50; companyId++) {
       locations = [
@@ -28,7 +28,7 @@ module.exports = {
     return queryInterface.bulkInsert('location', locations, {})
   },
 
-  down: function (queryInterface, Sequelize) {
+  down: function(queryInterface, Sequelize) {
     return queryInterface.bulkDelete('location', null, {})
   }
 }

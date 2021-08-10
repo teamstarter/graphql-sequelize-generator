@@ -6,7 +6,7 @@ const setupServer = require('./schema')
 
 const app = express()
 
-var options = {
+const options = {
   spdy: {
     plain: true
   }
@@ -27,7 +27,11 @@ server.applyMiddleware({
 const serverHttp = http
   .createServer(options, app)
   .listen(process.env.PORT || 8080, async () => {
-    console.log(`🚀 http/https/h2 server runs on ${process.env.PORT || 8080}`)
+    console.log(
+      `🚀 http/https/h2 server runs on ${process.env.PORT ||
+        8080}, check the playground here: http://localhost:${process.env.PORT ||
+        8080}/graphql`
+    )
     await migrateDatabase()
     await seedDatabase()
   })

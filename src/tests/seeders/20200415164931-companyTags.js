@@ -6,17 +6,21 @@ const timestamp = entry =>
   })
 
 module.exports = {
-  up: function (queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('tagCompanyLink', [
-      {
-        id: 1,
-        companyId: 1,
-        tagId: 1
-      }
-    ].map(timestamp), {})
+  up: function(queryInterface, Sequelize) {
+    return queryInterface.bulkInsert(
+      'tagCompanyLink',
+      [
+        {
+          id: 1,
+          companyId: 1,
+          tagId: 1
+        }
+      ].map(timestamp),
+      {}
+    )
   },
 
-  down: function (queryInterface, Sequelize) {
+  down: function(queryInterface, Sequelize) {
     return queryInterface.bulkDelete('tagCompanyLink', null, {})
   }
 }

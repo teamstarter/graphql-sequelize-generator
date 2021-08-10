@@ -9,7 +9,7 @@ const baseUserPerCompany = 10
 const departmentPerCompany = 5
 
 module.exports = {
-  up: function (queryInterface, Sequelize) {
+  up: function(queryInterface, Sequelize) {
     let users = []
     for (let companyId = 0; companyId < 50; companyId++) {
       const totalUsers = baseUserPerCompany * (companyId + 1)
@@ -29,7 +29,7 @@ module.exports = {
     return queryInterface.bulkInsert('user', users, {})
   },
 
-  down: function (queryInterface, Sequelize) {
+  down: function(queryInterface, Sequelize) {
     return queryInterface.bulkDelete('user', null, {})
   }
 }

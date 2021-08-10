@@ -1,6 +1,6 @@
 'use strict'
 module.exports = {
-  up: async function (queryInterface, Sequelize) {
+  up: async function(queryInterface, Sequelize) {
     await queryInterface.createTable('tag', {
       id: {
         allowNull: false,
@@ -54,7 +54,7 @@ module.exports = {
       }
     })
   },
-  down: function (queryInterface, Sequelize) {
+  down: function(queryInterface, Sequelize) {
     return queryInterface.dropTable('companyType')
   }
 }

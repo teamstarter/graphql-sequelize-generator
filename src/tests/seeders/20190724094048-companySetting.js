@@ -6,22 +6,26 @@ const timestamp = entry =>
   })
 
 module.exports = {
-  up: function (queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('companySetting', [
-      {
-        id: 1,
-        companyId: 1,
-        whiteLabelEnabled: 1
-      },
-      {
-        id: 2,
-        companyId: 2,
-        whiteLabelEnabled: 0
-      }
-    ].map(timestamp), {})
+  up: function(queryInterface, Sequelize) {
+    return queryInterface.bulkInsert(
+      'companySetting',
+      [
+        {
+          id: 1,
+          companyId: 1,
+          whiteLabelEnabled: 1
+        },
+        {
+          id: 2,
+          companyId: 2,
+          whiteLabelEnabled: 0
+        }
+      ].map(timestamp),
+      {}
+    )
   },
 
-  down: function (queryInterface, Sequelize) {
+  down: function(queryInterface, Sequelize) {
     return queryInterface.bulkDelete('companySetting', null, {})
   }
 }

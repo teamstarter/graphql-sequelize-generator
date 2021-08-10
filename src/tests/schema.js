@@ -14,7 +14,6 @@ const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 const { Op } = require('sequelize')
 const {
   generateApolloServer,
-  generateSchema,
   generateModelTypes,
   injectAssociations
 } = require('./../../lib')

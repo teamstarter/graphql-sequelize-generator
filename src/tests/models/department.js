@@ -1,6 +1,6 @@
 'use strict'
-module.exports = function (sequelize, DataTypes) {
-  var Department = sequelize.define(
+module.exports = function(sequelize, DataTypes) {
+  const Department = sequelize.define(
     'department',
     {
       name: {
@@ -18,7 +18,7 @@ module.exports = function (sequelize, DataTypes) {
     }
   )
 
-  Department.associate = function (models) {
+  Department.associate = function(models) {
     models.department.belongsTo(models.company)
     models.department.hasMany(models.user)
   }

@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = function(sequelize, DataTypes) {
-  let Log = sequelize.define(
+  const Log = sequelize.define(
     'log',
     {
       message: {

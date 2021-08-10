@@ -1,6 +1,6 @@
 'use strict'
-module.exports = function (sequelize, DataTypes) {
-  var CompanySetting = sequelize.define(
+module.exports = function(sequelize, DataTypes) {
+  const CompanySetting = sequelize.define(
     'companySetting',
     {
       whiteLabelEnabled: {
@@ -13,7 +13,7 @@ module.exports = function (sequelize, DataTypes) {
       freezeTableName: true
     }
   )
-  CompanySetting.associate = function (models) {
+  CompanySetting.associate = function(models) {
     models.companySetting.belongsTo(models.company)
   }
   return CompanySetting
