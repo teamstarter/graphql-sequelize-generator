@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **parent-obejct-attributes:** added the foreignKey when its a HasOne relation to match with the parent model ([ce28b57](https://github.com/teamstarter/graphql-sequelize-generator/commit/ce28b57))
+* **parent-obejct-attributes:** Fix an issue with HasOne relations that failed to be fetched. ([ce28b57](https://github.com/teamstarter/graphql-sequelize-generator/commit/ce28b57))
 
 
 
