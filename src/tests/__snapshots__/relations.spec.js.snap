@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test the create mutation Check that you can query a model and a belongsTo association 1`] = `
+Array [
+  Object {
+    "id": 3,
+    "name": "Company 3",
+    "type": Object {
+      "id": 2,
+      "name": "Nonprofit Corporation",
+    },
+  },
+]
+`;
+
+exports[`Test the create mutation Check that you can query a model and a belongsToMany association 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "tags": Array [
+      Object {
+        "name": "test 1",
+      },
+    ],
+  },
+]
+`;
+
+exports[`Test the create mutation Check that you can query a model and a hasMany association 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "users": Array [
+      Object {
+        "name": "Mr Test 5 c 2",
+      },
+      Object {
+        "name": "Test 10 c 2",
+      },
+    ],
+  },
+]
+`;
+
+exports[`Test the create mutation Check that you can query a model and a hasOne association 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "name": "Company 1",
+    "settings": Object {
+      "whiteLabelEnabled": true,
+    },
+  },
+]
+`;
