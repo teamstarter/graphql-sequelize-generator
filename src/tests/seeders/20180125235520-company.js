@@ -6,7 +6,7 @@ const timestamp = entry =>
   })
 
 module.exports = {
-  up: function(queryInterface, Sequelize) {
+  up: function(queryInterface) {
     let companies = [...Array(50)].map((u, index) => ({
       id: index + 1,
       name: `Company ${index + 1}`,
@@ -19,7 +19,7 @@ module.exports = {
     return queryInterface.bulkInsert('company', companies, {})
   },
 
-  down: function(queryInterface, Sequelize) {
+  down: function(queryInterface) {
     return queryInterface.bulkDelete('company', null, {})
   }
 }
