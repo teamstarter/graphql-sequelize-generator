@@ -2,245 +2,163 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [7.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.4.0...v7.5.0) (2021-10-14)
-
-
-### Features
-
-* **count-extra-arguments:** added the abbility to add an extra argument to the count query ([5c24eba](https://github.com/teamstarter/graphql-sequelize-generator/commit/5c24eba))
-
-
-
 ## [7.4.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.5...v7.4.0) (2021-08-10)
 
-
 ### Features
 
-* **workbench:** Add the models' comments in the workbench. ([29d768f](https://github.com/teamstarter/graphql-sequelize-generator/commit/29d768f))
-
-
+- **workbench:** Add the models' comments in the workbench. ([29d768f](https://github.com/teamstarter/graphql-sequelize-generator/commit/29d768f))
 
 ### [7.3.5](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.4...v7.3.5) (2021-05-20)
 
-
-
 ### [7.3.4](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.3...v7.3.4) (2021-05-17)
 
-
-
 ### [7.3.3](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.2...v7.3.3) (2021-05-14)
-
-
 
 ### [7.3.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.1...v7.3.2) (2021-05-12)
 
 ### features
 
-* **Hooks:** Add the preventDuplicateOnAttributes property on create to avoid duplicated automatically.
+- **Hooks:** Add the preventDuplicateOnAttributes property on create to avoid duplicated automatically.
 
 ### [7.3.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.0...v7.3.1) (2020-11-04)
 
-
 ### Bug Fixes
 
-* **typescript:** Add the missing Instance attribute on the models array. ([1ffd29a](https://github.com/teamstarter/graphql-sequelize-generator/commit/1ffd29a))
-
-
+- **typescript:** Add the missing Instance attribute on the models array. ([1ffd29a](https://github.com/teamstarter/graphql-sequelize-generator/commit/1ffd29a))
 
 ## [7.3.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.2.1...v7.3.0) (2020-11-04)
 
-
 ### Features
 
-* **typescript:** Upgrade the types to reflect the real API. ([39cafe6](https://github.com/teamstarter/graphql-sequelize-generator/commit/39cafe6))
-
-
+- **typescript:** Upgrade the types to reflect the real API. ([39cafe6](https://github.com/teamstarter/graphql-sequelize-generator/commit/39cafe6))
 
 ### [7.2.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.2.0...v7.2.1) (2020-11-03)
 
-
-
 ## [7.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.1.5...v7.2.0) (2020-10-22)
-
 
 ### Bug Fixes
 
-* **CI:** Remove travis as we now use the Github actions. ([686b042](https://github.com/teamstarter/graphql-sequelize-generator/commit/686b042))
-* **prettier:** prettier configuration for typescript ([6e35f2d](https://github.com/teamstarter/graphql-sequelize-generator/commit/6e35f2d))
-
+- **CI:** Remove travis as we now use the Github actions. ([686b042](https://github.com/teamstarter/graphql-sequelize-generator/commit/686b042))
+- **prettier:** prettier configuration for typescript ([6e35f2d](https://github.com/teamstarter/graphql-sequelize-generator/commit/6e35f2d))
 
 ### Features
 
-* **before-hook-control:** The absence of the before hook is controlled and signaled for each resolver and each model ([9bd7b10](https://github.com/teamstarter/graphql-sequelize-generator/commit/9bd7b10))
-* **ga-tests:** created the nodejs.yml file for github actions tests ([56ef757](https://github.com/teamstarter/graphql-sequelize-generator/commit/56ef757))
-
-
+- **before-hook-control:** The absence of the before hook is controlled and signaled for each resolver and each model ([9bd7b10](https://github.com/teamstarter/graphql-sequelize-generator/commit/9bd7b10))
+- **ga-tests:** created the nodejs.yml file for github actions tests ([56ef757](https://github.com/teamstarter/graphql-sequelize-generator/commit/56ef757))
 
 ### [7.1.5](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.1.4...v7.1.5) (2020-10-15)
 
-
 ### Bug Fixes
 
-* **typescript:** Fix root file type declaration. ([2adbb6e](https://github.com/teamstarter/graphql-sequelize-generator/commit/2adbb6e))
-
-
+- **typescript:** Fix root file type declaration. ([2adbb6e](https://github.com/teamstarter/graphql-sequelize-generator/commit/2adbb6e))
 
 ### [7.1.4](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.1.3...v7.1.4) (2020-10-15)
 
-
 ### Bug Fixes
 
-* **typescript:** Fix type definition. ([1addc93](https://github.com/teamstarter/graphql-sequelize-generator/commit/1addc93))
-
-
+- **typescript:** Fix type definition. ([1addc93](https://github.com/teamstarter/graphql-sequelize-generator/commit/1addc93))
 
 ### [7.1.3](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.1.2...v7.1.3) (2020-10-15)
 
-
 ### Bug Fixes
 
-* **typescript:** Try to fix the typescript declaration. ([4c65e9a](https://github.com/teamstarter/graphql-sequelize-generator/commit/4c65e9a))
-
-
+- **typescript:** Try to fix the typescript declaration. ([4c65e9a](https://github.com/teamstarter/graphql-sequelize-generator/commit/4c65e9a))
 
 ### [7.1.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.1.1...v7.1.2) (2020-10-15)
 
-
 ### Bug Fixes
 
-* **typescript:** Reference the type file in the package. ([847e1da](https://github.com/teamstarter/graphql-sequelize-generator/commit/847e1da))
-
-
+- **typescript:** Reference the type file in the package. ([847e1da](https://github.com/teamstarter/graphql-sequelize-generator/commit/847e1da))
 
 ### [7.1.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.1.0...v7.1.1) (2020-10-15)
 
-
 ### Bug Fixes
 
-* Fix main lib file still on old tree. ([f625bc7](https://github.com/teamstarter/graphql-sequelize-generator/commit/f625bc7))
-
-
+- Fix main lib file still on old tree. ([f625bc7](https://github.com/teamstarter/graphql-sequelize-generator/commit/f625bc7))
 
 ## [7.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.0.0...v7.1.0) (2020-10-15)
 
-
 ### Bug Fixes
 
-* **delete:** Add the missing extra args option on the delete resolver. ([53dc5a6](https://github.com/teamstarter/graphql-sequelize-generator/commit/53dc5a6))
-
+- **delete:** Add the missing extra args option on the delete resolver. ([53dc5a6](https://github.com/teamstarter/graphql-sequelize-generator/commit/53dc5a6))
 
 ### Features
 
-* **API:** Move to Typescript ([498cffa](https://github.com/teamstarter/graphql-sequelize-generator/commit/498cffa))
-
-
+- **API:** Move to Typescript ([498cffa](https://github.com/teamstarter/graphql-sequelize-generator/commit/498cffa))
 
 ## [7.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v6.1.0...v7.0.0) (2020-09-22)
 
-
-* Allow schema without mutations (#18) ([1b0238b](https://github.com/teamstarter/graphql-sequelize-generator/commit/1b0238b)), closes [#18](https://github.com/teamstarter/graphql-sequelize-generator/issues/18) [#13](https://github.com/teamstarter/graphql-sequelize-generator/issues/13)
-
+- Allow schema without mutations (#18) ([1b0238b](https://github.com/teamstarter/graphql-sequelize-generator/commit/1b0238b)), closes [#18](https://github.com/teamstarter/graphql-sequelize-generator/issues/18) [#13](https://github.com/teamstarter/graphql-sequelize-generator/issues/13)
 
 ### BREAKING CHANGES
 
-* Upgrade many libraries.
-
-
+- Upgrade many libraries.
 
 ## [6.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v6.0.1...v6.1.0) (2020-07-24)
 
-
 ### Features
 
-* **list:** Allow to enforce a max limit on list resolvers. ([25b23ad](https://github.com/teamstarter/graphql-sequelize-generator/commit/25b23ad))
-
-
+- **list:** Allow to enforce a max limit on list resolvers. ([25b23ad](https://github.com/teamstarter/graphql-sequelize-generator/commit/25b23ad))
 
 ### [6.0.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v6.0.0...v6.0.1) (2020-07-24)
 
-
-
 ## [6.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.6.0...v6.0.0) (2020-07-07)
-
 
 ### chore
 
-* Upgrade dependencies. ([00da4b6](https://github.com/teamstarter/graphql-sequelize-generator/commit/00da4b6))
-
+- Upgrade dependencies. ([00da4b6](https://github.com/teamstarter/graphql-sequelize-generator/commit/00da4b6))
 
 ### BREAKING CHANGES
 
-* Peer dependencies upgraded.
-
-
+- Peer dependencies upgraded.
 
 ## [5.6.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.5.0...v5.6.0) (2020-05-25)
 
-
 ### Bug Fixes
 
-* Add the global hook to the count resolver. ([b3e9acf](https://github.com/teamstarter/graphql-sequelize-generator/commit/b3e9acf))
-
+- Add the global hook to the count resolver. ([b3e9acf](https://github.com/teamstarter/graphql-sequelize-generator/commit/b3e9acf))
 
 ### Features
 
-* Add global hooks that works on all actions. ([af1bcf6](https://github.com/teamstarter/graphql-sequelize-generator/commit/af1bcf6))
-* Disable subscriptions by default ([9407893](https://github.com/teamstarter/graphql-sequelize-generator/commit/9407893))
-
-
+- Add global hooks that works on all actions. ([af1bcf6](https://github.com/teamstarter/graphql-sequelize-generator/commit/af1bcf6))
+- Disable subscriptions by default ([9407893](https://github.com/teamstarter/graphql-sequelize-generator/commit/9407893))
 
 ## [5.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.4.0...v5.5.0) (2020-05-11)
 
-
 ### Features
 
-* Remove unused attributes now handles HasMany relationship. ([ba48972](https://github.com/teamstarter/graphql-sequelize-generator/commit/ba48972))
-
-
+- Remove unused attributes now handles HasMany relationship. ([ba48972](https://github.com/teamstarter/graphql-sequelize-generator/commit/ba48972))
 
 ## [5.4.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.3.0...v5.4.0) (2020-04-21)
 
-
 ### Features
 
-* **count:** Allow to use a custom resolver for the count endpoint. ([60afbc2](https://github.com/teamstarter/graphql-sequelize-generator/commit/60afbc2))
-
-
+- **count:** Allow to use a custom resolver for the count endpoint. ([60afbc2](https://github.com/teamstarter/graphql-sequelize-generator/commit/60afbc2))
 
 ## [5.3.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.2.0...v5.3.0) (2020-04-21)
 
-
 ### Bug Fixes
 
-* Fix removeUnusedAttributes when using a model referenced by the source. ([5b17b84](https://github.com/teamstarter/graphql-sequelize-generator/commit/5b17b84))
-* Remove default export to avoid shadow dependency. ([f98e284](https://github.com/teamstarter/graphql-sequelize-generator/commit/f98e284))
-
+- Fix removeUnusedAttributes when using a model referenced by the source. ([5b17b84](https://github.com/teamstarter/graphql-sequelize-generator/commit/5b17b84))
+- Remove default export to avoid shadow dependency. ([f98e284](https://github.com/teamstarter/graphql-sequelize-generator/commit/f98e284))
 
 ### Features
 
-* Improve the seeds. ([182ed8e](https://github.com/teamstarter/graphql-sequelize-generator/commit/182ed8e))
-* One can specify a contextToOptions per resolver. ([6330304](https://github.com/teamstarter/graphql-sequelize-generator/commit/6330304))
-* Update dataloader-sequelize example. ([38d4a6a](https://github.com/teamstarter/graphql-sequelize-generator/commit/38d4a6a))
-
-
+- Improve the seeds. ([182ed8e](https://github.com/teamstarter/graphql-sequelize-generator/commit/182ed8e))
+- One can specify a contextToOptions per resolver. ([6330304](https://github.com/teamstarter/graphql-sequelize-generator/commit/6330304))
+- Update dataloader-sequelize example. ([38d4a6a](https://github.com/teamstarter/graphql-sequelize-generator/commit/38d4a6a))
 
 ## [5.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.1.0...v5.2.0) (2020-04-15)
 
-
 ### Features
 
-* **performances:** Remove the unused attributes by default. ([a44d434](https://github.com/teamstarter/graphql-sequelize-generator/commit/a44d434))
-
-
+- **performances:** Remove the unused attributes by default. ([a44d434](https://github.com/teamstarter/graphql-sequelize-generator/commit/a44d434))
 
 ## [5.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.0.2...v5.1.0) (2020-03-13)
 
-
 ### Features
 
-* **project:** Add the afterList hook. ([045230d](https://github.com/teamstarter/graphql-sequelize-generator/commit/045230d))
-
-
+- **project:** Add the afterList hook. ([045230d](https://github.com/teamstarter/graphql-sequelize-generator/commit/045230d))
 
 ### [5.0.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v5.0.1...v5.0.2) (2019-12-23)
 
