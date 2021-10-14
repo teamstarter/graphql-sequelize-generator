@@ -6,7 +6,8 @@ const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLInt
 } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
@@ -62,6 +63,23 @@ graphqlSchemaDeclaration.user = {
       // The function returns nothing
     }
   ],
+  count: {
+    extraArg: {
+      departmentId: { type: GraphQLInt }
+    },
+    before: async (findOptions, source, args) => {
+      if (args.managerId) {
+        findOptions.include.push({
+          model: models.company,
+          required: true,
+          where: {
+            departmentId: args.departmentId
+          }
+        })
+      }
+      return findOptions
+    }
+  },
   list: {
     removeUnusedAttributes: false,
     enforceMaxLimit: false,
