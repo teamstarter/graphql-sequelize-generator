@@ -17,7 +17,6 @@ function getModelsFields(
   models: SequelizeModels,
   globalPreCallback: GlobalPreCallback
 ) {
-  console.log('HEEEEERRRRRE')
   return Object.keys(outputTypes).reduce((fields, modelTypeName) => {
     const modelType = outputTypes[modelTypeName]
     const schemaDeclaration = allSchemaDeclarations[
