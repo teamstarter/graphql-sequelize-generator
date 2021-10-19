@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.4.1...v7.5.0) (2021-10-19)
+
+
+### Features
+
+* **count:** Allow the count to have extra args. Use the ones from list if not specified. ([5ad2d81](https://github.com/teamstarter/graphql-sequelize-generator/commit/5ad2d81))
+* **count-extra-arguments:** added the abbility to add an extra argum ([f128137](https://github.com/teamstarter/graphql-sequelize-generator/commit/f128137))
+* **count-extra-arguments:** added the abbility to add an extra argument to the count query ([5c24eba](https://github.com/teamstarter/graphql-sequelize-generator/commit/5c24eba))
+
+
+
 ### [7.4.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.4.0...v7.4.1) (2021-09-21)
 
 
