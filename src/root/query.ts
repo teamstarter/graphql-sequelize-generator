@@ -61,6 +61,10 @@ function getModelsFields(
                 ...defaultListArgs(),
                 ...(schemaDeclaration.count && schemaDeclaration.count.extraArg
                   ? schemaDeclaration.count.extraArg
+                  : // If not count extraArgs are specified, we use the list one by default
+                  // as we already use the list before by default.
+                  schemaDeclaration.list && schemaDeclaration.list.extraArg
+                  ? schemaDeclaration.list.extraArg
                   : {})
               },
               resolve: generateCountResolver(

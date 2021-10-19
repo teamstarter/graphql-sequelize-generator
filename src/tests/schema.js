@@ -68,7 +68,8 @@ graphqlSchemaDeclaration.user = {
       departmentId: { type: GraphQLInt }
     },
     before: async (findOptions, source, args) => {
-      if (args.managerId) {
+      // example of an extra argument usage
+      if (args.departmentId) {
         findOptions.include.push({
           model: models.company,
           required: true,
@@ -76,6 +77,18 @@ graphqlSchemaDeclaration.user = {
             departmentId: args.departmentId
           }
         })
+      }
+
+      // while keeping the list logic after
+      // If you want to re-use the list before,
+      // can can either call it or duplicate the code.
+      // Or do not specify the extra arg in the count,
+      // and declare it in the list, they will both user it.
+      if (typeof findOptions.where === 'undefined') {
+        findOptions.where = {}
+      }
+      findOptions.where = {
+        [Op.and]: [findOptions.where, { departmentId: [1] }]
       }
       return findOptions
     }
