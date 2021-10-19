@@ -112,8 +112,10 @@ export default function removeUnusedAttributes(
     models[info.parentType.name].associations[info.fieldName]
   ) {
     if (
-      models[info.parentType.name].associations[info.fieldName]
-        .associationType === 'HasMany'
+      ['HasMany', 'HasOne'].includes(
+        models[info.parentType.name].associations[info.fieldName]
+          .associationType
+      )
     ) {
       parentModelReferenceAttributes.push(
         models[info.parentType.name].associations[info.fieldName].foreignKey
