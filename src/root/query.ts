@@ -40,7 +40,6 @@ function getModelsFields(
     if (schemaDeclaration.excludeFromRoot === true) {
       return fields
     }
-
     const result =
       schemaDeclaration.actions &&
       schemaDeclaration.actions.indexOf('count') > -1
@@ -59,7 +58,10 @@ function getModelsFields(
               type: GraphQLInt,
               args: {
                 ...defaultArgs(schemaDeclaration.model),
-                ...defaultListArgs()
+                ...defaultListArgs(),
+                ...(schemaDeclaration.count && schemaDeclaration.count.extraArg
+                  ? schemaDeclaration.count.extraArg
+                  : {})
               },
               resolve: generateCountResolver(
                 schemaDeclaration.model,
