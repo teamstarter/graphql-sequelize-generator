@@ -36,7 +36,7 @@ graphqlSchemaDeclaration.user = {
   model: models.user,
   actions: ['list', 'create', 'delete', 'update', 'count'],
   subscriptions: ['create', 'update'],
-  webhooks: ['create', 'update'],
+  webhooks: ['create', 'update', 'delete'],
   before: [
     (args, context, info) => {
       // Global before hook only have args, context and info.
@@ -105,7 +105,7 @@ graphqlSchemaDeclaration.user = {
       // You can log what happened here
 
       setWebhookData(defaultData => {
-        console.log(defaultData)
+        // console.log(defaultData)
         return {
           ...defaultData,
           gsg: 'This hook will be triggered ig gsg'
@@ -360,7 +360,7 @@ module.exports = globalPreCallback => ({
       }
     },
     callWebhook: data => {
-      // console.log(data.data)
+      console.log(data)
       return data
     },
     pubSubInstance

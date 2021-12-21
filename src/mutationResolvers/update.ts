@@ -86,7 +86,12 @@ export default function generateMutationUpdate(
         graphqlModelDeclaration.update &&
         graphqlModelDeclaration.update.after
       ) {
-        const hookData = { ...entity }
+        const hookData = {
+          data: {
+            new: { ...entity.get({ plain: true }) },
+            old: { ...snapshotBeforeUpdate }
+          }
+        }
 
         const afterHandle = globalPreCallback('updateAfter')
         const updatedEntity = await graphqlModelDeclaration.update.after(
@@ -96,7 +101,7 @@ export default function generateMutationUpdate(
           args,
           context,
           info,
-          setWebhookData(entity)
+          setWebhookData(hookData)
         )
         if (afterHandle) {
           afterHandle()
@@ -131,7 +136,7 @@ export default function generateMutationUpdate(
         graphqlModelDeclaration.webhooks,
         'update',
         context,
-        { ...entity },
+        { ...snapshotBeforeUpdate },
         callWebhook
       )
 

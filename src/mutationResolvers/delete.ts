@@ -67,6 +67,7 @@ export default function generateMutationDelete(
       }
 
       const entity = await models[modelName].findOne({ where })
+      const snapshotBeforeDelete = { ...entity.get({ plain: true }) }
 
       if (!entity) {
         throw new Error(`${modelName} not found.`)
@@ -86,7 +87,7 @@ export default function generateMutationDelete(
         graphqlModelDeclaration.delete &&
         graphqlModelDeclaration.delete.after
       ) {
-        const hookData = { ...entity }
+        const hookData = { data: { ...snapshotBeforeDelete } }
 
         const afterHandle = globalPreCallback('deleteAfter')
         await graphqlModelDeclaration.delete.after(
@@ -95,7 +96,7 @@ export default function generateMutationDelete(
           args,
           context,
           info,
-          setWebhookData(entity)
+          setWebhookData(hookData)
         )
         if (afterHandle) {
           afterHandle()
@@ -114,9 +115,9 @@ export default function generateMutationDelete(
       await callModelWebhook(
         modelName,
         graphqlModelDeclaration.webhooks,
-        'create',
+        'delete',
         context,
-        { ...entity },
+        { ...snapshotBeforeDelete },
         callWebhook
       )
 

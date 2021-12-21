@@ -115,7 +115,7 @@ export default function generateMutationCreate(
       ) {
         const afterHandle = globalPreCallback('createAfter')
 
-        const hookData = { ...newEntity }
+        const hookData = { data: newEntity.get({ plain: true }) }
 
         const updatedEntity = await graphqlModelDeclaration.create.after(
           newEntity,
@@ -123,7 +123,7 @@ export default function generateMutationCreate(
           args,
           context,
           info,
-          setWebhookData(newEntity)
+          setWebhookData(hookData)
         )
         if (afterHandle) {
           afterHandle()
@@ -158,7 +158,7 @@ export default function generateMutationCreate(
         graphqlModelDeclaration.webhooks,
         'create',
         context,
-        { ...newEntity },
+        { ...newEntity.get({ plain: true }) },
         callWebhook
       )
 
