@@ -105,7 +105,6 @@ graphqlSchemaDeclaration.user = {
       // You can log what happened here
 
       setWebhookData(defaultData => {
-        // console.log(defaultData)
         return {
           ...defaultData,
           gsg: 'This hook will be triggered ig gsg'
@@ -360,7 +359,6 @@ module.exports = globalPreCallback => ({
       }
     },
     callWebhook: data => {
-      console.log(data)
       return data
     },
     pubSubInstance
