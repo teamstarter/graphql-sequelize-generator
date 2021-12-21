@@ -4,6 +4,8 @@ import {
   GraphQLNonNull,
   GraphQLObjectType
 } from 'graphql'
+import setWebhookData from '../webhook/setWebhookData'
+import callModelWebhook from './callModelWebhook'
 
 /**
  * Generates a update mutation operation
@@ -23,7 +25,8 @@ export default function generateMutationUpdate(
   graphqlModelDeclaration: any,
   models: any,
   globalPreCallback: any,
-  pubSubInstance: PubSub | null = null
+  pubSubInstance: PubSub | null = null,
+  callWebhook: Function
 ) {
   return {
     type: outputType,
@@ -83,6 +86,8 @@ export default function generateMutationUpdate(
         graphqlModelDeclaration.update &&
         graphqlModelDeclaration.update.after
       ) {
+        const hookData = { ...entity }
+
         const afterHandle = globalPreCallback('updateAfter')
         const updatedEntity = await graphqlModelDeclaration.update.after(
           entity,
@@ -90,7 +95,8 @@ export default function generateMutationUpdate(
           source,
           args,
           context,
-          info
+          info,
+          setWebhookData(entity)
         )
         if (afterHandle) {
           afterHandle()
@@ -102,6 +108,15 @@ export default function generateMutationUpdate(
           })
         }
 
+        await callModelWebhook(
+          modelName,
+          graphqlModelDeclaration.webhooks,
+          'update',
+          context,
+          hookData.data,
+          callWebhook
+        )
+
         return updatedEntity
       }
 
@@ -110,6 +125,15 @@ export default function generateMutationUpdate(
           [`${modelName}Updated`]: entity.get()
         })
       }
+
+      await callModelWebhook(
+        modelName,
+        graphqlModelDeclaration.webhooks,
+        'update',
+        context,
+        { ...entity },
+        callWebhook
+      )
 
       return entity
     }
