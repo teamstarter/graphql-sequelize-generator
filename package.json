@@ -68,6 +68,7 @@
     "@types/express-serve-static-core": "^4.17.13",
     "@typescript-eslint/parser": "^4.5.0",
     "apollo-server-express": "2.19.0",
+    "axios": "^0.24.0",
     "debug": "^4.1.1",
     "graphql-subscriptions": "^1.1.0",
     "subscriptions-transport-ws": "^0.9.5",

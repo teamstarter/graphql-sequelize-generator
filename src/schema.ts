@@ -21,7 +21,8 @@ export default function generateSchema({
   models,
   customMutations,
   globalPreCallback = () => null,
-  pubSubInstance
+  pubSubInstance,
+  callWebhook
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
@@ -29,6 +30,7 @@ export default function generateSchema({
   customMutations?: MutationList
   globalPreCallback?: GlobalPreCallback
   pubSubInstance?: PubSub | null
+  callWebhook: Function
 }): GraphQLSchemaConfig {
   const mutationExists =
     !!customMutations ||
@@ -56,7 +58,8 @@ export default function generateSchema({
         models,
         globalPreCallback,
         customMutations,
-        pubSubInstance
+        pubSubInstance,
+        callWebhook
       )
     })
   }

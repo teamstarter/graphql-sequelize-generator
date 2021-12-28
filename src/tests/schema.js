@@ -37,6 +37,7 @@ graphqlSchemaDeclaration.user = {
   model: models.user,
   actions: ['list', 'create', 'delete', 'update', 'count'],
   subscriptions: ['create', 'update'],
+  webhooks: ['create', 'update', 'delete'],
   before: [
     (args, context, info) => {
       // Global before hook only have args, context and info.
@@ -131,8 +132,16 @@ graphqlSchemaDeclaration.user = {
       // You can restrict the creation if needed
       return args.user
     },
-    after: async (newEntity, source, args, context, info) => {
+    after: async (newEntity, source, args, context, info, setWebhookData) => {
       // You can log what happened here
+
+      setWebhookData(defaultData => {
+        return {
+          ...defaultData,
+          gsg: 'This hook will be triggered ig gsg'
+        }
+      })
+
       return newEntity
     },
     preventDuplicateOnAttributes: ['type']
@@ -379,6 +388,9 @@ module.exports = globalPreCallback => ({
           return true
         }
       }
+    },
+    callWebhook: data => {
+      return data
     },
     pubSubInstance
   })
