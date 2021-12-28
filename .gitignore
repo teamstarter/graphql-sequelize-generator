@@ -3,3 +3,4 @@ npm-error.log*
 node_modules
 .DS_Store
 src/tests/data/*.db
+.env
