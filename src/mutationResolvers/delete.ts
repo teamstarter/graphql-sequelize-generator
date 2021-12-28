@@ -1,5 +1,7 @@
 import { PubSub } from 'graphql-subscriptions'
 import { GraphQLInt, GraphQLNonNull } from 'graphql'
+import setWebhookData from '../webhook/setWebhookData'
+import callModelWebhook from './callModelWebhook'
 
 /**
  * Generates a delete mutation operation
@@ -16,7 +18,8 @@ export default function generateMutationDelete(
   graphqlModelDeclaration: any,
   models: any,
   globalPreCallback: any,
-  pubSubInstance: PubSub | null = null
+  pubSubInstance: PubSub | null = null,
+  callWebhook: Function
 ) {
   return {
     type: GraphQLInt,
@@ -64,6 +67,7 @@ export default function generateMutationDelete(
       }
 
       const entity = await models[modelName].findOne({ where })
+      const snapshotBeforeDelete = { ...entity.get({ plain: true }) }
 
       if (!entity) {
         throw new Error(`${modelName} not found.`)
@@ -83,18 +87,40 @@ export default function generateMutationDelete(
         graphqlModelDeclaration.delete &&
         graphqlModelDeclaration.delete.after
       ) {
+        const hookData = { data: { ...snapshotBeforeDelete } }
+
         const afterHandle = globalPreCallback('deleteAfter')
         await graphqlModelDeclaration.delete.after(
           entity,
           source,
           args,
           context,
-          info
+          info,
+          setWebhookData(hookData)
         )
         if (afterHandle) {
           afterHandle()
         }
+
+        await callModelWebhook(
+          modelName,
+          graphqlModelDeclaration.webhooks,
+          'delete',
+          context,
+          hookData.data,
+          callWebhook
+        )
       }
+
+      await callModelWebhook(
+        modelName,
+        graphqlModelDeclaration.webhooks,
+        'delete',
+        context,
+        { ...snapshotBeforeDelete },
+        callWebhook
+      )
+
       return rowDeleted
     }
   }

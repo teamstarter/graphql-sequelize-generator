@@ -18,6 +18,7 @@ export default function generateApolloServer({
   models,
   apolloServerOptions = {},
   pubSubInstance = null,
+  callWebhook = () => null,
   globalPreCallback = () => null
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
@@ -26,6 +27,7 @@ export default function generateApolloServer({
   customMutations?: MutationList
   apolloServerOptions?: ApolloServerExpressConfig
   pubSubInstance?: PubSub | null
+  callWebhook: Function
   globalPreCallback?: GlobalPreCallback
 }): ApolloServer {
   const graphqlSchema = new GraphQLSchema(
@@ -35,7 +37,8 @@ export default function generateApolloServer({
       types,
       models,
       globalPreCallback,
-      pubSubInstance
+      pubSubInstance,
+      callWebhook
     })
   )
 
