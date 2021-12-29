@@ -1,24 +1,21 @@
-const axios = require('axios')
+import axios from 'axios'
+import { capitalize } from '../synchronizeWithIntegromat'
 
-function capitalize(s) {
-  return s[0].toUpperCase() + s.slice(1)
-}
-
-function addReadModule(models, modelName, attributes, token) {
-  let returnAttrinutes = ''
-  attributes.forEach(attribute => {
-    returnAttrinutes += `${attribute}\n    `
-  })
-
+export default function addDeleteModule(
+  models: any,
+  modelName: any,
+  attributes: any,
+  token: any
+) {
   const data = JSON.stringify({
-    name: `read${capitalize(modelName)}`,
-    label: `Read ${capitalize(modelName)}`,
+    name: `delete${capitalize(modelName)}`,
+    label: `Delete ${capitalize(modelName)}`,
     type_id: 4,
-    crud: 'read',
-    description: `The read endpoint for the ${capitalize(modelName)}`
+    crud: 'delete',
+    description: `The delete endpoint for the ${capitalize(modelName)}`
   })
 
-  const config = {
+  const config: any = {
     method: 'post',
     url: `https://api.integromat.com/v1/app/test-app-894954/1/module`,
     headers: {
@@ -38,13 +35,13 @@ function addReadModule(models, modelName, attributes, token) {
         method: 'POST',
         qs: {},
         body: {
-          operationName: modelName,
+          operationName: `delete${capitalize(modelName)}`,
           variables: {
-            where: '{{where}}'
+            id: '{{id}}'
           },
-          query: `query read${capitalize(
+          query: `mutation delete${capitalize(
             modelName
-          )}($where: SequelizeJSON!) {\n  ${modelName}(where: $where) {\n    ${returnAttrinutes}__typename\n  }\n}\n`
+          )}($id: Int!) {\n  ${modelName}Delete(id: $id) \n}\n`
         },
         headers: {
           authorization: '{{connection.token}}'
@@ -54,9 +51,9 @@ function addReadModule(models, modelName, attributes, token) {
         }
       })
 
-      const configApi = {
+      const configApi: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/read${capitalize(
+        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/delete${capitalize(
           modelName
         )}/api`,
         headers: {
@@ -77,16 +74,16 @@ function addReadModule(models, modelName, attributes, token) {
 
       const parameters = [
         {
-          name: 'where',
-          type: 'json',
-          label: 'Where',
+          name: 'id',
+          type: 'integer',
+          label: `${modelName} Id`,
           required: true
         }
       ]
 
-      const configExpect = {
+      const configExpect: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/read${capitalize(
+        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/delete${capitalize(
           modelName
         )}/expect`,
         headers: {
@@ -109,5 +106,3 @@ function addReadModule(models, modelName, attributes, token) {
       console.log(error)
     })
 }
-
-module.exports = addReadModule
