@@ -1,27 +1,27 @@
-const axios = require('axios')
+import axios from 'axios'
 
-const addCreateModule = require('./addModules/addCreateModule')
-const addDeleteModule = require('./addModules/addDeleteModule')
-const addReadModule = require('./addModules/addReadModule')
-const addUpdateModule = require('./addModules/addUpdateModule')
+import addCreateModule from './addModules/addCreateModule'
+import addDeleteModule from './addModules/addDeleteModule'
+import addReadModule from './addModules/addReadModule'
+import addUpdateModule from './addModules/addUpdateModule'
 
-const addModules = {
+const addModules: any = {
   read: addReadModule,
   create: addCreateModule,
   update: addUpdateModule,
   delete: addDeleteModule
 }
 
-function capitalize(s) {
+export function capitalize(s: string) {
   return s[0].toUpperCase() + s.slice(1)
 }
 
-function synchronizeWithIntegromat(models, token) {
+export default function synchronizeWithIntegromat(models: any, token: any) {
   Object.keys(models.sequelize.models).forEach(modelName => {
     if (models[modelName]) {
       ;['read', 'create', 'update', 'delete'].forEach(action => {
         const attributes = Object.keys(models[modelName].rawAttributes)
-        const config = {
+        const config: any = {
           method: 'get',
           url: `https://api.integromat.com/v1/app/test-app-894954/1/module/${action}${capitalize(
             modelName
@@ -45,7 +45,3 @@ function synchronizeWithIntegromat(models, token) {
     }
   })
 }
-
-module.exports = synchronizeWithIntegromat
-
-// console.log(models.company.rawAttributes.name.validate.isIn[0])

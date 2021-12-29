@@ -9,6 +9,9 @@
     "api",
     "express"
   ],
+  "bin": {
+    "gsg": "./lib/gsg.js"
+  },
   "main": "./lib/index.js",
   "types": "./src/index.d.ts",
   "repository": "git@github.com:teamstarter/graphql-sequelize-generator.git",
@@ -54,8 +57,9 @@
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
     "start": "rm -f ./src/tests/data/main.db && DEBUG=gsg node ./src/tests/testServer.js",
-    "build": "rm -rf ./lib/* && tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts",
-    "release": "standard-version"
+    "build": "rm -rf ./lib/* && tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts ./src/scripts/*.ts ./src/gsg.ts",
+    "release": "standard-version",
+    "gsg": "node ./lib/gsg.js"
   },
   "peerDependencies": {
     "graphql": "^14.6.0",
@@ -69,6 +73,7 @@
     "@typescript-eslint/parser": "^4.5.0",
     "apollo-server-express": "2.19.0",
     "axios": "^0.24.0",
+    "commander": "^7.2.0",
     "debug": "^4.1.1",
     "graphql-subscriptions": "^1.1.0",
     "subscriptions-transport-ws": "^0.9.5",

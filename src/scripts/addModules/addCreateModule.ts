@@ -1,16 +1,19 @@
-const axios = require('axios')
+import axios from 'axios'
+import { capitalize } from '../synchronizeWithIntegromat'
 
-function capitalize(s) {
-  return s[0].toUpperCase() + s.slice(1)
-}
-
-function addUpdateModule(models, modelName, attributes, token) {
-  const variable = {}
+export default function addCreateModule(
+  models: any,
+  modelName: string,
+  attributes: any,
+  token: any
+) {
+  const variable: any = {}
   let returnAttrinutes = ''
-  attributes.forEach(attribute => {
+  attributes.forEach((attribute: string) => {
     if (
+      !['createdAt', 'updatedAt', 'deletedAt', 'id'].includes(attribute) &&
       models[modelName].rawAttributes[attribute].type.constructor.key !==
-      'VIRTUAL'
+        'VIRTUAL'
     ) {
       variable[attribute] = `{{${attribute}}}`
     }
@@ -18,14 +21,14 @@ function addUpdateModule(models, modelName, attributes, token) {
   })
 
   const data = JSON.stringify({
-    name: `update${capitalize(modelName)}`,
-    label: `Update ${capitalize(modelName)}`,
+    name: `create${capitalize(modelName)}`,
+    label: `Create ${capitalize(modelName)}`,
     type_id: 4,
-    crud: 'update',
-    description: `The update endpoint for the ${capitalize(modelName)}`
+    crud: 'create',
+    description: `The create endpoint for the ${capitalize(modelName)}`
   })
 
-  const config = {
+  const config: any = {
     method: 'post',
     url: `https://api.integromat.com/v1/app/test-app-894954/1/module`,
     headers: {
@@ -45,13 +48,13 @@ function addUpdateModule(models, modelName, attributes, token) {
         method: 'POST',
         qs: {},
         body: {
-          operationName: `update${capitalize(modelName)}`,
+          operationName: `create${capitalize(modelName)}`,
           variables: {
             [modelName]: variable
           },
-          query: `mutation update${capitalize(
+          query: `mutation create${capitalize(
             modelName
-          )}($${modelName}: ${modelName}Input!) {\n  ${modelName}Update(${modelName}: $${modelName}) {\n    ${returnAttrinutes}__typename\n  }\n}\n`
+          )}($${modelName}: ${modelName}Input!) {\n  ${modelName}Create(${modelName}: $${modelName}) {\n    ${returnAttrinutes}__typename\n  }\n}\n`
         },
         headers: {
           authorization: '{{connection.token}}'
@@ -61,9 +64,9 @@ function addUpdateModule(models, modelName, attributes, token) {
         }
       })
 
-      const configApi = {
+      const configApi: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/update${capitalize(
+        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/create${capitalize(
           modelName
         )}/api`,
         headers: {
@@ -84,20 +87,17 @@ function addUpdateModule(models, modelName, attributes, token) {
 
       const parameters = Object.keys(variable).map(attribute => {
         const attributeObject = models[modelName].rawAttributes[attribute]
-        const parameter = {
+        const parameter: any = {
           name: attribute,
           type: models[modelName].rawAttributes[attribute].type.constructor.key,
           label: capitalize(attribute),
-          required:
-            attribute === 'id'
-              ? true
-              : !models[modelName].rawAttributes[attribute].allowNull
+          required: !models[modelName].rawAttributes[attribute].allowNull
         }
 
         if (attributeObject.validate && attributeObject.validate.isIn) {
           parameter['type'] = 'select'
           parameter['options'] = attributeObject.validate.isIn[0].map(
-            valid => ({
+            (valid: any) => ({
               label: String(valid),
               value: valid
             })
@@ -106,9 +106,9 @@ function addUpdateModule(models, modelName, attributes, token) {
         return parameter
       })
 
-      const configExpect = {
+      const configExpect: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/update${capitalize(
+        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/create${capitalize(
           modelName
         )}/expect`,
         headers: {
@@ -131,5 +131,3 @@ function addUpdateModule(models, modelName, attributes, token) {
       console.log(error)
     })
 }
-
-module.exports = addUpdateModule
