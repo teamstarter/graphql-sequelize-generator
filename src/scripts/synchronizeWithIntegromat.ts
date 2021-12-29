@@ -16,10 +16,14 @@ export function capitalize(s: string) {
   return s[0].toUpperCase() + s.slice(1)
 }
 
-export default function synchronizeWithIntegromat(models: any, token: any) {
-  Object.keys(models.sequelize.models).forEach(modelName => {
+export default async function synchronizeWithIntegromat(
+  models: any,
+  token: any
+) {
+  // Object.keys(models.sequelize.models).forEach(modelName => {
+  for (const modelName in models.sequelize.models) {
     if (models[modelName]) {
-      ;['read', 'create', 'update', 'delete'].forEach(action => {
+      ;['read', 'create', 'update', 'delete'].forEach(async action => {
         const attributes = Object.keys(models[modelName].rawAttributes)
         const config: any = {
           method: 'get',
@@ -31,17 +35,16 @@ export default function synchronizeWithIntegromat(models: any, token: any) {
             'x-imt-apps-sdk-version': '1.3.8'
           }
         }
-        axios(config)
-          .then(function(response) {
-            console.log(`Module "${response.data.label}" already exists.`)
-          })
-          .catch(function(error) {
-            console.log(error.response.data)
-            if (error.response.data.code === 'IM005') {
-              addModules[action](models, modelName, attributes, token)
-            }
-          })
+        try {
+          const response = await axios(config)
+          console.log(`Module "${response.data.label}" already exists.`)
+        } catch (error) {
+          console.log(error.response.data)
+          if (error.response.data.code === 'IM005') {
+            addModules[action](models, modelName, attributes, token)
+          }
+        }
       })
     }
-  })
+  }
 }
