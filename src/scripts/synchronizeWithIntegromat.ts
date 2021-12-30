@@ -16,6 +16,10 @@ export function capitalize(s: string) {
   return s[0].toUpperCase() + s.slice(1)
 }
 
+function sleep(ms: any) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 export default async function synchronizeWithIntegromat(
   models: any,
   token: any
@@ -42,6 +46,7 @@ export default async function synchronizeWithIntegromat(
           console.log(error.response.data)
           if (error.response.data.code === 'IM005') {
             addModules[action](models, modelName, attributes, token)
+            await sleep(500)
           }
         }
       })
