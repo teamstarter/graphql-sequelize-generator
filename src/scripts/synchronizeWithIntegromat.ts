@@ -16,7 +16,7 @@ export function capitalize(s: string) {
   return s[0].toUpperCase() + s.slice(1)
 }
 
-function sleep(ms) {
+function sleep(ms: any) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
