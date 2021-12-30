@@ -5,7 +5,8 @@ export default function addReadModule(
   models: any,
   modelName: string,
   attributes: any,
-  token: any
+  token: any,
+  appName: string
 ) {
   let returnAttrinutes = ''
   attributes.forEach((attribute: any) => {
@@ -22,7 +23,7 @@ export default function addReadModule(
 
   const config: any = {
     method: 'post',
-    url: `https://api.integromat.com/v1/app/test-app-894954/1/module`,
+    url: `https://api.integromat.com/v1/app/${appName}/1/module`,
     headers: {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ export default function addReadModule(
 
       const configApi: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/read${capitalize(
+        url: `https://api.integromat.com/v1/app/${appName}/1/module/read${capitalize(
           modelName
         )}/api`,
         headers: {
@@ -88,7 +89,7 @@ export default function addReadModule(
 
       const configExpect: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/read${capitalize(
+        url: `https://api.integromat.com/v1/app/${appName}/1/module/read${capitalize(
           modelName
         )}/expect`,
         headers: {

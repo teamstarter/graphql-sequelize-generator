@@ -5,7 +5,8 @@ export default function addCreateModule(
   models: any,
   modelName: string,
   attributes: any,
-  token: any
+  token: any,
+  appName: string
 ) {
   const variable: any = {}
   let returnAttrinutes = ''
@@ -30,7 +31,7 @@ export default function addCreateModule(
 
   const config: any = {
     method: 'post',
-    url: `https://api.integromat.com/v1/app/test-app-894954/1/module`,
+    url: `https://api.integromat.com/v1/app/${appName}/1/module`,
     headers: {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json',
@@ -66,7 +67,7 @@ export default function addCreateModule(
 
       const configApi: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/create${capitalize(
+        url: `https://api.integromat.com/v1/app/${appName}/1/module/create${capitalize(
           modelName
         )}/api`,
         headers: {
@@ -108,7 +109,7 @@ export default function addCreateModule(
 
       const configExpect: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/create${capitalize(
+        url: `https://api.integromat.com/v1/app/${appName}/1/module/create${capitalize(
           modelName
         )}/expect`,
         headers: {
