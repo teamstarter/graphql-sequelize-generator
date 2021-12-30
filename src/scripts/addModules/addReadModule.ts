@@ -74,7 +74,7 @@ export default async function addReadModule(
       const response = await axios(configApi)
       console.log(JSON.stringify(response.data))
     } catch (error) {
-      console.log(error.response.data)
+      console.log(JSON.stringify(error))
     }
 
     const parameters = [
@@ -103,9 +103,9 @@ export default async function addReadModule(
       const response = await axios(configExpect)
       console.log(JSON.stringify(response.data))
     } catch (error) {
-      console.log(error.response.data)
+      console.log(JSON.stringify(error))
     }
   } catch (error) {
-    console.log(error.response.data)
+    console.log(JSON.stringify(error))
   }
 }

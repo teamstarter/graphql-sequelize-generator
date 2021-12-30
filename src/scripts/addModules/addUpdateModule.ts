@@ -82,7 +82,7 @@ export default function addUpdateModule(
           console.log(JSON.stringify(response.data))
         })
         .catch(function(error) {
-          console.log(error.response.data)
+          console.log(JSON.stringify(error))
         })
 
       const parameters = Object.keys(variable).map(attribute => {
@@ -127,10 +127,10 @@ export default function addUpdateModule(
           console.log(JSON.stringify(response.data))
         })
         .catch(function(error) {
-          console.log(error.response.data)
+          console.log(JSON.stringify(error))
         })
     })
     .catch(function(error) {
-      console.log(error.response.data)
+      console.log(JSON.stringify(error))
     })
 }
