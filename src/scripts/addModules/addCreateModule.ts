@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { capitalize } from '../synchronizeWithIntegromat'
 
-export default function addCreateModule(
+export default async function addCreateModule(
   models: any,
   modelName: string,
   attributes: any,
@@ -40,95 +40,92 @@ export default function addCreateModule(
     data: data
   }
 
-  axios(config)
-    .then(function(response) {
+  try {
+    const response = await axios(config)
+    console.log(JSON.stringify(response.data))
+
+    const queryString = JSON.stringify({
+      url: '/platform/graphql',
+      method: 'POST',
+      qs: {},
+      body: {
+        operationName: `create${capitalize(modelName)}`,
+        variables: {
+          [modelName]: variable
+        },
+        query: `mutation create${capitalize(
+          modelName
+        )}($${modelName}: ${modelName}Input!) {\n  ${modelName}Create(${modelName}: $${modelName}) {\n    ${returnAttrinutes}__typename\n  }\n}\n`
+      },
+      headers: {
+        authorization: '{{connection.token}}'
+      },
+      response: {
+        output: '{{body}}'
+      }
+    })
+
+    const configApi: any = {
+      method: 'put',
+      url: `https://api.integromat.com/v1/app/${appName}/1/module/create${capitalize(
+        modelName
+      )}/api`,
+      headers: {
+        Authorization: `Token ${token}`,
+        'x-imt-apps-sdk-version': '1.0.0',
+        'Content-Type': 'application/jsonc'
+      },
+      data: queryString
+    }
+
+    try {
+      const response = await axios(configApi)
       console.log(JSON.stringify(response.data))
+    } catch (error) {
+      console.log(error.response.data)
+    }
 
-      const queryString = JSON.stringify({
-        url: '/platform/graphql',
-        method: 'POST',
-        qs: {},
-        body: {
-          operationName: `create${capitalize(modelName)}`,
-          variables: {
-            [modelName]: variable
-          },
-          query: `mutation create${capitalize(
-            modelName
-          )}($${modelName}: ${modelName}Input!) {\n  ${modelName}Create(${modelName}: $${modelName}) {\n    ${returnAttrinutes}__typename\n  }\n}\n`
-        },
-        headers: {
-          authorization: '{{connection.token}}'
-        },
-        response: {
-          output: '{{body}}'
-        }
-      })
-
-      const configApi: any = {
-        method: 'put',
-        url: `https://api.integromat.com/v1/app/${appName}/1/module/create${capitalize(
-          modelName
-        )}/api`,
-        headers: {
-          Authorization: `Token ${token}`,
-          'x-imt-apps-sdk-version': '1.0.0',
-          'Content-Type': 'application/jsonc'
-        },
-        data: queryString
+    const parameters = Object.keys(variable).map(attribute => {
+      const attributeObject = models[modelName].rawAttributes[attribute]
+      const parameter: any = {
+        name: attribute,
+        type: models[modelName].rawAttributes[attribute].type.constructor.key,
+        label: capitalize(attribute),
+        required: !models[modelName].rawAttributes[attribute].allowNull
       }
 
-      axios(configApi)
-        .then(function(response) {
-          console.log(JSON.stringify(response.data))
-        })
-        .catch(function(error) {
-          console.log(error)
-        })
-
-      const parameters = Object.keys(variable).map(attribute => {
-        const attributeObject = models[modelName].rawAttributes[attribute]
-        const parameter: any = {
-          name: attribute,
-          type: models[modelName].rawAttributes[attribute].type.constructor.key,
-          label: capitalize(attribute),
-          required: !models[modelName].rawAttributes[attribute].allowNull
-        }
-
-        if (attributeObject.validate && attributeObject.validate.isIn) {
-          parameter['type'] = 'select'
-          parameter['options'] = attributeObject.validate.isIn[0].map(
-            (valid: any) => ({
-              label: String(valid),
-              value: valid
-            })
-          )
-        }
-        return parameter
-      })
-
-      const configExpect: any = {
-        method: 'put',
-        url: `https://api.integromat.com/v1/app/${appName}/1/module/create${capitalize(
-          modelName
-        )}/expect`,
-        headers: {
-          Authorization: `Token ${token}`,
-          'x-imt-apps-sdk-version': '1.0.0',
-          'Content-Type': 'application/jsonc'
-        },
-        data: JSON.stringify(parameters)
+      if (attributeObject.validate && attributeObject.validate.isIn) {
+        parameter['type'] = 'select'
+        parameter['options'] = attributeObject.validate.isIn[0].map(
+          (valid: any) => ({
+            label: String(valid),
+            value: valid
+          })
+        )
       }
+      return parameter
+    })
 
-      axios(configExpect)
-        .then(function(response) {
-          console.log(JSON.stringify(response.data))
-        })
-        .catch(function(error) {
-          console.log(error)
-        })
-    })
-    .catch(function(error) {
-      console.log(error)
-    })
+    const configExpect: any = {
+      method: 'put',
+      url: `https://api.integromat.com/v1/app/${appName}/1/module/create${capitalize(
+        modelName
+      )}/expect`,
+      headers: {
+        Authorization: `Token ${token}`,
+        'x-imt-apps-sdk-version': '1.0.0',
+        'Content-Type': 'application/jsonc'
+      },
+      data: JSON.stringify(parameters)
+    }
+
+    try {
+      const response = await axios(configExpect)
+      console.log(JSON.stringify(response.data))
+    } catch (error) {
+      console.log(error.response.data)
+    }
+  } catch (error) {
+    console.log(error.response.data)
+  }
 }
