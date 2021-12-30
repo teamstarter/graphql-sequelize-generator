@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { capitalize } from '../synchronizeWithIntegromat'
 
-export default function addDeleteModule(
+export default async function addDeleteModule(
   models: any,
   modelName: any,
   attributes: any,
@@ -27,83 +27,80 @@ export default function addDeleteModule(
     data: data
   }
 
-  axios(config)
-    .then(function(response) {
+  try {
+    const response = await axios(config)
+    console.log(JSON.stringify(response.data))
+
+    const queryString = JSON.stringify({
+      url: '/platform/graphql',
+      method: 'POST',
+      qs: {},
+      body: {
+        operationName: `delete${capitalize(modelName)}`,
+        variables: {
+          id: '{{id}}'
+        },
+        query: `mutation delete${capitalize(
+          modelName
+        )}($id: Int!) {\n  ${modelName}Delete(id: $id) \n}\n`
+      },
+      headers: {
+        authorization: '{{connection.token}}'
+      },
+      response: {
+        output: '{{body}}'
+      }
+    })
+
+    const configApi: any = {
+      method: 'put',
+      url: `https://api.integromat.com/v1/app/${appName}/1/module/delete${capitalize(
+        modelName
+      )}/api`,
+      headers: {
+        Authorization: `Token ${token}`,
+        'x-imt-apps-sdk-version': '1.0.0',
+        'Content-Type': 'application/jsonc'
+      },
+      data: queryString
+    }
+
+    try {
+      const response = await axios(configApi)
       console.log(JSON.stringify(response.data))
+    } catch (error) {
+      console.log(error.response.data)
+    }
 
-      const queryString = JSON.stringify({
-        url: '/platform/graphql',
-        method: 'POST',
-        qs: {},
-        body: {
-          operationName: `delete${capitalize(modelName)}`,
-          variables: {
-            id: '{{id}}'
-          },
-          query: `mutation delete${capitalize(
-            modelName
-          )}($id: Int!) {\n  ${modelName}Delete(id: $id) \n}\n`
-        },
-        headers: {
-          authorization: '{{connection.token}}'
-        },
-        response: {
-          output: '{{body}}'
-        }
-      })
-
-      const configApi: any = {
-        method: 'put',
-        url: `https://api.integromat.com/v1/app/${appName}/1/module/delete${capitalize(
-          modelName
-        )}/api`,
-        headers: {
-          Authorization: `Token ${token}`,
-          'x-imt-apps-sdk-version': '1.0.0',
-          'Content-Type': 'application/jsonc'
-        },
-        data: queryString
+    const parameters = [
+      {
+        name: 'id',
+        type: 'integer',
+        label: `${modelName} Id`,
+        required: true
       }
+    ]
 
-      axios(configApi)
-        .then(function(response) {
-          console.log(JSON.stringify(response.data))
-        })
-        .catch(function(error) {
-          console.log(error)
-        })
+    const configExpect: any = {
+      method: 'put',
+      url: `https://api.integromat.com/v1/app/${appName}/1/module/delete${capitalize(
+        modelName
+      )}/expect`,
+      headers: {
+        Authorization: `Token ${token}`,
+        'x-imt-apps-sdk-version': '1.0.0',
+        'Content-Type': 'application/jsonc'
+      },
+      data: JSON.stringify(parameters)
+    }
 
-      const parameters = [
-        {
-          name: 'id',
-          type: 'integer',
-          label: `${modelName} Id`,
-          required: true
-        }
-      ]
-
-      const configExpect: any = {
-        method: 'put',
-        url: `https://api.integromat.com/v1/app/${appName}/1/module/delete${capitalize(
-          modelName
-        )}/expect`,
-        headers: {
-          Authorization: `Token ${token}`,
-          'x-imt-apps-sdk-version': '1.0.0',
-          'Content-Type': 'application/jsonc'
-        },
-        data: JSON.stringify(parameters)
-      }
-
-      axios(configExpect)
-        .then(function(response) {
-          console.log(JSON.stringify(response.data))
-        })
-        .catch(function(error) {
-          console.log(error)
-        })
-    })
-    .catch(function(error) {
-      console.log(error)
-    })
+    try {
+      const response = await axios(configExpect)
+      console.log(JSON.stringify(response.data))
+    } catch (error) {
+      console.log(error.response.data)
+    }
+  } catch (error) {
+    console.log(error.response.data)
+  }
 }
