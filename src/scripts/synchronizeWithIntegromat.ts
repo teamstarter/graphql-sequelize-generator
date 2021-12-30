@@ -40,7 +40,7 @@ export default async function synchronizeWithIntegromat(
           const response = await axios(config)
           console.log(`Module "${response.data.label}" already exists.`)
         } catch (error) {
-          console.log(error.response.data)
+          console.log(JSON.stringify(error))
           if (error.response.data.code === 'IM005') {
             addModules[action](models, modelName, attributes, token, appName)
           }
