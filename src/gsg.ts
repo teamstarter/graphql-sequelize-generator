@@ -16,7 +16,7 @@ program
       throw new Error('Could not load the given config.' + e.message)
     }
     const models = require(config.modelsPath)
-    synchronizeWithIntegromat(models, config.token)
+    synchronizeWithIntegromat(models, config.token, config.appName)
   })
 
 program.command('help', 'Display the help')

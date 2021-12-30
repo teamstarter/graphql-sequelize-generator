@@ -5,7 +5,8 @@ export default function addDeleteModule(
   models: any,
   modelName: any,
   attributes: any,
-  token: any
+  token: any,
+  appName: string
 ) {
   const data = JSON.stringify({
     name: `delete${capitalize(modelName)}`,
@@ -17,7 +18,7 @@ export default function addDeleteModule(
 
   const config: any = {
     method: 'post',
-    url: `https://api.integromat.com/v1/app/test-app-894954/1/module`,
+    url: `https://api.integromat.com/v1/app/${appName}/1/module`,
     headers: {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json',
@@ -53,7 +54,7 @@ export default function addDeleteModule(
 
       const configApi: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/delete${capitalize(
+        url: `https://api.integromat.com/v1/app/${appName}/1/module/delete${capitalize(
           modelName
         )}/api`,
         headers: {
@@ -83,7 +84,7 @@ export default function addDeleteModule(
 
       const configExpect: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/delete${capitalize(
+        url: `https://api.integromat.com/v1/app/${appName}/1/module/delete${capitalize(
           modelName
         )}/expect`,
         headers: {

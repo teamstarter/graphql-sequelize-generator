@@ -5,7 +5,8 @@ export default function addUpdateModule(
   models: any,
   modelName: string,
   attributes: any,
-  token: any
+  token: any,
+  appName: string
 ) {
   const variable: any = {}
   let returnAttrinutes = ''
@@ -29,7 +30,7 @@ export default function addUpdateModule(
 
   const config: any = {
     method: 'post',
-    url: `https://api.integromat.com/v1/app/test-app-894954/1/module`,
+    url: `https://api.integromat.com/v1/app/${appName}/1/module`,
     headers: {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json',
@@ -65,7 +66,7 @@ export default function addUpdateModule(
 
       const configApi: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/update${capitalize(
+        url: `https://api.integromat.com/v1/app/${appName}/1/module/update${capitalize(
           modelName
         )}/api`,
         headers: {
@@ -110,7 +111,7 @@ export default function addUpdateModule(
 
       const configExpect: any = {
         method: 'put',
-        url: `https://api.integromat.com/v1/app/test-app-894954/1/module/update${capitalize(
+        url: `https://api.integromat.com/v1/app/${appName}/1/module/update${capitalize(
           modelName
         )}/expect`,
         headers: {

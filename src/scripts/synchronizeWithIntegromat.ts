@@ -22,7 +22,8 @@ function sleep(ms: any) {
 
 export default async function synchronizeWithIntegromat(
   models: any,
-  token: any
+  token: any,
+  appName: string
 ) {
   // Object.keys(models.sequelize.models).forEach(modelName => {
   for (const modelName in models.sequelize.models) {
@@ -31,7 +32,7 @@ export default async function synchronizeWithIntegromat(
         const attributes = Object.keys(models[modelName].rawAttributes)
         const config: any = {
           method: 'get',
-          url: `https://api.integromat.com/v1/app/test-app-894954/1/module/${action}${capitalize(
+          url: `https://api.integromat.com/v1/app/${appName}/1/module/${action}${capitalize(
             modelName
           )}`,
           headers: {
@@ -45,7 +46,7 @@ export default async function synchronizeWithIntegromat(
         } catch (error) {
           console.log(error.response.data)
           if (error.response.data.code === 'IM005') {
-            addModules[action](models, modelName, attributes, token)
+            addModules[action](models, modelName, attributes, token, appName)
             await sleep(500)
           }
         }
