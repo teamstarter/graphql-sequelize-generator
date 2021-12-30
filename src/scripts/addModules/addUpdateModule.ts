@@ -41,7 +41,7 @@ export default function addUpdateModule(
 
   axios(config)
     .then(function(response) {
-      console.log(JSON.stringify(response.data))
+      console.log(JSON.stringify(response))
 
       const queryString = JSON.stringify({
         url: '/platform/graphql',
@@ -79,7 +79,7 @@ export default function addUpdateModule(
 
       axios(configApi)
         .then(function(response) {
-          console.log(JSON.stringify(response.data))
+          console.log(JSON.stringify(response))
         })
         .catch(function(error) {
           console.log(JSON.stringify(error))
@@ -124,7 +124,7 @@ export default function addUpdateModule(
 
       axios(configExpect)
         .then(function(response) {
-          console.log(JSON.stringify(response.data))
+          console.log(JSON.stringify(response))
         })
         .catch(function(error) {
           console.log(JSON.stringify(error))

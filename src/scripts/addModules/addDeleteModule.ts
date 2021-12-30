@@ -29,7 +29,7 @@ export default async function addDeleteModule(
 
   try {
     const response = await axios(config)
-    console.log(JSON.stringify(response.data))
+    console.log(JSON.stringify(response))
 
     const queryString = JSON.stringify({
       url: '/platform/graphql',
@@ -67,7 +67,7 @@ export default async function addDeleteModule(
 
     try {
       const response = await axios(configApi)
-      console.log(JSON.stringify(response.data))
+      console.log(JSON.stringify(response))
     } catch (error) {
       console.log(JSON.stringify(error))
     }
@@ -96,7 +96,7 @@ export default async function addDeleteModule(
 
     try {
       const response = await axios(configExpect)
-      console.log(JSON.stringify(response.data))
+      console.log(JSON.stringify(response))
     } catch (error) {
       console.log(JSON.stringify(error))
     }
