@@ -25,6 +25,7 @@ export function generateApolloServer({
   models,
   apolloServerOptions,
   pubSubInstance,
+  callWebhook,
   globalPreCallback
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
@@ -33,6 +34,7 @@ export function generateApolloServer({
   customMutations?: MutationList
   apolloServerOptions?: ApolloServerExpressConfig
   pubSubInstance?: PubSub | null
+  callWebhook: Function
   globalPreCallback?: GlobalPreCallback
 }): ApolloServer
 export function generateSchema({
@@ -41,7 +43,8 @@ export function generateSchema({
   models,
   customMutations,
   globalPreCallback,
-  pubSubInstance
+  pubSubInstance,
+  callWebhook
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
@@ -49,6 +52,7 @@ export function generateSchema({
   customMutations: MutationList
   globalPreCallback?: GlobalPreCallback
   pubSubInstance: PubSub | null
+  callWebhook: Function
 }): GraphQLSchemaConfig
 export function generateModelTypes(models: SequelizeModels): InAndOutTypes
 export function generateCount(

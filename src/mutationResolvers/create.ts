@@ -4,6 +4,8 @@ import {
   GraphQLNonNull,
   GraphQLObjectType
 } from 'graphql'
+import setWebhookData from '../webhook/setWebhookData'
+import callModelWebhook from './callModelWebhook'
 
 /**
  * Generates a create mutation operation
@@ -22,7 +24,8 @@ export default function generateMutationCreate(
   model: any,
   graphqlModelDeclaration: any,
   globalPreCallback: any,
-  pubSubInstance: PubSub | null = null
+  pubSubInstance: PubSub | null = null,
+  callWebhook: Function
 ) {
   return {
     type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
@@ -111,12 +114,16 @@ export default function generateMutationCreate(
         graphqlModelDeclaration.create.after
       ) {
         const afterHandle = globalPreCallback('createAfter')
+
+        const hookData = { data: newEntity.get({ plain: true }) }
+
         const updatedEntity = await graphqlModelDeclaration.create.after(
           newEntity,
           source,
           args,
           context,
-          info
+          info,
+          setWebhookData(hookData)
         )
         if (afterHandle) {
           afterHandle()
@@ -128,6 +135,15 @@ export default function generateMutationCreate(
           })
         }
 
+        await callModelWebhook(
+          modelName,
+          graphqlModelDeclaration.webhooks,
+          'create',
+          context,
+          hookData.data,
+          callWebhook
+        )
+
         return updatedEntity
       }
 
@@ -136,6 +152,15 @@ export default function generateMutationCreate(
           [`${modelName}Created`]: newEntity.get()
         })
       }
+
+      await callModelWebhook(
+        modelName,
+        graphqlModelDeclaration.webhooks,
+        'create',
+        context,
+        { ...newEntity.get({ plain: true }) },
+        callWebhook
+      )
 
       return newEntity
     }
