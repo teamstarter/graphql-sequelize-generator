@@ -4,27 +4,23 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [7.5.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.5.0...v7.5.1) (2022-01-20)
 
+### Features
 
+- **webhooks:** Make it easier to use graphql-web-hooks with GSG.
 
 ## [7.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.4.1...v7.5.0) (2021-10-19)
 
-
 ### Features
 
-* **count:** Allow the count to have extra args. Use the ones from list if not specified. ([5ad2d81](https://github.com/teamstarter/graphql-sequelize-generator/commit/5ad2d81))
-* **count-extra-arguments:** added the abbility to add an extra argum ([f128137](https://github.com/teamstarter/graphql-sequelize-generator/commit/f128137))
-* **count-extra-arguments:** added the abbility to add an extra argument to the count query ([5c24eba](https://github.com/teamstarter/graphql-sequelize-generator/commit/5c24eba))
-
-
+- **count:** Allow the count to have extra args. Use the ones from list if not specified. ([5ad2d81](https://github.com/teamstarter/graphql-sequelize-generator/commit/5ad2d81))
+- **count-extra-arguments:** added the abbility to add an extra argum ([f128137](https://github.com/teamstarter/graphql-sequelize-generator/commit/f128137))
+- **count-extra-arguments:** added the abbility to add an extra argument to the count query ([5c24eba](https://github.com/teamstarter/graphql-sequelize-generator/commit/5c24eba))
 
 ### [7.4.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.4.0...v7.4.1) (2021-09-21)
 
-
 ### Bug Fixes
 
-* **parent-obejct-attributes:** Fix an issue with HasOne relations that failed to be fetched. ([ce28b57](https://github.com/teamstarter/graphql-sequelize-generator/commit/ce28b57))
-
-
+- **parent-obejct-attributes:** Fix an issue with HasOne relations that failed to be fetched. ([ce28b57](https://github.com/teamstarter/graphql-sequelize-generator/commit/ce28b57))
 
 ## [7.4.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.3.5...v7.4.0) (2021-08-10)
 
