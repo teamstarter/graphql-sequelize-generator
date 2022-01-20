@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test the count resolvers Check that you can count a list with an extra agrument 1`] = `
+Array [
+  "listGlobalBefore",
+  "listGlobalBefore",
+  "listBefore",
+  "countBefore",
+  "listAfter",
+]
+`;
+
+exports[`Test the count resolvers Check that you can count a list with an extra agrument: Users ids and count with an extra argument 1`] = `
+Object {
+  "user": Array [
+    Object {
+      "id": 5,
+    },
+    Object {
+      "id": 10,
+    },
+  ],
+  "userCount": 2,
+}
+`;
+
 exports[`Test the count resolvers Check that you can inject types attributes and associations into a random Type 1`] = `Array []`;
 
 exports[`Test the count resolvers Check that you can inject types attributes and associations into a random Type: Users ids should only be odd. 1`] = `

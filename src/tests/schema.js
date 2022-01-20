@@ -6,7 +6,8 @@ const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLInt
 } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
@@ -36,6 +37,7 @@ graphqlSchemaDeclaration.user = {
   model: models.user,
   actions: ['list', 'create', 'delete', 'update', 'count'],
   subscriptions: ['create', 'update'],
+  webhooks: ['create', 'update', 'delete'],
   before: [
     (args, context, info) => {
       // Global before hook only have args, context and info.
@@ -62,6 +64,36 @@ graphqlSchemaDeclaration.user = {
       // The function returns nothing
     }
   ],
+  count: {
+    extraArg: {
+      departmentId: { type: GraphQLInt }
+    },
+    before: async (findOptions, source, args) => {
+      // example of an extra argument usage
+      if (args.departmentId) {
+        findOptions.include.push({
+          model: models.company,
+          required: true,
+          where: {
+            departmentId: args.departmentId
+          }
+        })
+      }
+
+      // while keeping the list logic after
+      // If you want to re-use the list before,
+      // can can either call it or duplicate the code.
+      // Or do not specify the extra arg in the count,
+      // and declare it in the list, they will both user it.
+      if (typeof findOptions.where === 'undefined') {
+        findOptions.where = {}
+      }
+      findOptions.where = {
+        [Op.and]: [findOptions.where, { departmentId: [1] }]
+      }
+      return findOptions
+    }
+  },
   list: {
     removeUnusedAttributes: false,
     enforceMaxLimit: false,
@@ -100,8 +132,16 @@ graphqlSchemaDeclaration.user = {
       // You can restrict the creation if needed
       return args.user
     },
-    after: async (newEntity, source, args, context, info) => {
+    after: async (newEntity, source, args, context, info, setWebhookData) => {
       // You can log what happened here
+
+      setWebhookData(defaultData => {
+        return {
+          ...defaultData,
+          gsg: 'This hook will be triggered ig gsg'
+        }
+      })
+
       return newEntity
     },
     preventDuplicateOnAttributes: ['type']
@@ -348,6 +388,9 @@ module.exports = globalPreCallback => ({
           return true
         }
       }
+    },
+    callWebhook: data => {
+      return data
     },
     pubSubInstance
   })

@@ -38,7 +38,8 @@ export default function generateMutation(
   models: any,
   globalPreCallback: any,
   customMutations = {},
-  pubSubInstance: PubSub | null = null
+  pubSubInstance: PubSub | null = null,
+  callWebhook: Function
 ) {
   const fields = Object.keys(inputTypes).reduce(
     (mutations: any, modelName: string) => {
@@ -67,7 +68,8 @@ export default function generateMutation(
                 model,
                 graphqlSchemaDeclaration[modelName],
                 globalPreCallback,
-                pubSubInstance
+                pubSubInstance,
+                callWebhook
               )
       }
       if (actions.includes('update')) {
@@ -82,7 +84,8 @@ export default function generateMutation(
                 graphqlSchemaDeclaration[modelName],
                 models,
                 globalPreCallback,
-                pubSubInstance
+                pubSubInstance,
+                callWebhook
               )
       }
       if (actions.includes('delete')) {
@@ -95,7 +98,8 @@ export default function generateMutation(
                 graphqlSchemaDeclaration[modelName],
                 models,
                 globalPreCallback,
-                pubSubInstance
+                pubSubInstance,
+                callWebhook
               )
       }
 

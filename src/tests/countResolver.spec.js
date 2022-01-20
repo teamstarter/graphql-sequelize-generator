@@ -45,6 +45,26 @@ describe('Test the count resolvers', () => {
     expect(trace).toMatchSnapshot()
   })
 
+  it('Check that you can count a list with an extra agrument', async () => {
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query user {
+              user {
+                id
+              }
+              userCount (departmentId : 1)
+          }`
+      )
+      .set('userId', 1)
+    expect(response.body.data.user).not.toBeUndefined()
+    expect(response.body.data).toMatchSnapshot(
+      'Users ids and count with an extra argument'
+    )
+    expect(response.body.data.user.length).toBe(response.body.data.userCount)
+    expect(trace).toMatchSnapshot()
+  })
+
   it('Check that you can inject types attributes and associations into a random Type', async () => {
     const response = await request(server)
       .get(
