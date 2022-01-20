@@ -46,7 +46,7 @@
     "sequelize-cli": "^6.2.0",
     "spdy": "^3.4.7",
     "sqlite3": "^4.2.0",
-    "standard-version": "^6.0.1",
+    "standard-version": "^8.0.1",
     "supertest": "^3.0.0",
     "ts-migrate": "^0.1.7",
     "ts-node-dev": "^1.0.0-pre.63",
