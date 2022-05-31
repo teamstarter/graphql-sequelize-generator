@@ -46,14 +46,6 @@ function getModelsFields(
       schemaDeclaration.actions.indexOf('count') > -1
         ? {
             ...fields,
-            // LIST RESOLVER
-            [modelType.name]: generateListResolver(
-              modelType,
-              allSchemaDeclarations,
-              outputTypes,
-              models,
-              globalPreCallback
-            ),
             // COUNT RESOLVER
             [`${modelType.name}Count`]: {
               type: GraphQLInt,
