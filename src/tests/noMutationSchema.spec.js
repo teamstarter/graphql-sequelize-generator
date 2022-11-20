@@ -38,6 +38,7 @@ describe('Test the creation a schema without mutations', () => {
     })
 
     const app = express()
+    await graphqlServer.start()
     graphqlServer.applyMiddleware({ app, path: '/graphql' })
     const serverHttp = await new Promise(resolve => {
       const newServer = http

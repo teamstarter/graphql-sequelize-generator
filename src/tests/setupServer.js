@@ -10,6 +10,7 @@ const createServer = async (options = {}, globalPreCallback = () => null) => {
     ...options
   }
   const { server } = setupServer(globalPreCallback)
+  await server.start()
   server.applyMiddleware({ app, path: '/graphql' })
   const serverHttp = await new Promise(resolve => {
     const newServer = http

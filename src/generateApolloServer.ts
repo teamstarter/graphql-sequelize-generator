@@ -1,6 +1,7 @@
 import { GraphQLSchema } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
 import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
+import { ApolloServerPluginCacheControlDisabled } from 'apollo-server-core'
 
 import {
   GlobalPreCallback,
@@ -44,7 +45,7 @@ export default function generateApolloServer({
 
   return new ApolloServer({
     schema: graphqlSchema,
-    cacheControl: false,
+    plugins: [ApolloServerPluginCacheControlDisabled()],
     ...apolloServerOptions
   })
 }

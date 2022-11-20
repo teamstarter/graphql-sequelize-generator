@@ -57,6 +57,7 @@ const server = generateApolloServer({
 })
 
 const app = express()
+server.start()
 server.applyMiddleware({
   app,
   path: '/graphql'

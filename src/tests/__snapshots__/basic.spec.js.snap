@@ -126,12 +126,6 @@ Array [
     "extensions": Object {
       "code": "GRAPHQL_VALIDATION_FAILED",
     },
-    "locations": Array [
-      Object {
-        "column": 15,
-        "line": 6,
-      },
-    ],
     "message": "Cannot query field \\"updatedAt\\" on type \\"department\\". Did you mean \\"createdAt\\"?",
   },
 ]
@@ -143,13 +137,7 @@ Array [
     "extensions": Object {
       "code": "GRAPHQL_VALIDATION_FAILED",
     },
-    "locations": Array [
-      Object {
-        "column": 13,
-        "line": 3,
-      },
-    ],
-    "message": "Cannot query field \\"companySetting\\" on type \\"Root_Query\\". Did you mean \\"companyType\\" or \\"company\\"?",
+    "message": "Cannot query field \\"companySetting\\" on type \\"Root_Query\\". Did you mean \\"companyType\\"?",
   },
 ]
 `;
@@ -185,12 +173,6 @@ Array [
     "extensions": Object {
       "code": "GRAPHQL_VALIDATION_FAILED",
     },
-    "locations": Array [
-      Object {
-        "column": 15,
-        "line": 6,
-      },
-    ],
     "message": "Cannot query field \\"company\\" on type \\"department\\". Did you mean \\"companyId\\"?",
   },
 ]
