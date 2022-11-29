@@ -1,4 +1,4 @@
-import { ApolloServer, ApolloServerExpressConfig } from 'apollo-server-express'
+import { ApolloServer } from '@apollo/server'
 import {
   GraphQLFieldResolver,
   GraphQLObjectType,
@@ -32,7 +32,7 @@ export function generateApolloServer({
   types: InAndOutTypes
   models: SequelizeModels
   customMutations?: MutationList
-  apolloServerOptions?: ApolloServerExpressConfig
+  apolloServerOptions?: any
   pubSubInstance?: PubSub | null
   callWebhook: Function
   globalPreCallback?: GlobalPreCallback

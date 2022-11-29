@@ -7,11 +7,15 @@ const {
   GraphQLString,
   GraphQLList,
   GraphQLBoolean,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLError
 } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
 const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
+const { WebSocketServer } = require('ws')
+const { useServer } = require('graphql-ws/lib/use/ws')
+
 const { Op } = require('sequelize')
 const {
   generateApolloServer,
@@ -45,11 +49,11 @@ graphqlSchemaDeclaration.user = {
 
       // Use it if you need to do something before each enpoint
       if (!context.bootDate) {
-        throw new Error('Boot date is missing!')
+        throw new GraphQLError('Boot date is missing!')
       }
 
       if (info.xxx) {
-        throw new Error('Xxx is provided when it should not!')
+        throw new GraphQLError('Xxx is provided when it should not!')
       }
 
       // Typical usage:
@@ -187,6 +191,7 @@ graphqlSchemaDeclaration.user = {
 graphqlSchemaDeclaration.company = {
   model: models.company,
   actions: ['list', 'create'],
+  subscriptions: ['create', 'update'],
   list: {
     removeUnusedAttributes: false,
     before: (findOptions, args, context, info) => {
@@ -353,45 +358,39 @@ graphqlSchemaDeclaration.companySetting = {
   actions: ['list']
 }
 
-module.exports = globalPreCallback => ({
-  server: generateApolloServer({
-    graphqlSchemaDeclaration,
-    customMutations,
-    types,
-    models,
-    globalPreCallback,
-    apolloServerOptions: {
-      playground: true,
-      // Example of context modification.
-      context: ({ req, connection }) => {
-        const contextDataloader = createContext(models.sequelize)
+module.exports = (globalPreCallback, httpServer) => {
+  // Creating the WebSocket server
+  const wsServer = new WebSocketServer({
+    // This is the `httpServer` we created in a previous step.
+    server: httpServer,
+    // Pass a different path here if app.use
+    // serves expressMiddleware at a different path
+    path: '/graphql'
+  })
 
-        // Connection is provided when a webSocket is connected.
-        if (connection) {
-          // check connection for metadata
-          return {
-            ...connection.context,
-            [EXPECTED_OPTIONS_KEY]: contextDataloader
+  return {
+    server: generateApolloServer({
+      graphqlSchemaDeclaration,
+      customMutations,
+      types,
+      models,
+      globalPreCallback,
+      wsServer,
+      apolloServerOptions: {
+        // Required for the tests.
+        csrfPrevention: false,
+        playground: true,
+        // Example of socket security hook.
+        subscriptions: {
+          onConnect: (connectionParams, webSocket) => {
+            return true
           }
         }
-
-        // This is an example of context manipulation.
-        return {
-          ...req,
-          bootDate: '2017-01-01',
-          [EXPECTED_OPTIONS_KEY]: contextDataloader
-        }
       },
-      // Example of socket security hook.
-      subscriptions: {
-        onConnect: (connectionParams, webSocket) => {
-          return true
-        }
-      }
-    },
-    callWebhook: data => {
-      return data
-    },
-    pubSubInstance
-  })
-})
+      callWebhook: data => {
+        return data
+      },
+      pubSubInstance
+    })
+  }
+}
