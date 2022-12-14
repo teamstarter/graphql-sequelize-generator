@@ -7,7 +7,7 @@ import {
   GraphqlSchemaDeclarationType,
   ModelDeclarationType,
   OutputTypes,
-  SequelizeModels
+  SequelizeModels,
 } from '../../types'
 import createResolver from '../createResolver'
 import generateAssociationField from './field'
@@ -71,7 +71,7 @@ export default function injectAssociations(
     baseFields = attributeFields(modelDefinition.model, {
       allowNull: false,
       exclude: modelDefinition.excludeFields,
-      commentToDescription: true
+      commentToDescription: true,
     })
   }
 
@@ -107,7 +107,7 @@ export default function injectAssociations(
         name: field,
         isDeprecated: false,
         args: [],
-        ...baseFields[field]
+        ...baseFields[field],
       }
     }
   }

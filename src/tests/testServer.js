@@ -15,8 +15,8 @@ async function startServer() {
 
   const options = {
     spdy: {
-      plain: true
-    }
+      plain: true,
+    },
   }
   const httpServer = http.createServer(options, app)
 
@@ -40,7 +40,7 @@ async function startServer() {
           // check connection for metadata
           return {
             ...connection.context,
-            [EXPECTED_OPTIONS_KEY]: contextDataloader
+            [EXPECTED_OPTIONS_KEY]: contextDataloader,
           }
         }
 
@@ -48,17 +48,19 @@ async function startServer() {
         return {
           ...req,
           bootDate: '2017-01-01',
-          [EXPECTED_OPTIONS_KEY]: contextDataloader
+          [EXPECTED_OPTIONS_KEY]: contextDataloader,
         }
-      }
+      },
     })
   )
 
   httpServer.listen(process.env.PORT || 8080, async () => {
     console.log(
-      `🚀 http/https/h2 server runs on ${process.env.PORT ||
-        8080}, check the playground here: http://localhost:${process.env.PORT ||
-        8080}/graphql`
+      `🚀 http/https/h2 server runs on ${
+        process.env.PORT || 8080
+      }, check the playground here: http://localhost:${
+        process.env.PORT || 8080
+      }/graphql`
     )
     await migrateDatabase()
     await seedDatabase()

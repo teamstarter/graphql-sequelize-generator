@@ -10,7 +10,7 @@ import {
   GraphqlSchemaDeclarationType,
   MutationList,
   SequelizeModels,
-  InAndOutTypes
+  InAndOutTypes,
 } from '../types'
 
 const debug = _debug('gsg')
@@ -22,7 +22,7 @@ export default function generateSchema({
   customMutations,
   globalPreCallback = () => null,
   pubSubInstance,
-  callWebhook
+  callWebhook,
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
@@ -36,7 +36,7 @@ export default function generateSchema({
     !!customMutations ||
     Object.values(graphqlSchemaDeclaration).some((type: any) => {
       if (type.actions) {
-        return ['create', 'delete', 'update'].some(action =>
+        return ['create', 'delete', 'update'].some((action) =>
           type.actions.includes(action)
         )
       }
@@ -60,8 +60,8 @@ export default function generateSchema({
         customMutations,
         pubSubInstance,
         callWebhook
-      )
-    })
+      ),
+    }),
   }
 
   // Do not generate subscriptions if no ways of propagating information is defined.

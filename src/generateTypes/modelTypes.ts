@@ -2,7 +2,7 @@ import {
   InputTypes,
   OutputTypes,
   SequelizeModels,
-  InAndOutTypes
+  InAndOutTypes,
 } from '../../types'
 import generateGraphQLType from './graphQLType'
 

@@ -9,7 +9,7 @@ import {
   GraphqlSchemaDeclarationType,
   MutationList,
   SequelizeModels,
-  InAndOutTypes
+  InAndOutTypes,
 } from '../types'
 import generateSchema from './schema'
 
@@ -22,7 +22,7 @@ export default function generateApolloServer({
   pubSubInstance = null,
   callWebhook = () => null,
   wsServer = null,
-  globalPreCallback = () => null
+  globalPreCallback = () => null,
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
@@ -42,7 +42,7 @@ export default function generateApolloServer({
       models,
       globalPreCallback,
       pubSubInstance,
-      callWebhook
+      callWebhook,
     })
   )
 
@@ -55,6 +55,6 @@ export default function generateApolloServer({
   return new ApolloServer({
     schema: graphqlSchema,
     plugins: [ApolloServerPluginCacheControlDisabled()],
-    ...apolloServerOptions
+    ...apolloServerOptions,
   })
 }

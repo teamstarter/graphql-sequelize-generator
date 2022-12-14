@@ -18,7 +18,7 @@ export default async function addReadModule(
     label: `Read ${capitalize(modelName)}`,
     type_id: 4,
     crud: 'read',
-    description: `The read endpoint for the ${capitalize(modelName)}`
+    description: `The read endpoint for the ${capitalize(modelName)}`,
   })
 
   const config: any = {
@@ -27,9 +27,9 @@ export default async function addReadModule(
     headers: {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json',
-      'x-imt-apps-sdk-version': '1.0.0'
+      'x-imt-apps-sdk-version': '1.0.0',
     },
-    data: data
+    data: data,
   }
 
   try {
@@ -43,18 +43,18 @@ export default async function addReadModule(
       body: {
         operationName: modelName,
         variables: {
-          where: '{{where}}'
+          where: '{{where}}',
         },
         query: `query read${capitalize(
           modelName
-        )}($where: SequelizeJSON!) {\n  ${modelName}(where: $where) {\n    ${returnAttrinutes}__typename\n  }\n}\n`
+        )}($where: SequelizeJSON!) {\n  ${modelName}(where: $where) {\n    ${returnAttrinutes}__typename\n  }\n}\n`,
       },
       headers: {
-        authorization: '{{connection.token}}'
+        authorization: '{{connection.token}}',
       },
       response: {
-        output: '{{body}}'
-      }
+        output: '{{body}}',
+      },
     })
 
     const configApi: any = {
@@ -65,9 +65,9 @@ export default async function addReadModule(
       headers: {
         Authorization: `Token ${token}`,
         'x-imt-apps-sdk-version': '1.0.0',
-        'Content-Type': 'application/jsonc'
+        'Content-Type': 'application/jsonc',
       },
-      data: queryString
+      data: queryString,
     }
 
     try {
@@ -82,8 +82,8 @@ export default async function addReadModule(
         name: 'where',
         type: 'json',
         label: 'Where',
-        required: true
-      }
+        required: true,
+      },
     ]
 
     const configExpect: any = {
@@ -94,9 +94,9 @@ export default async function addReadModule(
       headers: {
         Authorization: `Token ${token}`,
         'x-imt-apps-sdk-version': '1.0.0',
-        'Content-Type': 'application/jsonc'
+        'Content-Type': 'application/jsonc',
       },
-      data: JSON.stringify(parameters)
+      data: JSON.stringify(parameters),
     }
 
     try {

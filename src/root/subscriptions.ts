@@ -29,7 +29,7 @@ export default function generateSubscriptions(
 
       const subscriptionsEnabled: EventList = declaration.subscriptions || []
 
-      availableActions.forEach(action => {
+      availableActions.forEach((action) => {
         if (subscriptionsEnabled.includes(action)) {
           // ex: name = "userUpdated"
           const name = `${modelName}${capitalizeFirstLetter(action)}d`
@@ -37,7 +37,7 @@ export default function generateSubscriptions(
           subscriptions[name] = {
             type: outputType,
             args: {
-              id: { type: GraphQLInt }
+              id: { type: GraphQLInt },
             },
             subscribe: withFilter(
               () => pubSubInstance.asyncIterator(name),
@@ -45,7 +45,7 @@ export default function generateSubscriptions(
                 configuration.subscriptionFilter
                 ? configuration.subscriptionFilter
                 : () => true
-            )
+            ),
           }
         }
       })
@@ -53,7 +53,7 @@ export default function generateSubscriptions(
       /** Subscription an be manually added, following declaration is requiered because typescript sucks. */
       const s = declaration.additionalSubscriptions
       if (typeof s !== 'undefined') {
-        Object.keys(s).map(key => (subscriptions[key] = s[key]))
+        Object.keys(s).map((key) => (subscriptions[key] = s[key]))
       }
 
       return subscriptions
@@ -67,6 +67,6 @@ export default function generateSubscriptions(
 
   return new GraphQLObjectType({
     name: 'Subscription',
-    fields
+    fields,
   })
 }

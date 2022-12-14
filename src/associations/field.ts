@@ -2,8 +2,10 @@ import {
   GraphQLList,
   GraphQLType,
   GraphQLScalarType,
-  GraphQLString
+  GraphQLString,
+  GraphQLInt,
 } from 'graphql'
+import { GraphQLField } from 'graphql/type'
 import { Association } from 'sequelize/types'
 import { injectAssociations } from '..'
 import { OutputTypes } from '../../types'
@@ -45,7 +47,7 @@ export default function generateAssociationField(
       ? new GraphQLList(newBaseType)
       : newBaseType
 
-  const field = {
+  const field: any = {
     type,
     isDeprecated: false,
     associationsInjected: true,
@@ -54,9 +56,9 @@ export default function generateAssociationField(
       {
         // An arg with the key order will automatically be converted to a order on the target
         name: 'order',
-        type: GraphQLString
-      }
-    ]
+        type: GraphQLString,
+      },
+    ],
   }
 
   if (relation.associationType === 'HasMany') {
@@ -64,8 +66,8 @@ export default function generateAssociationField(
     // Having the limit on the include will trigger a "Only HasMany associations support include.separate" error.
     // While sequelize N:M associations are not supported with hasMany. So BelongsToMany relationships
     // cannot be limited in a subquery. If you want to query them, make a custom resolver, or create a view.
-    field.args.push({ name: 'limit', type: GraphQLString })
-    field.args.push({ name: 'offset', type: GraphQLString })
+    field.args.push({ name: 'limit', type: GraphQLInt })
+    field.args.push({ name: 'offset', type: GraphQLInt })
   }
 
   if (resolver) {

@@ -2,7 +2,7 @@ import { ApolloServer } from '@apollo/server'
 import {
   GraphQLFieldResolver,
   GraphQLObjectType,
-  GraphQLSchemaConfig
+  GraphQLSchemaConfig,
 } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
 import { FindOptions } from 'sequelize/types'
@@ -15,7 +15,7 @@ import {
   SequelizeModel,
   SequelizeModels,
   TInfo,
-  InAndOutTypes
+  InAndOutTypes,
 } from '../types'
 
 export function generateApolloServer({
@@ -26,7 +26,7 @@ export function generateApolloServer({
   apolloServerOptions,
   pubSubInstance,
   callWebhook,
-  globalPreCallback
+  globalPreCallback,
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
@@ -44,7 +44,7 @@ export function generateSchema({
   customMutations,
   globalPreCallback,
   pubSubInstance,
-  callWebhook
+  callWebhook,
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
