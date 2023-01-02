@@ -18,7 +18,7 @@
   "author": "vincent desmares <vincent.desmares@gmail.com>",
   "license": "BSD-3-Clause",
   "engines": {
-    "node": ">=9.11.2"
+    "node": ">=16.14.0"
   },
   "devDependencies": {
     "@types/node": "^14.11.8",
