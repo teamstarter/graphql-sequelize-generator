@@ -39,7 +39,7 @@ Then you will be ready to add a GraphQL API to your express server with only a f
 import express from 'express'
 const {
   generateModelTypes,
-  generateGraphqlExpressMiddleware
+  generateGraphqlExpressMiddleware,
 } = require('graphql-sequelize-generator')
 import models from './models'
 
@@ -47,22 +47,24 @@ const types = generateModelTypes(models)
 
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ['list', 'create']
+  actions: ['list', 'create'],
 }
 
 const server = generateApolloServer({
   graphqlSchemaDeclaration,
   types,
-  models
+  models,
 })
 
 const app = express()
 server.start()
 server.applyMiddleware({
   app,
-  path: '/graphql'
+  path: '/graphql',
 })
 ```
+
+<!-- A priori OK mais pas sûr -->
 
 ## Getting started with boilerplates
 
@@ -70,3 +72,5 @@ You can easily start a project with graphql-sequelize-generator using these boil
 
 - In JavaScript : [GSG Boilerplate](https://github.com/teamstarter/gsg-boilerplate)
 - In TypeScript : [GSG Typescript Boilerplate](https://github.com/teamstarter/gsg-boilerplate-typescript)
+
+<!-- OK -->
