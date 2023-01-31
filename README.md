@@ -7,6 +7,8 @@ It's a very good fit for POCs and MVPs, while also scaling pretty well thanks to
 
 ## Manual
 
+[NOW COMPATIBLE WITH APOLLO 4 - NEW DOCUMENTATION INCOMING]
+
 Get started with **[the online documentation](https://teamstarter.github.io/gsg-documentation/)**
 
 ## What can I do with GSG?
@@ -39,7 +41,7 @@ Then you will be ready to add a GraphQL API to your express server with only a f
 import express from 'express'
 const {
   generateModelTypes,
-  generateGraphqlExpressMiddleware
+  generateGraphqlExpressMiddleware,
 } = require('graphql-sequelize-generator')
 import models from './models'
 
@@ -47,20 +49,20 @@ const types = generateModelTypes(models)
 
 graphqlSchemaDeclaration.user = {
   model: models.user,
-  actions: ['list', 'create']
+  actions: ['list', 'create'],
 }
 
 const server = generateApolloServer({
   graphqlSchemaDeclaration,
   types,
-  models
+  models,
 })
 
 const app = express()
 server.start()
 server.applyMiddleware({
   app,
-  path: '/graphql'
+  path: '/graphql',
 })
 ```
 
