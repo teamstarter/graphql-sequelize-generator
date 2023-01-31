@@ -3,8 +3,9 @@ import {
   GraphQLType,
   GraphQLScalarType,
   GraphQLString,
-  GraphQLInt
+  GraphQLInt,
 } from 'graphql'
+import { GraphQLField } from 'graphql/type'
 import { Association } from 'sequelize/types'
 import { injectAssociations } from '..'
 import { OutputTypes } from '../../types'
@@ -46,7 +47,7 @@ export default function generateAssociationField(
       ? new GraphQLList(newBaseType)
       : newBaseType
 
-  const field = {
+  const field: any = {
     type,
     isDeprecated: false,
     associationsInjected: true,
@@ -55,9 +56,9 @@ export default function generateAssociationField(
       {
         // An arg with the key order will automatically be converted to a order on the target
         name: 'order',
-        type: GraphQLString
-      }
-    ]
+        type: GraphQLString,
+      },
+    ],
   }
 
   if (relation.associationType === 'HasMany') {

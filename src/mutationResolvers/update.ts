@@ -2,7 +2,7 @@ import { PubSub } from 'graphql-subscriptions'
 import {
   GraphQLInputObjectType,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
 } from 'graphql'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
@@ -36,7 +36,7 @@ export default function generateMutationUpdate(
       ...(graphqlModelDeclaration.update &&
       graphqlModelDeclaration.update.extraArg
         ? graphqlModelDeclaration.update.extraArg
-        : {})
+        : {}),
     },
     resolve: async (source: any, args: any, context: any, info: any) => {
       let data = args[modelName]
@@ -89,8 +89,8 @@ export default function generateMutationUpdate(
         const hookData = {
           data: {
             new: { ...entity.get({ plain: true }) },
-            old: { ...snapshotBeforeUpdate }
-          }
+            old: { ...snapshotBeforeUpdate },
+          },
         }
 
         const afterHandle = globalPreCallback('updateAfter')
@@ -109,7 +109,7 @@ export default function generateMutationUpdate(
 
         if (pubSubInstance) {
           pubSubInstance.publish(`${modelName}Updated`, {
-            [`${modelName}Updated`]: updatedEntity.get()
+            [`${modelName}Updated`]: updatedEntity.get(),
           })
         }
 
@@ -127,7 +127,7 @@ export default function generateMutationUpdate(
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Updated`, {
-          [`${modelName}Updated`]: entity.get()
+          [`${modelName}Updated`]: entity.get(),
         })
       }
 
@@ -141,6 +141,6 @@ export default function generateMutationUpdate(
       )
 
       return entity
-    }
+    },
   }
 }

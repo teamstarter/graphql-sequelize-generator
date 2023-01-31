@@ -1,5 +1,6 @@
 import { PubSub } from 'graphql-subscriptions'
 import {
+  GraphQLError,
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLObjectType
@@ -107,7 +108,13 @@ export default function generateMutationCreate(
         }
       }
 
-      const newEntity = await model.create(attributes)
+      let newEntity = undefined
+      try {
+        newEntity = await model.create(attributes)
+      } catch (error) {
+        // @ts-ignore
+        throw new GraphQLError(error.message)
+      }
 
       if (
         graphqlModelDeclaration.create &&

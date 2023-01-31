@@ -13,5 +13,5 @@ export {
   generateCount,
   // Functions that you can use in your resolvers
   removeUnusedAttributes,
-  injectAssociations
+  injectAssociations,
 }

@@ -10,7 +10,7 @@ export default async function callModelWebhook(
     await callWebhook({
       eventType: `${modelName}-${action}d`,
       context,
-      data
+      data,
     })
   }
 }

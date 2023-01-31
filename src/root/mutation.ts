@@ -9,7 +9,7 @@ import { InputTypes, OutputTypes } from '../../types'
 function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
   const wrappedMutations: any = {}
 
-  Object.keys(mutations).forEach(mutationKey => {
+  Object.keys(mutations).forEach((mutationKey) => {
     const mutation = mutations[mutationKey]
     if (!mutation.resolve) {
       throw new Error(
@@ -25,7 +25,7 @@ function wrapMutationsResolver(mutations: any, globalPreCallback: any) {
           customHandle()
         }
         return result
-      }
+      },
     }
   })
   return wrappedMutations
@@ -53,7 +53,7 @@ export default function generateMutation(
       const actions = graphqlSchemaDeclaration[modelName].actions || [
         'create',
         'update',
-        'delete'
+        'delete',
       ]
 
       if (actions.includes('create')) {
@@ -107,7 +107,7 @@ export default function generateMutation(
         Object.keys(
           graphqlSchemaDeclaration[modelName].additionalMutations
         ).map(
-          key =>
+          (key) =>
             (mutations[key] =
               graphqlSchemaDeclaration[modelName].additionalMutations[key])
         )
@@ -122,7 +122,7 @@ export default function generateMutation(
     name: 'Root_Mutations',
     fields: {
       ...fields,
-      ...wrapMutationsResolver(customMutations, globalPreCallback)
-    }
+      ...wrapMutationsResolver(customMutations, globalPreCallback),
+    },
   })
 }

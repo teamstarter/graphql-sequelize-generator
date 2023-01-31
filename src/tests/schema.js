@@ -7,16 +7,20 @@ const {
   GraphQLString,
   GraphQLList,
   GraphQLBoolean,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLError,
 } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
 const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
+const { WebSocketServer } = require('ws')
+const { useServer } = require('graphql-ws/lib/use/ws')
+
 const { Op } = require('sequelize')
 const {
   generateApolloServer,
   generateModelTypes,
-  injectAssociations
+  injectAssociations,
 } = require('./../../lib')
 const models = require('./models')
 
@@ -30,7 +34,7 @@ const pubSubInstance = new PubSub()
 
 graphqlSchemaDeclaration.companyType = {
   model: models.companyType,
-  actions: ['list', 'create']
+  actions: ['list', 'create'],
 }
 
 graphqlSchemaDeclaration.user = {
@@ -45,11 +49,11 @@ graphqlSchemaDeclaration.user = {
 
       // Use it if you need to do something before each enpoint
       if (!context.bootDate) {
-        throw new Error('Boot date is missing!')
+        throw new GraphQLError('Boot date is missing!')
       }
 
       if (info.xxx) {
-        throw new Error('Xxx is provided when it should not!')
+        throw new GraphQLError('Xxx is provided when it should not!')
       }
 
       // Typical usage:
@@ -62,11 +66,11 @@ graphqlSchemaDeclaration.user = {
       // }
 
       // The function returns nothing
-    }
+    },
   ],
   count: {
     extraArg: {
-      departmentId: { type: GraphQLInt }
+      departmentId: { type: GraphQLInt },
     },
     before: async (findOptions, source, args) => {
       // example of an extra argument usage
@@ -75,8 +79,8 @@ graphqlSchemaDeclaration.user = {
           model: models.company,
           required: true,
           where: {
-            departmentId: args.departmentId
-          }
+            departmentId: args.departmentId,
+          },
         })
       }
 
@@ -89,10 +93,10 @@ graphqlSchemaDeclaration.user = {
         findOptions.where = {}
       }
       findOptions.where = {
-        [Op.and]: [findOptions.where, { departmentId: [1] }]
+        [Op.and]: [findOptions.where, { departmentId: [1] }],
       }
       return findOptions
-    }
+    },
   },
   list: {
     removeUnusedAttributes: false,
@@ -102,7 +106,7 @@ graphqlSchemaDeclaration.user = {
         findOptions.where = {}
       }
       findOptions.where = {
-        [Op.and]: [findOptions.where, { departmentId: [1] }]
+        [Op.and]: [findOptions.where, { departmentId: [1] }],
       }
       return findOptions
     },
@@ -123,7 +127,7 @@ graphqlSchemaDeclaration.user = {
         return false
       }
       return true
-    }
+    },
   },
   // The followings hooks are just here to demo their signatures.
   // They are not required and can be omited if you don't need them.
@@ -135,16 +139,16 @@ graphqlSchemaDeclaration.user = {
     after: async (newEntity, source, args, context, info, setWebhookData) => {
       // You can log what happened here
 
-      setWebhookData(defaultData => {
+      setWebhookData((defaultData) => {
         return {
           ...defaultData,
-          gsg: 'This hook will be triggered ig gsg'
+          gsg: 'This hook will be triggered ig gsg',
         }
       })
 
       return newEntity
     },
-    preventDuplicateOnAttributes: ['type']
+    preventDuplicateOnAttributes: ['type'],
   },
   update: {
     before: (source, args, context, info) => {
@@ -161,7 +165,7 @@ graphqlSchemaDeclaration.user = {
     ) => {
       // You can log what happened here
       return updatedEntity
-    }
+    },
   },
   delete: {
     extraArg: { log: { type: GraphQLBoolean } },
@@ -176,17 +180,18 @@ graphqlSchemaDeclaration.user = {
         await models.log.create({
           message: `The User id = ${args.id} was successfully deleted`,
           createdAt: date,
-          updatedAt: date
+          updatedAt: date,
         })
       }
       return deletedEntity
-    }
-  }
+    },
+  },
 }
 
 graphqlSchemaDeclaration.company = {
   model: models.company,
   actions: ['list', 'create'],
+  subscriptions: ['create', 'update'],
   list: {
     removeUnusedAttributes: false,
     before: (findOptions, args, context, info) => {
@@ -196,11 +201,11 @@ graphqlSchemaDeclaration.company = {
 
       // This is an example of rights enforcement
       findOptions.where = {
-        [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }]
+        [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }],
       }
       return findOptions
-    }
-  }
+    },
+  },
 }
 
 graphqlSchemaDeclaration.department = {
@@ -227,7 +232,7 @@ graphqlSchemaDeclaration.department = {
         // Example of dataloader used for a query
         // This call will be taken in account by the dataloader
         return source.getDepartments({
-          [EXPECTED_OPTIONS_KEY]: context[EXPECTED_OPTIONS_KEY]
+          [EXPECTED_OPTIONS_KEY]: context[EXPECTED_OPTIONS_KEY],
         })
       }
 
@@ -235,18 +240,18 @@ graphqlSchemaDeclaration.department = {
       // The dataloader will not be used for this query!
       return models.department.findAll({
         where: {
-          id: [1, 2, 3, 4, 5, 6, 7, 8]
-        }
+          id: [1, 2, 3, 4, 5, 6, 7, 8],
+        },
       })
-    }
-  }
+    },
+  },
 }
 
 graphqlSchemaDeclaration.location = {
   model: models.location,
   actions: ['list', 'count'],
   list: {
-    enforceMaxLimit: 2
+    enforceMaxLimit: 2,
   },
   count: {
     resolver: async () => {
@@ -256,8 +261,8 @@ graphqlSchemaDeclaration.location = {
         { type: models.sequelize.QueryTypes.SELECT }
       )
       return result && result[0] ? result[0].count : 0
-    }
-  }
+    },
+  },
 }
 
 graphqlSchemaDeclaration.serverStatistics = {
@@ -265,33 +270,33 @@ graphqlSchemaDeclaration.serverStatistics = {
     name: 'serverStatistics',
     description: 'Statistics about the server',
     fields: {
-      serverBootDate: { type: GraphQLString }
-    }
+      serverBootDate: { type: GraphQLString },
+    },
   }),
   resolve: async (source, args, context, info) => {
     return {
-      serverBootDate: context.bootDate
+      serverBootDate: context.bootDate,
     }
-  }
+  },
 }
 
 const OddUser = new GraphQLObjectType({
   name: 'OddUser',
   description: 'Like an user, but only with odd ids.',
   fields: {
-    handleAdditionalFields: { type: GraphQLString }
-  }
+    handleAdditionalFields: { type: GraphQLString },
+  },
 })
 
 graphqlSchemaDeclaration.log = {
   model: models.log,
-  actions: ['list', 'create']
+  actions: ['list', 'create'],
 }
 
 // Testing the many to many relationships
 graphqlSchemaDeclaration.tag = {
   model: models.tag,
-  actions: ['list']
+  actions: ['list'],
 }
 
 graphqlSchemaDeclaration.oddUser = {
@@ -306,19 +311,19 @@ graphqlSchemaDeclaration.oddUser = {
     )
   ),
   args: {
-    ...defaultListArgs()
+    ...defaultListArgs(),
   },
   resolve: resolver(models.user, {
     before: async (findOptions, args, context, info) => {
       findOptions.where = {
         [Op.and]: [
           findOptions.where,
-          { id: models.sequelize.literal('id % 2') }
-        ]
+          { id: models.sequelize.literal('id % 2') },
+        ],
       }
       return findOptions
-    }
-  })
+    },
+  }),
 }
 
 // Sometimes you want to add an action that do not match an existing model
@@ -328,13 +333,13 @@ customMutations.logThat = {
   type: new GraphQLObjectType({
     name: 'logThat',
     fields: {
-      message: { type: GraphQLString }
-    }
+      message: { type: GraphQLString },
+    },
   }),
   args: {
     message: {
-      type: GraphQLString
-    }
+      type: GraphQLString,
+    },
   },
   description: 'Refresh the status of the call for projects.',
   resolve: async (source, args, context, info) => {
@@ -342,56 +347,50 @@ customMutations.logThat = {
     console.log(args.message)
 
     return {
-      message: args.message
+      message: args.message,
     }
-  }
+  },
 }
 
 graphqlSchemaDeclaration.companySetting = {
   model: models.companySetting,
   excludeFromRoot: true,
-  actions: ['list']
+  actions: ['list'],
 }
 
-module.exports = globalPreCallback => ({
-  server: generateApolloServer({
-    graphqlSchemaDeclaration,
-    customMutations,
-    types,
-    models,
-    globalPreCallback,
-    apolloServerOptions: {
-      playground: true,
-      // Example of context modification.
-      context: ({ req, connection }) => {
-        const contextDataloader = createContext(models.sequelize)
-
-        // Connection is provided when a webSocket is connected.
-        if (connection) {
-          // check connection for metadata
-          return {
-            ...connection.context,
-            [EXPECTED_OPTIONS_KEY]: contextDataloader
-          }
-        }
-
-        // This is an example of context manipulation.
-        return {
-          ...req,
-          bootDate: '2017-01-01',
-          [EXPECTED_OPTIONS_KEY]: contextDataloader
-        }
-      },
-      // Example of socket security hook.
-      subscriptions: {
-        onConnect: (connectionParams, webSocket) => {
-          return true
-        }
-      }
-    },
-    callWebhook: data => {
-      return data
-    },
-    pubSubInstance
+module.exports = (globalPreCallback, httpServer) => {
+  // Creating the WebSocket server
+  const wsServer = new WebSocketServer({
+    // This is the `httpServer` we created in a previous step.
+    server: httpServer,
+    // Pass a different path here if app.use
+    // serves expressMiddleware at a different path
+    path: '/graphql',
   })
-})
+
+  return {
+    server: generateApolloServer({
+      graphqlSchemaDeclaration,
+      customMutations,
+      types,
+      models,
+      globalPreCallback,
+      wsServer,
+      apolloServerOptions: {
+        // Required for the tests.
+        csrfPrevention: false,
+        playground: true,
+        // Example of socket security hook.
+        subscriptions: {
+          onConnect: (connectionParams, webSocket) => {
+            return true
+          },
+        },
+      },
+      callWebhook: (data) => {
+        return data
+      },
+      pubSubInstance,
+    }),
+  }
+}
