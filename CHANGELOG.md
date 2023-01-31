@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.5.1...v8.0.0) (2023-01-31)
+
+
+### Bug Fixes
+
+* **associations:** Fix limit and offset type from string to int. And fix many small linting issues. ([04fc241](https://github.com/teamstarter/graphql-sequelize-generator/commit/04fc241))
+* **documentation:** Update documentation to warn of Apollo upgrade. ([ab5c67d](https://github.com/teamstarter/graphql-sequelize-generator/commit/ab5c67d))
+
+
+### Features
+
+* **infra:** Upgrade minium node version. ([2d9ecf4](https://github.com/teamstarter/graphql-sequelize-generator/commit/2d9ecf4))
+
+
+### BREAKING CHANGES
+
+* **documentation:** Update documentation to warn of Apollo upgrade.
+
+
+
 ### [7.5.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.5.0...v7.5.1) (2022-01-20)
 
 ### Features
