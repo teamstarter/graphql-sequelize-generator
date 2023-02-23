@@ -42,7 +42,7 @@
     "prettier": "^1.19.1",
     "prettier-eslint": "^9.0.0",
     "prettier-tslint": "^0.4.2",
-    "sequelize": "5.22.3",
+    "sequelize": "6.28.2",
     "sequelize-cli": "^6.2.0",
     "spdy": "^3.4.7",
     "sqlite3": "^4.2.0",
@@ -65,7 +65,7 @@
     "graphql": "^14.6.0",
     "graphql-relay": "^0.6.0",
     "graphql-sequelize": "^9.3.5",
-    "sequelize": "5.22.3"
+    "sequelize": "6.28.2"
   },
   "dependencies": {
     "@types/debug": "^4.1.5",
