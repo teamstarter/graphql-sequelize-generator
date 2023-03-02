@@ -1,6 +1,10 @@
 const request = require('supertest')
 const express = require('express')
 const http = require('spdy')
+const cors = require('cors')
+const { json } = require('body-parser')
+const { expressMiddleware } = require('@apollo/server/express4')
+
 const { generateApolloServer, generateModelTypes } = require('./../../lib')
 
 const { deleteTables } = require('./testDatabase.js')
@@ -28,31 +32,44 @@ describe('Test the creation a schema without mutations', () => {
       actions: ['list']
     }
 
+    const app = express()
+    const httpServer = http.createServer(
+      {
+        spdy: {
+          plain: true
+        }
+      },
+      app
+    )
+
     const graphqlServer = generateApolloServer({
       graphqlSchemaDeclaration,
       types,
       models,
       apolloServerOptions: {
-        playground: true
+        playground: true,
+        csrfPrevention: false
       }
     })
 
-    const app = express()
-    graphqlServer.applyMiddleware({ app, path: '/graphql' })
-    const serverHttp = await new Promise(resolve => {
-      const newServer = http
-        .createServer(
-          {
-            spdy: { plain: true }
-          },
-          app
-        )
-        .listen(process.env.PORT || 8080, () => {
-          resolve(newServer)
-        })
+    await graphqlServer.start()
+
+    app.use(
+      '/graphql',
+      cors(),
+      json(),
+      expressMiddleware(graphqlServer, {
+        context: async ({ req }) => ({ token: req.headers.token })
+      })
+    )
+
+    await new Promise(resolve => {
+      httpServer.listen(process.env.PORT || 8080, () => {
+        resolve()
+      })
     })
 
-    const response = await request(serverHttp)
+    const response = await request(httpServer)
       .get(
         `/graphql?query=
           query getCompanies {
@@ -69,7 +86,7 @@ describe('Test the creation a schema without mutations', () => {
     expect(companies).toMatchSnapshot('All companies')
 
     await Promise.all([
-      new Promise(resolve => serverHttp.close(() => resolve()))
+      new Promise(resolve => httpServer.close(() => resolve()))
     ])
   })
 })

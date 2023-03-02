@@ -5,7 +5,7 @@ import {
   GraphqlSchemaDeclarationType,
   ModelDeclarationType,
   OutputTypes,
-  SequelizeModels
+  SequelizeModels,
 } from '../../types'
 
 import generateCountResolver from '../queryResolvers/count'
@@ -65,14 +65,14 @@ function getModelsFields(
                   // as we already use the list before by default.
                   schemaDeclaration.list && schemaDeclaration.list.extraArg
                   ? schemaDeclaration.list.extraArg
-                  : {})
+                  : {}),
               },
               resolve: generateCountResolver(
                 schemaDeclaration.model,
                 schemaDeclaration,
                 globalPreCallback
-              )
-            }
+              ),
+            },
           }
         : {
             ...fields,
@@ -83,7 +83,7 @@ function getModelsFields(
               outputTypes,
               models,
               globalPreCallback
-            )
+            ),
           }
     return result
   }, {})
@@ -107,7 +107,7 @@ function getCustomEndpoints(
     return {
       ...fields,
       // The full endpoints must be manually declared.
-      [endpointKey]: endpointDeclaration
+      [endpointKey]: endpointDeclaration,
     }
   }, {})
 }
@@ -137,7 +137,7 @@ export default function generateQueryRootResolver(
   const customEndpoints = getCustomEndpoints(allSchemaDeclarations, outputTypes)
 
   const modelsKeys = Object.keys(modelFields)
-  Object.keys(customEndpoints).filter(value => {
+  Object.keys(customEndpoints).filter((value) => {
     if (modelsKeys.indexOf(value) !== -1) {
       throw new Error(
         `You created the custom endpoint (${value}) on the same key of an already defined model endpoint.`
@@ -147,6 +147,6 @@ export default function generateQueryRootResolver(
 
   return new GraphQLObjectType({
     name: 'Root_Query',
-    fields: { ...modelFields, ...customEndpoints }
+    fields: { ...modelFields, ...customEndpoints },
   })
 }

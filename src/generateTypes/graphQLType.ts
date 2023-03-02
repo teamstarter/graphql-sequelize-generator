@@ -21,10 +21,10 @@ export default function generateGraphQLType(
     fields: () => ({
       ...attributeFields(model, {
         allowNull: !!isInput,
-        commentToDescription: true
+        commentToDescription: true,
       }),
-      ...(isInput ? generateAssociationsFields(model.associations, types) : {})
-    })
+      ...(isInput ? generateAssociationsFields(model.associations, types) : {}),
+    }),
   })
   return type
 }

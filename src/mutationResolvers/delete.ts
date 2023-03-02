@@ -29,7 +29,7 @@ export default function generateMutationDelete(
       ...(graphqlModelDeclaration.delete &&
       graphqlModelDeclaration.delete.extraArg
         ? graphqlModelDeclaration.delete.extraArg
-        : {})
+        : {}),
     },
     resolve: async (source: any, args: any, context: any, info: any) => {
       let where = { id: args.id }
@@ -74,12 +74,12 @@ export default function generateMutationDelete(
       }
 
       const rowDeleted = await graphqlModelDeclaration.model.destroy({
-        where
+        where,
       }) // Returns the number of rows affected (0 or 1)
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Deleted`, {
-          [`${modelName}Deleted`]: entity.get()
+          [`${modelName}Deleted`]: entity.get(),
         })
       }
 
@@ -122,6 +122,6 @@ export default function generateMutationDelete(
       )
 
       return rowDeleted
-    }
+    },
   }
 }

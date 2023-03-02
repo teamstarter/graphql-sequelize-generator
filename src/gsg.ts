@@ -8,11 +8,11 @@ program
   .description(
     'Synchronizes the given sequelize models to the integromat modules'
   )
-  .action(async function(configPath) {
+  .action(async function (configPath) {
     let config = null
     try {
       config = require(configPath)
-    } catch (e) {
+    } catch (e: any) {
       throw new Error('Could not load the given config.' + e.message)
     }
     const models = require(config.modelsPath)

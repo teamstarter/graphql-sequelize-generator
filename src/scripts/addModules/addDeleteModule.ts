@@ -13,7 +13,7 @@ export default async function addDeleteModule(
     label: `Delete ${capitalize(modelName)}`,
     type_id: 4,
     crud: 'delete',
-    description: `The delete endpoint for the ${capitalize(modelName)}`
+    description: `The delete endpoint for the ${capitalize(modelName)}`,
   })
 
   const config: any = {
@@ -22,9 +22,9 @@ export default async function addDeleteModule(
     headers: {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json',
-      'x-imt-apps-sdk-version': '1.0.0'
+      'x-imt-apps-sdk-version': '1.0.0',
     },
-    data: data
+    data: data,
   }
 
   try {
@@ -38,18 +38,18 @@ export default async function addDeleteModule(
       body: {
         operationName: `delete${capitalize(modelName)}`,
         variables: {
-          id: '{{id}}'
+          id: '{{id}}',
         },
         query: `mutation delete${capitalize(
           modelName
-        )}($id: Int!) {\n  ${modelName}Delete(id: $id) \n}\n`
+        )}($id: Int!) {\n  ${modelName}Delete(id: $id) \n}\n`,
       },
       headers: {
-        authorization: '{{connection.token}}'
+        authorization: '{{connection.token}}',
       },
       response: {
-        output: '{{body}}'
-      }
+        output: '{{body}}',
+      },
     })
 
     const configApi: any = {
@@ -60,9 +60,9 @@ export default async function addDeleteModule(
       headers: {
         Authorization: `Token ${token}`,
         'x-imt-apps-sdk-version': '1.0.0',
-        'Content-Type': 'application/jsonc'
+        'Content-Type': 'application/jsonc',
       },
-      data: queryString
+      data: queryString,
     }
 
     try {
@@ -77,8 +77,8 @@ export default async function addDeleteModule(
         name: 'id',
         type: 'integer',
         label: `${modelName} Id`,
-        required: true
-      }
+        required: true,
+      },
     ]
 
     const configExpect: any = {
@@ -89,9 +89,9 @@ export default async function addDeleteModule(
       headers: {
         Authorization: `Token ${token}`,
         'x-imt-apps-sdk-version': '1.0.0',
-        'Content-Type': 'application/jsonc'
+        'Content-Type': 'application/jsonc',
       },
-      data: JSON.stringify(parameters)
+      data: JSON.stringify(parameters),
     }
 
     try {

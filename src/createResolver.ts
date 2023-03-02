@@ -38,7 +38,7 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
       }
 
       const modelInclude: any = {
-        model: model.associations[associationName].target
+        model: model.associations[associationName].target,
       }
 
       if (model.associations[associationName].as) {
@@ -48,7 +48,7 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
       findOptions.include.push(modelInclude)
 
       const modelSort: any = {
-        model: model.associations[associationName].target
+        model: model.associations[associationName].target,
       }
       // When sorting by a associated table, the alias must be specified
       // if defined in the association definition.
@@ -119,7 +119,7 @@ const argsAdvancedProcessing = (
   ) {
     findOptions.where = {
       ...(findOptions.where ? findOptions.where : {}),
-      ...models[info.parentType.name].associations[info.fieldName].scope
+      ...models[info.parentType.name].associations[info.fieldName].scope,
     }
   }
 
@@ -250,6 +250,6 @@ export default function createResolver(
         return modifiedResult
       }
       return result
-    }
+    },
   })
 }

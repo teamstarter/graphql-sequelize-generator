@@ -25,7 +25,7 @@ export default function addUpdateModule(
     label: `Update ${capitalize(modelName)}`,
     type_id: 4,
     crud: 'update',
-    description: `The update endpoint for the ${capitalize(modelName)}`
+    description: `The update endpoint for the ${capitalize(modelName)}`,
   })
 
   const config: any = {
@@ -34,13 +34,13 @@ export default function addUpdateModule(
     headers: {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json',
-      'x-imt-apps-sdk-version': '1.0.0'
+      'x-imt-apps-sdk-version': '1.0.0',
     },
-    data: data
+    data: data,
   }
 
   axios(config)
-    .then(function(response) {
+    .then(function (response) {
       console.log(JSON.stringify(response))
 
       const queryString = JSON.stringify({
@@ -50,18 +50,18 @@ export default function addUpdateModule(
         body: {
           operationName: `update${capitalize(modelName)}`,
           variables: {
-            [modelName]: variable
+            [modelName]: variable,
           },
           query: `mutation update${capitalize(
             modelName
-          )}($${modelName}: ${modelName}Input!) {\n  ${modelName}Update(${modelName}: $${modelName}) {\n    ${returnAttrinutes}__typename\n  }\n}\n`
+          )}($${modelName}: ${modelName}Input!) {\n  ${modelName}Update(${modelName}: $${modelName}) {\n    ${returnAttrinutes}__typename\n  }\n}\n`,
         },
         headers: {
-          authorization: '{{connection.token}}'
+          authorization: '{{connection.token}}',
         },
         response: {
-          output: '{{body}}'
-        }
+          output: '{{body}}',
+        },
       })
 
       const configApi: any = {
@@ -72,20 +72,20 @@ export default function addUpdateModule(
         headers: {
           Authorization: `Token ${token}`,
           'x-imt-apps-sdk-version': '1.0.0',
-          'Content-Type': 'application/jsonc'
+          'Content-Type': 'application/jsonc',
         },
-        data: queryString
+        data: queryString,
       }
 
       axios(configApi)
-        .then(function(response) {
+        .then(function (response) {
           console.log(JSON.stringify(response))
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(JSON.stringify(error))
         })
 
-      const parameters = Object.keys(variable).map(attribute => {
+      const parameters = Object.keys(variable).map((attribute) => {
         const attributeObject = models[modelName].rawAttributes[attribute]
         const parameter: any = {
           name: attribute,
@@ -94,7 +94,7 @@ export default function addUpdateModule(
           required:
             attribute === 'id'
               ? true
-              : !models[modelName].rawAttributes[attribute].allowNull
+              : !models[modelName].rawAttributes[attribute].allowNull,
         }
 
         if (attributeObject.validate && attributeObject.validate.isIn) {
@@ -102,7 +102,7 @@ export default function addUpdateModule(
           parameter['options'] = attributeObject.validate.isIn[0].map(
             (valid: any) => ({
               label: String(valid),
-              value: valid
+              value: valid,
             })
           )
         }
@@ -117,20 +117,20 @@ export default function addUpdateModule(
         headers: {
           Authorization: `Token ${token}`,
           'x-imt-apps-sdk-version': '1.0.0',
-          'Content-Type': 'application/jsonc'
+          'Content-Type': 'application/jsonc',
         },
-        data: JSON.stringify(parameters)
+        data: JSON.stringify(parameters),
       }
 
       axios(configExpect)
-        .then(function(response) {
+        .then(function (response) {
           console.log(JSON.stringify(response))
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(JSON.stringify(error))
         })
     })
-    .catch(function(error) {
+    .catch(function (error) {
       console.log(JSON.stringify(error))
     })
 }

@@ -26,7 +26,7 @@ export default async function addCreateModule(
     label: `Create ${capitalize(modelName)}`,
     type_id: 4,
     crud: 'create',
-    description: `The create endpoint for the ${capitalize(modelName)}`
+    description: `The create endpoint for the ${capitalize(modelName)}`,
   })
 
   const config: any = {
@@ -35,9 +35,9 @@ export default async function addCreateModule(
     headers: {
       Authorization: `Token ${token}`,
       'Content-Type': 'application/json',
-      'x-imt-apps-sdk-version': '1.0.0'
+      'x-imt-apps-sdk-version': '1.0.0',
     },
-    data: data
+    data: data,
   }
 
   try {
@@ -51,18 +51,18 @@ export default async function addCreateModule(
       body: {
         operationName: `create${capitalize(modelName)}`,
         variables: {
-          [modelName]: variable
+          [modelName]: variable,
         },
         query: `mutation create${capitalize(
           modelName
-        )}($${modelName}: ${modelName}Input!) {\n  ${modelName}Create(${modelName}: $${modelName}) {\n    ${returnAttrinutes}__typename\n  }\n}\n`
+        )}($${modelName}: ${modelName}Input!) {\n  ${modelName}Create(${modelName}: $${modelName}) {\n    ${returnAttrinutes}__typename\n  }\n}\n`,
       },
       headers: {
-        authorization: '{{connection.token}}'
+        authorization: '{{connection.token}}',
       },
       response: {
-        output: '{{body}}'
-      }
+        output: '{{body}}',
+      },
     })
 
     const configApi: any = {
@@ -73,9 +73,9 @@ export default async function addCreateModule(
       headers: {
         Authorization: `Token ${token}`,
         'x-imt-apps-sdk-version': '1.0.0',
-        'Content-Type': 'application/jsonc'
+        'Content-Type': 'application/jsonc',
       },
-      data: queryString
+      data: queryString,
     }
 
     try {
@@ -85,13 +85,13 @@ export default async function addCreateModule(
       console.log(JSON.stringify(error))
     }
 
-    const parameters = Object.keys(variable).map(attribute => {
+    const parameters = Object.keys(variable).map((attribute) => {
       const attributeObject = models[modelName].rawAttributes[attribute]
       const parameter: any = {
         name: attribute,
         type: models[modelName].rawAttributes[attribute].type.constructor.key,
         label: capitalize(attribute),
-        required: !models[modelName].rawAttributes[attribute].allowNull
+        required: !models[modelName].rawAttributes[attribute].allowNull,
       }
 
       if (attributeObject.validate && attributeObject.validate.isIn) {
@@ -99,7 +99,7 @@ export default async function addCreateModule(
         parameter['options'] = attributeObject.validate.isIn[0].map(
           (valid: any) => ({
             label: String(valid),
-            value: valid
+            value: valid,
           })
         )
       }
@@ -114,9 +114,9 @@ export default async function addCreateModule(
       headers: {
         Authorization: `Token ${token}`,
         'x-imt-apps-sdk-version': '1.0.0',
-        'Content-Type': 'application/jsonc'
+        'Content-Type': 'application/jsonc',
       },
-      data: JSON.stringify(parameters)
+      data: JSON.stringify(parameters),
     }
 
     try {

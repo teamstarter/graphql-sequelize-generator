@@ -1,8 +1,9 @@
 import { PubSub } from 'graphql-subscriptions'
 import {
+  GraphQLError,
   GraphQLInputObjectType,
   GraphQLNonNull,
-  GraphQLObjectType
+  GraphQLObjectType,
 } from 'graphql'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
@@ -35,7 +36,7 @@ export default function generateMutationCreate(
       ...(graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.extraArg
         ? graphqlModelDeclaration.create.extraArg
-        : {})
+        : {}),
     },
     resolve: async (source: any, args: any, context: any, info: any) => {
       let attributes = args[modelName]
@@ -98,7 +99,7 @@ export default function generateMutationCreate(
         let entityDuplicate = null
         if (Object.keys(filters).length) {
           entityDuplicate = await model.findOne({
-            where: filters
+            where: filters,
           })
         }
 
@@ -107,7 +108,13 @@ export default function generateMutationCreate(
         }
       }
 
-      const newEntity = await model.create(attributes)
+      let newEntity = undefined
+      try {
+        newEntity = await model.create(attributes)
+      } catch (error) {
+        // @ts-ignore
+        throw new GraphQLError(error.message)
+      }
 
       if (
         graphqlModelDeclaration.create &&
@@ -131,7 +138,7 @@ export default function generateMutationCreate(
 
         if (pubSubInstance) {
           pubSubInstance.publish(`${modelName}Created`, {
-            [`${modelName}Created`]: updatedEntity.get()
+            [`${modelName}Created`]: updatedEntity.get(),
           })
         }
 
@@ -149,7 +156,7 @@ export default function generateMutationCreate(
 
       if (pubSubInstance) {
         pubSubInstance.publish(`${modelName}Created`, {
-          [`${modelName}Created`]: newEntity.get()
+          [`${modelName}Created`]: newEntity.get(),
         })
       }
 
@@ -163,6 +170,6 @@ export default function generateMutationCreate(
       )
 
       return newEntity
-    }
+    },
   }
 }

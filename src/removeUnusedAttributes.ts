@@ -43,7 +43,7 @@ export default function removeUnusedAttributes(
    * that the reconcilier can match the car with the user.
    *
    */
-  const attributes = Object.keys(ast.fields).filter(attribute => {
+  const attributes = Object.keys(ast.fields).filter((attribute) => {
     // The typename field is a key metadata and must always be returned if asked
     if (attribute === '__typename') {
       return false
@@ -131,8 +131,8 @@ export default function removeUnusedAttributes(
         ...attributes,
         ...linkFields,
         ...parentModelReferenceAttributes,
-        ...keep
-      ])
-    ]
+        ...keep,
+      ]),
+    ],
   }
 }

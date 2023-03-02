@@ -44,8 +44,8 @@ export default function generateListResolver(
       ...defaultListArgs(),
       ...(schemaDeclaration.list && schemaDeclaration.list.extraArg
         ? schemaDeclaration.list.extraArg
-        : {})
+        : {}),
     },
-    resolve: createResolver(schemaDeclaration, models, globalPreCallback)
+    resolve: createResolver(schemaDeclaration, models, globalPreCallback),
   }
 }
