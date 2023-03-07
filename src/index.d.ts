@@ -23,6 +23,7 @@ export function generateApolloServer({
   customMutations,
   types,
   models,
+  wsServer,
   apolloServerOptions,
   pubSubInstance,
   callWebhook,
@@ -30,7 +31,8 @@ export function generateApolloServer({
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
-  models: SequelizeModels
+    models: SequelizeModels
+  wsServer: any
   customMutations?: MutationList
   apolloServerOptions?: any
   pubSubInstance?: PubSub | null
