@@ -8,7 +8,7 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
 describe('Test the create mutation', () => {
   let server = null
   let trace = []
-  const globalPreCallback = type => {
+  const globalPreCallback = (type) => {
     trace.push(type)
   }
 
@@ -64,10 +64,10 @@ describe('Test the create mutation', () => {
         variables: {
           user: {
             id: 5,
-            name: 'edited name'
-          }
+            name: 'edited name',
+          },
         },
-        operationName: 'userUpdate'
+        operationName: 'userUpdate',
       })
     expect(responseUserCreate.body.errors).toBeUndefined()
     expect(responseUserCreate.body.data.user).not.toBeUndefined()

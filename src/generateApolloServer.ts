@@ -23,6 +23,7 @@ export default function generateApolloServer({
   callWebhook = () => null,
   wsServer = null,
   globalPreCallback = () => null,
+  useServerOptions = {},
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
@@ -33,6 +34,7 @@ export default function generateApolloServer({
   callWebhook: Function
   wsServer: any
   globalPreCallback?: GlobalPreCallback
+  useServerOptions: any
 }): ApolloServer {
   const graphqlSchema = new GraphQLSchema(
     generateSchema({
@@ -49,7 +51,7 @@ export default function generateApolloServer({
   // Hand in the schema we just created and have the
   // WebSocketServer start listening.
   if (wsServer) {
-    useServer({ schema: graphqlSchema }, wsServer)
+    useServer({ schema: graphqlSchema, ...useServerOptions }, wsServer)
   }
 
   return new ApolloServer({
