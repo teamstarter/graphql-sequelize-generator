@@ -380,17 +380,20 @@ module.exports = (globalPreCallback, httpServer) => {
         // Required for the tests.
         csrfPrevention: false,
         playground: true,
-        // Example of socket security hook.
-        subscriptions: {
-          onConnect: (connectionParams, webSocket) => {
-            return true
-          },
-        },
       },
       callWebhook: (data) => {
         return data
       },
       pubSubInstance,
+      useServerOptions: {
+        context: async (ctx, msg, args) => {
+          // Returning an object will add that information to
+          // contextValue, which all of our resolvers have access to.
+          const user = { id: 1, name: 'John', companyId: 1, role: 'admin' }
+          ctx.user = user
+          return { ctx, msg, args }
+        },
+      },
     }),
   }
 }

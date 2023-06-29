@@ -58,9 +58,9 @@ async function startServer() {
     console.log(
       `🚀 http/https/h2 server runs on ${
         process.env.PORT || 8080
-      }, check the playground here: http://localhost:${
+      }.\n you can use this url: http://localhost:${
         process.env.PORT || 8080
-      }/graphql`
+      }/graphql on https://studio.apollographql.com/sandbox/explorer/ to start the playground.`
     )
     await migrateDatabase()
     await seedDatabase()
