@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.0.0...v8.1.0) (2023-03-08)
+
+
+### Features
+
+* **documentation:** Lead to the new documentation ([57f3221](https://github.com/teamstarter/graphql-sequelize-generator/commit/57f3221))
+
+
+
 ## [8.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v7.5.1...v8.0.0) (2023-01-31)
 
 
