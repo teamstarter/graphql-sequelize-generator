@@ -43,7 +43,7 @@
     "prettier": "^2.7.1",
     "prettier-eslint": "^v13.0.0",
     "prettier-tslint": "^0.4.2",
-    "sequelize": "5.22.3",
+    "sequelize": "6.29.0",
     "sequelize-cli": "^6.2.0",
     "spdy": "^3.4.7",
     "sqlite3": "^4.2.0",
