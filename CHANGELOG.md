@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.1.0...v8.2.0) (2023-06-29)
+
+
+### Features
+
+* **websockets:** add serverOption tu be able to use context operations while using web sockets  ([534f2d0](https://github.com/teamstarter/graphql-sequelize-generator/commit/534f2d0)), closes [#74](https://github.com/teamstarter/graphql-sequelize-generator/issues/74)
+
+
+
 ## [8.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.0.0...v8.1.0) (2023-03-08)
 
 
