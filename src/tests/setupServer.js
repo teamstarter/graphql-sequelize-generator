@@ -13,13 +13,12 @@ const createServer = async (options = {}, globalPreCallback = () => null) => {
   const app = express()
   options = {
     spdy: { plain: true },
-    ...options
+    ...options,
   }
   const httpServer = http.createServer(options, app)
 
   const { server } = setupServer(globalPreCallback, httpServer)
   await server.start()
-  //server.applyMiddleware({ app, path: '/graphql' })
   app.use(
     '/graphql',
     cors(),
@@ -27,13 +26,12 @@ const createServer = async (options = {}, globalPreCallback = () => null) => {
     expressMiddleware(server, {
       context: async ({ req, connection }) => {
         const contextDataloader = createContext(models.sequelize)
-
         // Connection is provided when a webSocket is connected.
         if (connection) {
           // check connection for metadata
           return {
             ...connection.context,
-            [EXPECTED_OPTIONS_KEY]: contextDataloader
+            [EXPECTED_OPTIONS_KEY]: contextDataloader,
           }
         }
 
@@ -41,13 +39,13 @@ const createServer = async (options = {}, globalPreCallback = () => null) => {
         return {
           ...req,
           bootDate: '2017-01-01',
-          [EXPECTED_OPTIONS_KEY]: contextDataloader
+          [EXPECTED_OPTIONS_KEY]: contextDataloader,
         }
-      }
+      },
     })
   )
 
-  await new Promise(resolve => {
+  await new Promise((resolve) => {
     httpServer.listen(process.env.PORT || 8080, () => {
       resolve()
     })
@@ -55,8 +53,8 @@ const createServer = async (options = {}, globalPreCallback = () => null) => {
   return httpServer
 }
 
-const closeServer = async server => {
-  await Promise.all([new Promise(resolve => server.close(() => resolve()))])
+const closeServer = async (server) => {
+  await Promise.all([new Promise((resolve) => server.close(() => resolve()))])
 }
 
 const resetDb = async () => {
@@ -72,5 +70,5 @@ const resetDb = async () => {
 module.exports = {
   createServer,
   closeServer,
-  resetDb
+  resetDb,
 }
