@@ -31,7 +31,7 @@ export function generateApolloServer({
 }: {
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType
   types: InAndOutTypes
-    models: SequelizeModels
+  models: SequelizeModels
   wsServer: any
   customMutations?: MutationList
   apolloServerOptions?: any
