@@ -13,6 +13,7 @@ import {
   GraphQLType,
   GraphQLFieldConfig,
   GraphQLFieldResolver,
+  GraphQLList,
 } from 'graphql'
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
@@ -67,7 +68,7 @@ export type CustomResolver = (
 ) => Promise<any>
 
 export type CustomMutationConfiguration = {
-  type: GraphQLObjectType
+  type: GraphQLObjectType | GraphQLList<GraphQLObjectType>
   description?: string
   args: EndpointArgs
   resolve: CustomResolver
@@ -78,7 +79,7 @@ export type MutationList = {
 }
 
 export type CustomSubscriptionConfiguration = {
-  type: GraphQLObjectType
+  type: GraphQLObjectType | GraphQLList<GraphQLObjectType>
   description?: string
   args: EndpointArgs
   subscribe: GraphQLFieldResolver<TSource, TContext, TArgs>
