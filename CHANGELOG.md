@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.3.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.2.0...v8.3.0) (2023-10-10)
+
+
+### Features
+
+* **wsServer:** wsServer added + fix about about different type ([#82](https://github.com/teamstarter/graphql-sequelize-generator/issues/82)) ([e9fb384](https://github.com/teamstarter/graphql-sequelize-generator/commit/e9fb384)), closes [#74](https://github.com/teamstarter/graphql-sequelize-generator/issues/74) [#81](https://github.com/teamstarter/graphql-sequelize-generator/issues/81)
+
+
+
 ## [8.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.1.0...v8.2.0) (2023-06-29)
 
 
