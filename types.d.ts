@@ -3,7 +3,7 @@ import {
   Sequelize,
   BuildOptions,
   FindOptions,
-  Association
+  Association,
 } from 'sequelize/types'
 import {
   GraphQLScalarType,
@@ -12,7 +12,8 @@ import {
   GraphQLInputObjectType,
   GraphQLType,
   GraphQLFieldConfig,
-  GraphQLFieldResolver
+  GraphQLFieldResolver,
+  GraphQLList,
 } from 'graphql'
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
@@ -67,7 +68,7 @@ export type CustomResolver = (
 ) => Promise<any>
 
 export type CustomMutationConfiguration = {
-  type: GraphQLObjectType
+  type: GraphQLObjectType | GraphQLList<GraphQLObjectType>
   description?: string
   args: EndpointArgs
   resolve: CustomResolver
@@ -78,14 +79,14 @@ export type MutationList = {
 }
 
 export type CustomSubscriptionConfiguration = {
-  type: GraphQLObjectType
+  type: GraphQLObjectType | GraphQLList<GraphQLObjectType>
   description?: string
   args: EndpointArgs
-  subcribe: GraphQLFieldResolver<TSource, TContext, TArgs>
+  subscribe: GraphQLFieldResolver<TSource, TContext, TArgs>
 }
 
 export type SubscriptionList = {
-  [key: string]: CustomMutationConfiguration
+  [key: string]: CustomSubscriptionConfiguration
 }
 
 export type GlobalBeforeHook = (
@@ -179,7 +180,6 @@ export type ModelDeclarationType = {
     before?: MutationBeforeHook
     after?: UpdateAfterHook
     subscriptionFilter?: SubscriptionFilterHook
-
   }
   delete?: {
     before?: DeleteBeforeHook
