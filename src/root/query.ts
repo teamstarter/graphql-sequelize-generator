@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLInt, GraphQLFieldConfig } from 'graphql'
+import { GraphQLFieldConfig, GraphQLInt, GraphQLObjectType } from 'graphql'
 import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
 import {
   GlobalPreCallback,

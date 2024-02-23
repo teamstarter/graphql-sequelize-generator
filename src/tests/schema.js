@@ -12,9 +12,8 @@ const {
 } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { resolver, defaultListArgs } = require('graphql-sequelize')
-const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
+const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 const { WebSocketServer } = require('ws')
-const { useServer } = require('graphql-ws/lib/use/ws')
 
 const { Op } = require('sequelize')
 const {

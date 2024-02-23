@@ -1,20 +1,20 @@
 import {
-  Model,
-  Sequelize,
-  BuildOptions,
-  FindOptions,
-  Association,
-} from 'sequelize/types'
-import {
-  GraphQLScalarType,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLInputObjectType,
-  GraphQLType,
   GraphQLFieldConfig,
   GraphQLFieldResolver,
+  GraphQLInputObjectType,
   GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLScalarType,
+  GraphQLType,
 } from 'graphql'
+import {
+  Association,
+  BuildOptions,
+  FindOptions,
+  Model,
+  Sequelize,
+} from 'sequelize/types'
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
 export type ActionList = Array<Action>
@@ -152,6 +152,27 @@ export type GraphqlSchemaDeclarationType = {
   [key: string]: ModelDeclarationType | GraphQLFieldConfig<any, any, any>
 }
 
+export type CreateFieldDeclarationType = {
+  extraArg?: ExtraArg
+  before?: MutationBeforeHook
+  after?: CreateAfterHook
+  subscriptionFilter?: SubscriptionFilterHook
+  preventDuplicateOnAttributes?: string[]
+}
+
+export type UpdateFieldDeclarationType = {
+  extraArg?: ExtraArg
+  before?: MutationBeforeHook
+  after?: UpdateAfterHook
+  subscriptionFilter?: SubscriptionFilterHook
+}
+
+export type DeleteFieldDeclarationType = {
+  before?: DeleteBeforeHook
+  after?: DeleteAfterHook
+  subscriptionFilter?: SubscriptionFilterHook
+}
+
 export type ModelDeclarationType = {
   model: SequelizeModel
   actions?: ActionList
@@ -168,29 +189,20 @@ export type ModelDeclarationType = {
     after?: ListAfterHook
     resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
   }
-  create?: {
-    extraArg?: ExtraArg
-    before?: MutationBeforeHook
-    after?: CreateAfterHook
-    subscriptionFilter?: SubscriptionFilterHook
-    preventDuplicateOnAttributes?: string[]
-  }
-  update?: {
-    extraArg?: ExtraArg
-    before?: MutationBeforeHook
-    after?: UpdateAfterHook
-    subscriptionFilter?: SubscriptionFilterHook
-  }
-  delete?: {
-    before?: DeleteBeforeHook
-    after?: DeleteAfterHook
-    subscriptionFilter?: SubscriptionFilterHook
-  }
   count?: {
     extraArg?: ExtraArg
     before?: QueryBeforeHook
     resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
   }
+  create?:
+    | CreateFieldDeclarationType
+    | GraphQLFieldConfig<TSource, TContext, TArgs>
+  update?:
+    | UpdateFieldDeclarationType
+    | GraphQLFieldConfig<TSource, TContext, TArgs>
+  delete?:
+    | DeleteFieldDeclarationType
+    | GraphQLFieldConfig<TSource, TContext, TArgs>
 }
 
 export type SequelizeModels = { [key: string]: SequelizeModel } & {

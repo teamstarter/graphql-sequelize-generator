@@ -1,6 +1,12 @@
 import { GraphQLInt, GraphQLObjectType } from 'graphql'
 import { PubSub, withFilter } from 'graphql-subscriptions'
-import { GraphqlSchemaDeclarationType, EventList } from '../../types'
+import {
+  CreateFieldDeclarationType,
+  DeleteFieldDeclarationType,
+  EventList,
+  GraphqlSchemaDeclarationType,
+  UpdateFieldDeclarationType,
+} from '../../types'
 import { isGraphqlFieldDeclaration } from '../isGraphqlFieldDeclaration'
 
 const availableActions: EventList = ['create', 'update', 'delete']
@@ -34,6 +40,24 @@ export default function generateSubscriptions(
           // ex: name = "userUpdated"
           const name = `${modelName}${capitalizeFirstLetter(action)}d`
           const configuration = declaration[action]
+
+          let subscriptionFunction: any = () => true
+
+          if (
+            typeof configuration !== 'undefined' &&
+            Object.prototype.hasOwnProperty.call(
+              configuration,
+              'subscriptionFilter'
+            )
+          ) {
+            subscriptionFunction = (
+              configuration as
+                | CreateFieldDeclarationType
+                | DeleteFieldDeclarationType
+                | UpdateFieldDeclarationType
+            ).subscriptionFilter
+          }
+
           subscriptions[name] = {
             type: outputType,
             args: {
@@ -41,10 +65,7 @@ export default function generateSubscriptions(
             },
             subscribe: withFilter(
               () => pubSubInstance.asyncIterator(name),
-              typeof configuration !== 'undefined' &&
-                configuration.subscriptionFilter
-                ? configuration.subscriptionFilter
-                : () => true
+              subscriptionFunction
             ),
           }
         }
