@@ -1,11 +1,10 @@
 import {
+  GraphQLInt,
   GraphQLList,
-  GraphQLType,
   GraphQLScalarType,
   GraphQLString,
-  GraphQLInt,
+  GraphQLType,
 } from 'graphql'
-import { GraphQLField } from 'graphql/type'
 import { Association } from 'sequelize/types'
 import { injectAssociations } from '..'
 import { OutputTypes } from '../../types'
