@@ -1,4 +1,5 @@
 import { resolver } from 'graphql-sequelize'
+import { GlobalBeforeHook, ModelDeclarationType } from '../types'
 import removeUnusedAttributes from './removeUnusedAttributes'
 
 function allowOrderOnAssociations(findOptions: any, model: any) {
@@ -127,28 +128,26 @@ const argsAdvancedProcessing = (
 }
 
 export default function createResolver(
-  graphqlTypeDeclaration: any,
+  graphqlTypeDeclaration: ModelDeclarationType,
   models: any,
   globalPreCallback: any,
   relation = null
 ) {
-  if (
-    graphqlTypeDeclaration &&
-    graphqlTypeDeclaration.list &&
-    graphqlTypeDeclaration.list.resolver
-  ) {
+  if (graphqlTypeDeclaration?.list?.resolver) {
     return async (source: any, args: any, context: any, info: any) => {
       const customResolverHandle = globalPreCallback('customListBefore')
-      const customResult = await graphqlTypeDeclaration.list.resolver(
-        source,
-        args,
-        context,
-        info
-      )
-      if (customResolverHandle) {
-        customResolverHandle()
+      if (graphqlTypeDeclaration?.list?.resolver) {
+        const customResult = await graphqlTypeDeclaration.list.resolver(
+          source,
+          args,
+          context,
+          info
+        )
+        if (customResolverHandle) {
+          customResolverHandle()
+        }
+        return customResult
       }
-      return customResult
     }
   }
 
@@ -194,10 +193,12 @@ export default function createResolver(
         }
       }
       if (graphqlTypeDeclaration.before) {
-        const beforeList =
+        const beforeList: GlobalBeforeHook[] =
           typeof graphqlTypeDeclaration.before.length !== 'undefined'
-            ? graphqlTypeDeclaration.before
-            : [graphqlTypeDeclaration.before]
+            ? (graphqlTypeDeclaration.before as GlobalBeforeHook[])
+            : ([
+                graphqlTypeDeclaration.before as GlobalBeforeHook,
+              ] as GlobalBeforeHook[])
 
         for (const before of beforeList) {
           const handle = globalPreCallback('listGlobalBefore')

@@ -51,7 +51,10 @@ export default function injectAssociations(
       models,
       globalPreCallback,
       createResolver(
-        graphqlSchemaDeclaration[associations[associationName].target.name],
+        graphqlSchemaDeclaration[
+          associations[associationName].target.name
+          // Models MUST be ModelDeclarationType. GraphQLFieldConfig are for custom endpoints.
+        ] as ModelDeclarationType,
         models,
         globalPreCallback,
         associations[associationName]

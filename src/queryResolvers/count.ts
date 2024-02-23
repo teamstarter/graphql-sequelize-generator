@@ -1,5 +1,6 @@
 import { argsToFindOptions } from 'graphql-sequelize'
 import {
+  GlobalBeforeHook,
   GlobalPreCallback,
   ModelDeclarationType,
   SequelizeModel,
@@ -32,10 +33,11 @@ export default function countResolver(
 
   return async (source: any, args: any, context: any, info: any) => {
     if (schemaDeclaration.before) {
-      const beforeList = schemaDeclaration.before
-      typeof schemaDeclaration.before.length !== 'undefined'
-        ? schemaDeclaration.before
-        : [schemaDeclaration.before]
+      const beforeList: GlobalBeforeHook[] =
+        schemaDeclaration.before &&
+        typeof schemaDeclaration.before.length !== 'undefined'
+          ? (schemaDeclaration.before as GlobalBeforeHook[])
+          : ([schemaDeclaration.before] as GlobalBeforeHook[])
 
       for (const before of beforeList) {
         const handle = globalPreCallback('listGlobalBefore')

@@ -93,13 +93,13 @@ export type GlobalBeforeHook = (
   args: TArgs,
   context: TContext,
   info: TInfo
-) => void
+) => Promise<any>
 export type QueryBeforeHook = (
   findOptions: FindOptions,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => FindOptions
+) => Promise<FindOptions>
 export type ListAfterHook = (
   result: ListResult,
   args: TArgs,
@@ -111,14 +111,14 @@ export type MutationBeforeHook = (
   args: TArgs,
   context: TContext,
   info: TInfo
-) => EntityProperties
+) => Promise<EntityProperties>
 export type CreateAfterHook = (
   newEntity: any,
   source: any,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => any
+) => Promise<any>
 export type UpdateAfterHook = (
   newEntity: any,
   entitySnapshotBeforeUpdate: any,
@@ -126,27 +126,27 @@ export type UpdateAfterHook = (
   args: TArgs,
   context: TContext,
   info: TInfo
-) => any
+) => Promise<any>
 export type DeleteBeforeHook = (
   where: Where,
   findOptions: FindOptions,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => Where
+) => Promise<Where>
 export type DeleteAfterHook = (
   oldEntitySnapshot: any,
   source: any,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => any
+) => Promise<any>
 
 export type SubscriptionFilterHook = (
   payload: Payload,
   args: TArgs,
   context: TContext
-) => boolean
+) => boolean | Promise<boolean>
 
 export type GraphqlSchemaDeclarationType = {
   [key: string]: ModelDeclarationType | GraphQLFieldConfig<any, any, any>
@@ -173,6 +173,16 @@ export type DeleteFieldDeclarationType = {
   subscriptionFilter?: SubscriptionFilterHook
 }
 
+export type ListDeclarationType = {
+  removeUnusedAttributes?: boolean
+  extraArg?: ExtraArg
+  before?: QueryBeforeHook
+  after?: ListAfterHook
+  resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
+  enforceMaxLimit?: number
+  contextToOptions?: boolean
+}
+
 export type ModelDeclarationType = {
   model: SequelizeModel
   actions?: ActionList
@@ -181,14 +191,8 @@ export type ModelDeclarationType = {
   additionalSubscriptions?: SubscriptionList
   excludeFromRoot?: boolean
   excludeFields?: string[]
-  before?: GlobalBeforeHook[]
-  list?: {
-    removeUnusedAttributes?: boolean
-    extraArg?: ExtraArg
-    before?: QueryBeforeHook
-    after?: ListAfterHook
-    resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
-  }
+  before?: GlobalBeforeHook[] | GlobalBeforeHook
+  list?: ListDeclarationType
   count?: {
     extraArg?: ExtraArg
     before?: QueryBeforeHook
