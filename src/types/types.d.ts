@@ -11,10 +11,15 @@ import {
 import {
   Association,
   BuildOptions,
-  FindOptions,
+  FindOptions as FO,
+  Includeable,
   Model,
   Sequelize,
 } from 'sequelize/types'
+
+// graphql-sequelize does not have typescript support. So we have to reproduce what it is based on
+// the sequelize implementation.
+export type FindOptions = Omit<FO, 'include'> & { include: Includeable[] }
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
 export type ActionList = Array<Action>
@@ -22,8 +27,8 @@ export type ActionList = Array<Action>
 export type Event = 'create' | 'delete' | 'update'
 export type EventList = Array<Event>
 
-export type SequelizeModel = typeof Model & {
-  new (values?: object, options?: BuildOptions): any
+export type SequelizeModel<M extends Model> = typeof Model<M> & {
+  new (values?: M, options?: BuildOptions): any
 }
 
 export type ExtraArg = { [key: string]: { type: GraphQLType } }
@@ -42,7 +47,7 @@ export type InAndOutTypes = {
 
 export type EntityProperties = any
 
-export type ListResult = any[]
+export type ListResult<M extends SequelizeModel<any>> = M[] | M
 
 export type Where = any
 
@@ -64,7 +69,8 @@ export type EndpointArgs = {
 export type CustomResolver = (
   source: any,
   args: TArgs,
-  context: TContext
+  context: TContext,
+  info: TInfo
 ) => Promise<any>
 
 export type CustomMutationConfiguration = {
@@ -89,36 +95,41 @@ export type SubscriptionList = {
   [key: string]: CustomSubscriptionConfiguration
 }
 
+export type setWebhookDataType = (defaultData: any) => (f: Function) => void
+
 export type GlobalBeforeHook = (
   args: TArgs,
   context: TContext,
   info: TInfo
-) => Promise<any>
+) => any | Promise<any>
 export type QueryBeforeHook = (
   findOptions: FindOptions,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => Promise<FindOptions>
-export type ListAfterHook = (
-  result: ListResult,
+) => FindOptions | Promise<FindOptions>
+
+export type ListAfterHook<M extends SequelizeModel<any>> = (
+  result: ListResult<M>,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => ListResult
+) => ListResult<M> | Promise<ListResult<M>>
+
 export type MutationBeforeHook = (
   findOptions: FindOptions,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => Promise<EntityProperties>
+) => EntityProperties | Promise<EntityProperties>
 export type CreateAfterHook = (
   newEntity: any,
   source: any,
   args: TArgs,
   context: TContext,
-  info: TInfo
-) => Promise<any>
+  info: TInfo,
+  setWebhookData: setWebhookDataType
+) => any | Promise<any>
 export type UpdateAfterHook = (
   newEntity: any,
   entitySnapshotBeforeUpdate: any,
@@ -126,21 +137,21 @@ export type UpdateAfterHook = (
   args: TArgs,
   context: TContext,
   info: TInfo
-) => Promise<any>
+) => any | Promise<any>
 export type DeleteBeforeHook = (
   where: Where,
   findOptions: FindOptions,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => Promise<Where>
+) => Where | Promise<Where>
 export type DeleteAfterHook = (
   oldEntitySnapshot: any,
   source: any,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => Promise<any>
+) => any | Promise<any>
 
 export type SubscriptionFilterHook = (
   payload: Payload,
@@ -149,7 +160,7 @@ export type SubscriptionFilterHook = (
 ) => boolean | Promise<boolean>
 
 export type GraphqlSchemaDeclarationType = {
-  [key: string]: ModelDeclarationType | GraphQLFieldConfig<any, any, any>
+  [key: string]: ModelDeclarationType<any> | GraphQLFieldConfig<any, any, any>
 }
 
 export type CreateFieldDeclarationType = {
@@ -173,18 +184,19 @@ export type DeleteFieldDeclarationType = {
   subscriptionFilter?: SubscriptionFilterHook
 }
 
-export type ListDeclarationType = {
+export type ListDeclarationType<M extends SequelizeModel<any>> = {
   removeUnusedAttributes?: boolean
   extraArg?: ExtraArg
   before?: QueryBeforeHook
-  after?: ListAfterHook
+  after?: ListAfterHook<M>
   resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
   enforceMaxLimit?: number
   contextToOptions?: boolean
+  subscriptionFilter?: SubscriptionFilterHook
 }
 
-export type ModelDeclarationType = {
-  model: SequelizeModel
+export type ModelDeclarationType<M extends SequelizeModel<any>> = {
+  model: M
   actions?: ActionList
   subscriptions?: EventList
   additionalMutations?: MutationList
@@ -192,7 +204,7 @@ export type ModelDeclarationType = {
   excludeFromRoot?: boolean
   excludeFields?: string[]
   before?: GlobalBeforeHook[] | GlobalBeforeHook
-  list?: ListDeclarationType
+  list?: ListDeclarationType<M>
   count?: {
     extraArg?: ExtraArg
     before?: QueryBeforeHook
@@ -209,10 +221,21 @@ export type ModelDeclarationType = {
     | GraphQLFieldConfig<TSource, TContext, TArgs>
 }
 
-export type SequelizeModels = { [key: string]: SequelizeModel } & {
+export type SequelizeModels = { [key: string]: SequelizeModel<any> } & {
   sequelize: Sequelize
 }
 
 export type GlobalPreCallback = (name: string) => Function | null
 
 export type Associations = { [key: string]: Association }
+
+export type GraphqlSequelizeResolverConfigType = {
+  before?: QueryBeforeHook
+}
+
+export interface GraphqlSequelizeResolverType {
+  (model: SequelizeModel<any>, config: GraphqlSequelizeResolverConfigType):
+    | any
+    | Promise<any>
+  contextToOptions: any
+}

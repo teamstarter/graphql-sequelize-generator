@@ -1,5 +1,6 @@
+import { GraphQLFieldConfig, GraphQLInt, GraphQLNonNull } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
-import { GraphQLInt, GraphQLNonNull } from 'graphql'
+import { TArgs, TContext, TSource } from '../types/types'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
 
@@ -31,7 +32,7 @@ export default function generateMutationDelete(
         ? graphqlModelDeclaration.delete.extraArg
         : {}),
     },
-    resolve: async (source: any, args: any, context: any, info: any) => {
+    resolve: async (source, args, context, info) => {
       let where = { id: args.id }
 
       if (graphqlModelDeclaration.before) {
@@ -123,5 +124,5 @@ export default function generateMutationDelete(
 
       return rowDeleted
     },
-  }
+  } as GraphQLFieldConfig<TSource, TContext, TArgs>
 }

@@ -1,8 +1,8 @@
 const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
-const { createServer, closeServer, resetDb } = require('./setupServer')
+const { createServer, closeServer, resetDb } = require('./setupTestServer')
 
-const userCreate = user => ({
+const userCreate = (user) => ({
   query: `mutation userCreate($user: userInput!) {
     userCreate(user: $user) {
       id
@@ -10,9 +10,9 @@ const userCreate = user => ({
     }
   }`,
   variables: {
-    user
+    user,
   },
-  operationName: null
+  operationName: null,
 })
 
 /**
@@ -21,7 +21,7 @@ const userCreate = user => ({
 describe('Test the create mutation', () => {
   let server = null
   let trace = []
-  const globalPreCallback = type => {
+  const globalPreCallback = (type) => {
     trace.push(type)
   }
 
@@ -78,10 +78,10 @@ describe('Test the create mutation', () => {
           user: {
             name: 'new user',
             departmentId: 1,
-            companyId: 1
-          }
+            companyId: 1,
+          },
         },
-        operationName: 'userCreate'
+        operationName: 'userCreate',
       })
     expect(responseUserCreate.body.errors).toBeUndefined()
     expect(responseUserCreate.body.data.user).not.toBeUndefined()
@@ -117,7 +117,7 @@ describe('Test the create mutation', () => {
           name: 'new user',
           departmentId: 1,
           companyId: 1,
-          type: 'a'
+          type: 'a',
         })
       )
     expect(responseCreateJob.body.errors).toBeUndefined()
@@ -130,7 +130,7 @@ describe('Test the create mutation', () => {
           name: 'new user',
           departmentId: 1,
           companyId: 1,
-          type: 'a'
+          type: 'a',
         })
       )
 
@@ -147,7 +147,7 @@ describe('Test the create mutation', () => {
         userCreate({
           name: 'new user',
           departmentId: 1,
-          companyId: 1
+          companyId: 1,
         })
       )
     expect(responseCreateJob.body.errors).toBeUndefined()

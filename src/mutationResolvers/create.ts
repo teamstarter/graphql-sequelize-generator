@@ -1,10 +1,12 @@
-import { PubSub } from 'graphql-subscriptions'
 import {
   GraphQLError,
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql'
+import { PubSub } from 'graphql-subscriptions'
+import { Model } from 'sequelize'
+import { SequelizeModel } from '../types/types'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
 
@@ -22,7 +24,7 @@ export default function generateMutationCreate(
   modelName: string,
   inputType: GraphQLInputObjectType,
   outputType: GraphQLObjectType,
-  model: any,
+  model: SequelizeModel<any>,
   graphqlModelDeclaration: any,
   globalPreCallback: any,
   pubSubInstance: PubSub | null = null,
@@ -108,12 +110,16 @@ export default function generateMutationCreate(
         }
       }
 
-      let newEntity = undefined
+      let newEntity: Model<any> | undefined = undefined
       try {
         newEntity = await model.create(attributes)
       } catch (error) {
         // @ts-ignore
         throw new GraphQLError(error.message)
+      }
+
+      if (!newEntity) {
+        return
       }
 
       if (

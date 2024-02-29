@@ -1,19 +1,20 @@
-import { GraphQLSchema } from 'graphql'
-import { PubSub } from 'graphql-subscriptions'
 import { ApolloServer } from '@apollo/server'
 import { ApolloServerPluginCacheControlDisabled } from '@apollo/server/plugin/disabled'
+import { GraphQLSchema } from 'graphql'
+import { PubSub } from 'graphql-subscriptions'
 import { useServer } from 'graphql-ws/lib/use/ws'
 
+import { ConnectionInitMessage, ServerOptions } from 'graphql-ws'
+import generateSchema from './schema'
 import {
   GlobalPreCallback,
   GraphqlSchemaDeclarationType,
+  InAndOutTypes,
   MutationList,
   SequelizeModels,
-  InAndOutTypes,
-} from '../types'
-import generateSchema from './schema'
+} from './types/types'
 
-export default function generateApolloServer({
+export default function generateApolloServer<ContextExtraAttributes = {}>({
   graphqlSchemaDeclaration,
   customMutations,
   types,
@@ -34,7 +35,10 @@ export default function generateApolloServer({
   callWebhook: Function
   wsServer: any
   globalPreCallback?: GlobalPreCallback
-  useServerOptions: any
+  useServerOptions: ServerOptions<
+    ConnectionInitMessage['payload'],
+    ContextExtraAttributes
+  >
 }): ApolloServer {
   const graphqlSchema = new GraphQLSchema(
     generateSchema({
@@ -51,6 +55,7 @@ export default function generateApolloServer({
   // Hand in the schema we just created and have the
   // WebSocketServer start listening.
   if (wsServer) {
+    // @ts-ignore
     useServer({ schema: graphqlSchema, ...useServerOptions }, wsServer)
   }
 

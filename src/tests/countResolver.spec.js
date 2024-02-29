@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
-const { createServer, closeServer, resetDb } = require('./setupServer')
+const { createServer, closeServer, resetDb } = require('./setupTestServer')
 
 /**
  * Starting the tests
@@ -8,7 +8,7 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
 describe('Test the count resolvers', () => {
   let server = null
   let trace = []
-  const globalPreCallback = type => {
+  const globalPreCallback = (type) => {
     trace.push(type)
   }
 

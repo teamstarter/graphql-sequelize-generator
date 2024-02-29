@@ -4,11 +4,11 @@ import {
   GlobalPreCallback,
   ModelDeclarationType,
   SequelizeModel,
-} from '../../types'
+} from '../types/types'
 
-export default function countResolver(
-  model: SequelizeModel,
-  schemaDeclaration: ModelDeclarationType,
+export default function countResolver<M extends SequelizeModel<any>>(
+  model: M,
+  schemaDeclaration: ModelDeclarationType<M>,
   globalPreCallback: GlobalPreCallback
 ) {
   const countResolver =

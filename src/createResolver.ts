@@ -1,6 +1,10 @@
 import { resolver } from 'graphql-sequelize'
-import { GlobalBeforeHook, ModelDeclarationType } from '../types'
 import removeUnusedAttributes from './removeUnusedAttributes'
+import {
+  GlobalBeforeHook,
+  ModelDeclarationType,
+  SequelizeModel,
+} from './types/types'
 
 function allowOrderOnAssociations(findOptions: any, model: any) {
   if (typeof findOptions.order === 'undefined') {
@@ -11,7 +15,7 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
   const checkForAssociationSort = (singleOrder: any, index: any) => {
     // When the comas is used, graphql-sequelize will not handle the 'reverse:' command.
     // We have to implement it ourselves.
-    let field = null
+    let field: string | null = null
     // By default we take the direction detected by GraphQL-sequelize
     // It will be 'ASC' if 'reverse:' was not specified.
     // But this will only work for the first field.
@@ -26,7 +30,7 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
     }
 
     // if there is exactly one dot, we check for associations
-    const parts = field.split('.')
+    const parts = field ? field.split('.') : []
     if (parts.length === 2) {
       const associationName = parts[0]
       if (typeof model.associations[associationName] === 'undefined') {
@@ -62,6 +66,7 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
       // Virtual field must be sorted using quotes
       // as they are not real fields.
       if (
+        field &&
         model.rawAttributes[field] &&
         model.rawAttributes[field].type.key === 'VIRTUAL'
       ) {
@@ -128,7 +133,7 @@ const argsAdvancedProcessing = (
 }
 
 export default function createResolver(
-  graphqlTypeDeclaration: ModelDeclarationType,
+  graphqlTypeDeclaration: ModelDeclarationType<any>,
   models: any,
   globalPreCallback: any,
   relation = null
@@ -241,7 +246,12 @@ export default function createResolver(
             models
           )
     },
-    after: async (result: any, args: any, context: any, info: any) => {
+    after: async (
+      result: SequelizeModel<any> | SequelizeModel<any>[],
+      args: any,
+      context: any,
+      info: any
+    ) => {
       if (listAfter) {
         const handle = globalPreCallback('listAfter')
         const modifiedResult = await listAfter(result, args, context, info)

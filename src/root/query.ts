@@ -6,7 +6,7 @@ import {
   ModelDeclarationType,
   OutputTypes,
   SequelizeModels,
-} from '../../types'
+} from '../types/types'
 
 import generateCountResolver from '../queryResolvers/count'
 import generateListResolver from '../queryResolvers/list'
@@ -21,7 +21,7 @@ function getModelsFields(
     const modelType = outputTypes[modelTypeName]
     const schemaDeclaration = allSchemaDeclarations[
       modelType.name
-    ] as ModelDeclarationType
+    ] as ModelDeclarationType<any>
 
     if (typeof schemaDeclaration === 'undefined') {
       // If a model is not defined, we just ignore it.
