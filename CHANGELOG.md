@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.4.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.1...v8.4.2) (2024-02-29)
+
+
+### Bug Fixes
+
+* **types:** Fix findOptions types ([e254092](https://github.com/teamstarter/graphql-sequelize-generator/commit/e254092))
+
+
+
 ### [8.4.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.0...v8.4.1) (2024-02-29)
 
 
