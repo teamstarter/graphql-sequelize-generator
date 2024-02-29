@@ -52,9 +52,9 @@ export default function generateSubscriptions(
           ) {
             subscriptionFunction = (
               configuration as
-                | CreateFieldDeclarationType
+                | CreateFieldDeclarationType<any>
                 | DeleteFieldDeclarationType<any>
-                | UpdateFieldDeclarationType
+                | UpdateFieldDeclarationType<any>
             ).subscriptionFilter
           }
 

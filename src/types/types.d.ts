@@ -10,6 +10,7 @@ import {
 } from 'graphql'
 import {
   Association,
+  Attributes,
   FindOptions as FO,
   Includeable,
   Model,
@@ -19,7 +20,10 @@ import {
 
 // graphql-sequelize does not have typescript support. So we have to reproduce what it is based on
 // the sequelize implementation.
-export type FindOptions = Omit<FO, 'include'> & { include: Includeable[] }
+export type FindOptions<M extends Model> = Omit<
+  FO<Attributes<M>>,
+  'include'
+> & { include: Includeable[] }
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
 export type ActionList = Array<Action>
@@ -100,12 +104,12 @@ export type GlobalBeforeHook = (
   context: TContext,
   info: TInfo
 ) => any | Promise<any>
-export type QueryBeforeHook = (
-  findOptions: FindOptions,
+export type QueryBeforeHook<M extends Model<any>> = (
+  findOptions: FindOptions<M>,
   args: TArgs,
   context: TContext,
   info: TInfo
-) => FindOptions | Promise<FindOptions>
+) => FindOptions<M> | Promise<FindOptions<M>>
 
 export type ListAfterHook<M extends Model<any>> = (
   result: ListResult<M>,
@@ -114,8 +118,8 @@ export type ListAfterHook<M extends Model<any>> = (
   info: TInfo
 ) => ListResult<M> | Promise<ListResult<M>>
 
-export type MutationBeforeHook = (
-  findOptions: FindOptions,
+export type MutationBeforeHook<M extends Model> = (
+  findOptions: FindOptions<M>,
   args: TArgs,
   context: TContext,
   info: TInfo
@@ -128,8 +132,8 @@ export type CreateAfterHook = (
   info: TInfo,
   webhookData: (f: Function) => void
 ) => any | Promise<any>
-export type UpdateAfterHook = (
-  newEntity: any,
+export type UpdateAfterHook<M extends Model> = (
+  newEntity: M,
   entitySnapshotBeforeUpdate: any,
   source: any,
   args: TArgs,
@@ -137,9 +141,9 @@ export type UpdateAfterHook = (
   info: TInfo,
   webhookData: (f: Function) => void
 ) => any | Promise<any>
-export type DeleteBeforeHook = (
+export type DeleteBeforeHook<M extends Model> = (
   where: Where,
-  findOptions: FindOptions,
+  findOptions: FindOptions<M>,
   args: TArgs,
   context: TContext,
   info: TInfo
@@ -163,23 +167,23 @@ export type GraphqlSchemaDeclarationType = {
   [key: string]: ModelDeclarationType<any> | GraphQLFieldConfig<any, any, any>
 }
 
-export type CreateFieldDeclarationType = {
+export type CreateFieldDeclarationType<M extends Model> = {
   extraArg?: ExtraArg
-  before?: MutationBeforeHook
+  before?: MutationBeforeHook<M>
   after?: CreateAfterHook
   subscriptionFilter?: SubscriptionFilterHook
   preventDuplicateOnAttributes?: string[]
 }
 
-export type UpdateFieldDeclarationType = {
+export type UpdateFieldDeclarationType<M extends Model> = {
   extraArg?: ExtraArg
-  before?: MutationBeforeHook
-  after?: UpdateAfterHook
+  before?: MutationBeforeHook<M>
+  after?: UpdateAfterHook<M>
   subscriptionFilter?: SubscriptionFilterHook
 }
 
 export type DeleteFieldDeclarationType<M extends Model<M>> = {
-  before?: DeleteBeforeHook
+  before?: DeleteBeforeHook<M>
   after?: DeleteAfterHook<M>
   subscriptionFilter?: SubscriptionFilterHook
 }
@@ -187,7 +191,7 @@ export type DeleteFieldDeclarationType<M extends Model<M>> = {
 export type ListDeclarationType<M extends Model<any>> = {
   removeUnusedAttributes?: boolean
   extraArg?: ExtraArg
-  before?: QueryBeforeHook
+  before?: QueryBeforeHook<M>
   after?: ListAfterHook<M>
   resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
   enforceMaxLimit?: number
@@ -195,7 +199,7 @@ export type ListDeclarationType<M extends Model<any>> = {
   subscriptionFilter?: SubscriptionFilterHook
 }
 
-export type ModelDeclarationType<M extends Model<M>> = {
+export type ModelDeclarationType<M extends Model> = {
   model: ModelStatic<M>
   actions?: ActionList
   subscriptions?: EventList
@@ -208,14 +212,14 @@ export type ModelDeclarationType<M extends Model<M>> = {
   list?: ListDeclarationType<M>
   count?: {
     extraArg?: ExtraArg
-    before?: QueryBeforeHook
+    before?: QueryBeforeHook<M>
     resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
   }
   create?:
-    | CreateFieldDeclarationType
+    | CreateFieldDeclarationType<M>
     | GraphQLFieldConfig<TSource, TContext, TArgs>
   update?:
-    | UpdateFieldDeclarationType
+    | UpdateFieldDeclarationType<M>
     | GraphQLFieldConfig<TSource, TContext, TArgs>
   delete?:
     | DeleteFieldDeclarationType<M>
@@ -230,12 +234,12 @@ export type GlobalPreCallback = (name: string) => Function | null
 
 export type Associations = { [key: string]: Association }
 
-export type GraphqlSequelizeResolverConfigType = {
-  before?: QueryBeforeHook
+export type GraphqlSequelizeResolverConfigType<M extends Model> = {
+  before?: QueryBeforeHook<M>
 }
 
 export interface GraphqlSequelizeResolverType {
-  (model: ModelStatic<any>, config: GraphqlSequelizeResolverConfigType):
+  (model: ModelStatic<any>, config: GraphqlSequelizeResolverConfigType<any>):
     | any
     | Promise<any>
   contextToOptions: any

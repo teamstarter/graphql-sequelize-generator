@@ -46,6 +46,7 @@ graphqlSchemaDeclaration.companyType = {
 }
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  declare id: number | null
   declare name: string | null
 }
 
@@ -135,9 +136,7 @@ graphqlSchemaDeclaration.user = {
       if (typeof findOptions.where === 'undefined') {
         findOptions.where = {}
       }
-      findOptions.where = {
-        [Op.and]: [findOptions.where, { departmentId: [1] }],
-      }
+      findOptions.where = { ...findOptions.where, id: 1 }
       return findOptions
     },
     after: (result, args, context, info) => {
