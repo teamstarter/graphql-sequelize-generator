@@ -1,10 +1,7 @@
 import { resolver } from 'graphql-sequelize'
+import { Model } from 'sequelize'
 import removeUnusedAttributes from './removeUnusedAttributes'
-import {
-  GlobalBeforeHook,
-  ModelDeclarationType,
-  SequelizeModel,
-} from './types/types'
+import { GlobalBeforeHook, ModelDeclarationType } from './types/types'
 
 function allowOrderOnAssociations(findOptions: any, model: any) {
   if (typeof findOptions.order === 'undefined') {
@@ -247,7 +244,7 @@ export default function createResolver(
           )
     },
     after: async (
-      result: SequelizeModel<any> | SequelizeModel<any>[],
+      result: Model<any> | Model<any>[],
       args: any,
       context: any,
       info: any

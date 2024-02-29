@@ -1,13 +1,13 @@
 import { argsToFindOptions } from 'graphql-sequelize'
+import { Model, ModelStatic } from 'sequelize'
 import {
   GlobalBeforeHook,
   GlobalPreCallback,
   ModelDeclarationType,
-  SequelizeModel,
 } from '../types/types'
 
-export default function countResolver<M extends SequelizeModel<any>>(
-  model: M,
+export default function countResolver<M extends Model<any>>(
+  model: ModelStatic<M>,
   schemaDeclaration: ModelDeclarationType<M>,
   globalPreCallback: GlobalPreCallback
 ) {
@@ -51,7 +51,7 @@ export default function countResolver<M extends SequelizeModel<any>>(
     if (typeof countBefore !== 'undefined') {
       const handle = globalPreCallback('countBefore')
       const countOptions = await countBefore(
-        argsToFindOptions.default(args, Object.keys(model.rawAttributes)),
+        argsToFindOptions.default(args, Object.keys(model.getAttributes())),
         args,
         context,
         info
@@ -62,7 +62,7 @@ export default function countResolver<M extends SequelizeModel<any>>(
       return model.count(countOptions)
     }
     return model.count(
-      argsToFindOptions.default(args, Object.keys(model.rawAttributes))
+      argsToFindOptions.default(args, Object.keys(model.getAttributes()))
     )
   }
 }

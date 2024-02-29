@@ -53,7 +53,7 @@ export default function generateSubscriptions(
             subscriptionFunction = (
               configuration as
                 | CreateFieldDeclarationType
-                | DeleteFieldDeclarationType
+                | DeleteFieldDeclarationType<any>
                 | UpdateFieldDeclarationType
             ).subscriptionFilter
           }

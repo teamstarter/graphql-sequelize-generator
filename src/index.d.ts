@@ -5,7 +5,7 @@ import {
   GraphQLSchemaConfig,
 } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
-import { FindOptions } from 'sequelize/types'
+import { FindOptions, ModelStatic } from 'sequelize/types'
 import {
   GlobalPreCallback,
   GraphqlSchemaDeclarationType,
@@ -58,7 +58,7 @@ export function generateSchema({
 }): GraphQLSchemaConfig
 export function generateModelTypes(models: SequelizeModels): InAndOutTypes
 export function generateCount(
-  model: SequelizeModel<any>,
+  model: ModelStatic<any>,
   schemaDeclaration: ModelDeclarationType<any>,
   globalPreCallback: GlobalPreCallback
 ): GraphQLFieldResolver<any, any, any>
