@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.4.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.0...v8.4.1) (2024-02-29)
+
+
+### Bug Fixes
+
+* **types:** Add webhook types missing from some hooks. Fix differences between the row and table class. ([3c0c9df](https://github.com/teamstarter/graphql-sequelize-generator/commit/3c0c9df))
+
+
+
 ## [8.4.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.3.2...v8.4.0) (2024-02-29)
 
 
