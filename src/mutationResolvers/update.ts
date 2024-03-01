@@ -128,6 +128,7 @@ export default function generateMutationUpdate(
 
         return updatedEntity
       }
+      return entity
     },
   }
 }

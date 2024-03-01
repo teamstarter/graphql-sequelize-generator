@@ -96,4 +96,31 @@ describe('Test the create mutation', () => {
     )
     expect(trace).toMatchSnapshot()
   })
+
+  it('Check that you can update an entity', async () => {
+    const responseCompanyUpdate = await request(server)
+      .post('/graphql')
+      .set('userid', 1)
+      .send({
+        query: `mutation companyUpdate($company: companyInput!) {
+              company : companyUpdate(company: $company) {
+                id
+                name
+                __typename
+              }
+            }`,
+        variables: {
+          company: {
+            id: 5,
+            name: 'updated name',
+          },
+        },
+        operationName: 'companyUpdate',
+      })
+    expect(responseCompanyUpdate.body.errors).toBeUndefined()
+    expect(responseCompanyUpdate.body.data.company).not.toBeUndefined()
+    expect(responseCompanyUpdate.body.data.company).toMatchSnapshot(
+      'Updated company'
+    )
+  })
 })

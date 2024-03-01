@@ -196,7 +196,7 @@ graphqlSchemaDeclaration.user = {
 
 graphqlSchemaDeclaration.company = {
   model: models.company,
-  actions: ['list', 'create'],
+  actions: ['list', 'create', 'update'],
   subscriptions: ['create', 'update'],
   list: {
     removeUnusedAttributes: false,
@@ -212,6 +212,7 @@ graphqlSchemaDeclaration.company = {
       return findOptions
     },
   },
+  // Do not add the update hooks. This enpoint is used to test the default behavior.
 }
 
 graphqlSchemaDeclaration.department = {
