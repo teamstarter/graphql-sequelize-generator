@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.3...v8.5.0) (2024-03-04)
+
+
+### Features
+
+* **list:** Optimize limit/offset queries by pre-fetching the primary keys that should be returned. ([74c1959](https://github.com/teamstarter/graphql-sequelize-generator/commit/74c1959))
+
+
+
 ### [8.4.3](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.2...v8.4.3) (2024-03-01)
 
 
