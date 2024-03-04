@@ -1,8 +1,8 @@
 import { GraphQLList, GraphQLType } from 'graphql'
 import { defaultArgs, defaultListArgs } from 'graphql-sequelize'
 
-import createResolver from '../createResolver'
 import injectAssociations from '../associations/inject'
+import createListResolver from '../createListResolver'
 /**
  * Returns a root `GraphQLObjectType` used as query for `GraphQLSchema`.
  *
@@ -46,6 +46,6 @@ export default function generateListResolver(
         ? schemaDeclaration.list.extraArg
         : {}),
     },
-    resolve: createResolver(schemaDeclaration, models, globalPreCallback),
+    resolve: createListResolver(schemaDeclaration, models, globalPreCallback),
   }
 }

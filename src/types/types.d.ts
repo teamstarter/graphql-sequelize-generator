@@ -190,6 +190,7 @@ export type DeleteFieldDeclarationType<M extends Model<M>> = {
 
 export type ListDeclarationType<M extends Model<any>> = {
   removeUnusedAttributes?: boolean
+  disableOptimizationForLimitOffset?: boolean
   extraArg?: ExtraArg
   before?: QueryBeforeHook<M>
   after?: ListAfterHook<M>

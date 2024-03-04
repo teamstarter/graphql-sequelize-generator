@@ -129,7 +129,70 @@ const argsAdvancedProcessing = (
   return findOptions
 }
 
-export default function createResolver(
+async function trimAndOptimizeFindOptions({
+  findOptions,
+  graphqlTypeDeclaration,
+  info,
+  models,
+}: {
+  findOptions: any
+  graphqlTypeDeclaration: any
+  info: any
+  models: any
+}) {
+  const trimedFindOptions =
+    graphqlTypeDeclaration.list &&
+    graphqlTypeDeclaration.list.removeUnusedAttributes === false
+      ? findOptions
+      : removeUnusedAttributes(
+          findOptions,
+          info,
+          graphqlTypeDeclaration.model,
+          models
+        )
+
+  if (
+    // If we have a list with a limit and an offset
+    trimedFindOptions.limit &&
+    trimedFindOptions.offset &&
+    // And no explicit instructions to not optimize it.
+    // In the majority of the case, doubling the number of queries should be either
+    // faster OR not significantly slower.
+    // As GSG is made to be "easy-to-use", we optimize by default.
+    // We expect limit to be small enough to not cause performance issues.
+    // If you are in a case where you need to fetch a big offset, you should disable the optimization.
+    (!graphqlTypeDeclaration.list ||
+      typeof graphqlTypeDeclaration.list.disableOptimizationForLimitOffset ===
+        'undefined' ||
+      graphqlTypeDeclaration.list.disableOptimizationForLimitOffset !== true)
+  ) {
+    // then we pre-fetch the ids to avoid slowness problems for big offsets.
+    const fetchIdsFindOptions = {
+      ...trimedFindOptions,
+      // We only fetch the primary attribute
+      attributes: [graphqlTypeDeclaration.model.primaryKeyAttribute],
+    }
+    const result = await graphqlTypeDeclaration.model.findAll(
+      fetchIdsFindOptions
+    )
+
+    return {
+      ...trimedFindOptions,
+      offset: undefined,
+      limit: undefined,
+      // We override the where to only fetch the rows we want.
+      where: {
+        [graphqlTypeDeclaration.model.primaryKeyAttribute]: result.map(
+          (r: any) => r[graphqlTypeDeclaration.model.primaryKeyAttribute]
+        ),
+      },
+    }
+  }
+
+  return trimedFindOptions
+}
+
+export default function createListResolver(
   graphqlTypeDeclaration: ModelDeclarationType<any>,
   models: any,
   globalPreCallback: any,
@@ -167,7 +230,7 @@ export default function createResolver(
       ? graphqlTypeDeclaration.list.contextToOptions
       : undefined,
     before: async (findOptions: any, args: any, context: any, info: any) => {
-      const processedFindOptions = argsAdvancedProcessing(
+      let processedFindOptions = argsAdvancedProcessing(
         findOptions,
         args,
         context,
@@ -194,6 +257,8 @@ export default function createResolver(
           findOptions.limit = graphqlTypeDeclaration.list.enforceMaxLimit
         }
       }
+
+      // Global hooks, cannot impact the findOptions
       if (graphqlTypeDeclaration.before) {
         const beforeList: GlobalBeforeHook[] =
           typeof graphqlTypeDeclaration.before.length !== 'undefined'
@@ -211,37 +276,35 @@ export default function createResolver(
         }
       }
 
+      // before hook, can mutate the findOptions
       if (listBefore) {
         const handle = globalPreCallback('listBefore')
-        const result = await listBefore(
+        const resultBefore = await listBefore(
           processedFindOptions,
           args,
           context,
           info
         )
+        if (!resultBefore) {
+          throw new Error(
+            'The before hook of the list endpoint must return a value.'
+          )
+        }
+
+        // The list overwrite the findOptions
+        processedFindOptions = resultBefore
+
         if (handle) {
           handle()
         }
-        return graphqlTypeDeclaration.list &&
-          graphqlTypeDeclaration.list.removeUnusedAttributes === false
-          ? result
-          : removeUnusedAttributes(
-              result,
-              info,
-              graphqlTypeDeclaration.model,
-              models
-            )
       }
 
-      return graphqlTypeDeclaration.list &&
-        graphqlTypeDeclaration.list.removeUnusedAttributes === false
-        ? processedFindOptions
-        : removeUnusedAttributes(
-            processedFindOptions,
-            info,
-            graphqlTypeDeclaration.model,
-            models
-          )
+      return trimAndOptimizeFindOptions({
+        findOptions: processedFindOptions,
+        graphqlTypeDeclaration,
+        info,
+        models,
+      })
     },
     after: async (
       result: Model<any> | Model<any>[],

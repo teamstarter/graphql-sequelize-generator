@@ -2,7 +2,7 @@ import _debug from 'debug'
 import { GraphQLObjectType } from 'graphql'
 import { attributeFields } from 'graphql-sequelize'
 
-import createResolver from '../createResolver'
+import createResolver from '../createListResolver'
 import {
   GlobalPreCallback,
   GraphqlSchemaDeclarationType,
