@@ -1,17 +1,17 @@
+import _debug from 'debug'
 import { GraphQLSchemaConfig } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
-import _debug from 'debug'
 
+import generateMutation from './root/mutation'
 import generateQueryRootResolver from './root/query'
 import generateSubscriptions from './root/subscriptions'
-import generateMutation from './root/mutation'
 import {
   GlobalPreCallback,
   GraphqlSchemaDeclarationType,
+  InAndOutTypes,
   MutationList,
   SequelizeModels,
-  InAndOutTypes,
-} from '../types'
+} from './types/types'
 
 const debug = _debug('gsg')
 

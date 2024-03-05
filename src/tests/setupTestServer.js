@@ -1,32 +1,24 @@
 const express = require('express')
+const { expressMiddleware } = require('@apollo/server/express4')
+const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
+
+const setupServer = require('./testSchema.js')
 const http = require('spdy')
 const cors = require('cors')
 const { json } = require('body-parser')
-const { createContext, EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
-
-const models = require('./models')
-const setupServer = require('./schema')
-
 const { migrateDatabase, seedDatabase } = require('./testDatabase.js')
-const { expressMiddleware } = require('@apollo/server/express4')
+const models = require('./models/index.js')
 
-async function startServer() {
+const createServer = async (options = {}, globalPreCallback = () => null) => {
   const app = express()
-
-  const options = {
-    spdy: {
-      plain: true,
-    },
+  options = {
+    spdy: { plain: true },
+    ...options,
   }
   const httpServer = http.createServer(options, app)
 
-  const { server } = setupServer(console.log, httpServer)
+  const { server } = setupServer(globalPreCallback, httpServer)
   await server.start()
-  /**
-   * This is the test server.
-   * Used to allow the access to the Graphql Playground at this address: http://localhost:8080/graphql.
-   * Each time the server is starter, the database is reset.
-   */
   app.use(
     '/graphql',
     cors(),
@@ -34,7 +26,6 @@ async function startServer() {
     expressMiddleware(server, {
       context: async ({ req, connection }) => {
         const contextDataloader = createContext(models.sequelize)
-
         // Connection is provided when a webSocket is connected.
         if (connection) {
           // check connection for metadata
@@ -54,17 +45,30 @@ async function startServer() {
     })
   )
 
-  httpServer.listen(process.env.PORT || 8080, async () => {
-    console.log(
-      `🚀 http/https/h2 server runs on ${
-        process.env.PORT || 8080
-      }.\n you can use this url: http://localhost:${
-        process.env.PORT || 8080
-      }/graphql on https://studio.apollographql.com/sandbox/explorer/ to start the playground.`
-    )
-    await migrateDatabase()
-    await seedDatabase()
+  await new Promise((resolve) => {
+    httpServer.listen(process.env.PORT || 8080, () => {
+      resolve()
+    })
   })
+  return httpServer
 }
 
-startServer()
+const closeServer = async (server) => {
+  await Promise.all([new Promise((resolve) => server.close(() => resolve()))])
+}
+
+const resetDb = async () => {
+  try {
+    await migrateDatabase()
+    await seedDatabase()
+  } catch (e) {
+    console.log('Critical error during the database migration', e.message, e)
+    throw e
+  }
+}
+
+module.exports = {
+  createServer,
+  closeServer,
+  resetDb,
+}

@@ -5,9 +5,9 @@ import {
   GraphQLString,
   GraphQLType,
 } from 'graphql'
-import { Association } from 'sequelize/types'
+import { Association } from 'sequelize'
 import { injectAssociations } from '..'
-import { OutputTypes } from '../../types'
+import { OutputTypes } from '../types/types'
 
 export default function generateAssociationField(
   relation: Association,

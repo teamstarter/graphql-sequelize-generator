@@ -1,5 +1,7 @@
 import { resolver } from 'graphql-sequelize'
+import { Model } from 'sequelize'
 import removeUnusedAttributes from './removeUnusedAttributes'
+import { GlobalBeforeHook, ModelDeclarationType } from './types/types'
 
 function allowOrderOnAssociations(findOptions: any, model: any) {
   if (typeof findOptions.order === 'undefined') {
@@ -10,7 +12,7 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
   const checkForAssociationSort = (singleOrder: any, index: any) => {
     // When the comas is used, graphql-sequelize will not handle the 'reverse:' command.
     // We have to implement it ourselves.
-    let field = null
+    let field: string | null = null
     // By default we take the direction detected by GraphQL-sequelize
     // It will be 'ASC' if 'reverse:' was not specified.
     // But this will only work for the first field.
@@ -25,7 +27,7 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
     }
 
     // if there is exactly one dot, we check for associations
-    const parts = field.split('.')
+    const parts = field ? field.split('.') : []
     if (parts.length === 2) {
       const associationName = parts[0]
       if (typeof model.associations[associationName] === 'undefined') {
@@ -61,6 +63,7 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
       // Virtual field must be sorted using quotes
       // as they are not real fields.
       if (
+        field &&
         model.rawAttributes[field] &&
         model.rawAttributes[field].type.key === 'VIRTUAL'
       ) {
@@ -126,29 +129,90 @@ const argsAdvancedProcessing = (
   return findOptions
 }
 
-export default function createResolver(
-  graphqlTypeDeclaration: any,
+async function trimAndOptimizeFindOptions({
+  findOptions,
+  graphqlTypeDeclaration,
+  info,
+  models,
+}: {
+  findOptions: any
+  graphqlTypeDeclaration: any
+  info: any
+  models: any
+}) {
+  const trimedFindOptions =
+    graphqlTypeDeclaration.list &&
+    graphqlTypeDeclaration.list.removeUnusedAttributes === false
+      ? findOptions
+      : removeUnusedAttributes(
+          findOptions,
+          info,
+          graphqlTypeDeclaration.model,
+          models
+        )
+
+  if (
+    // If we have a list with a limit and an offset
+    trimedFindOptions.limit &&
+    trimedFindOptions.offset &&
+    // And no explicit instructions to not optimize it.
+    // In the majority of the case, doubling the number of queries should be either
+    // faster OR not significantly slower.
+    // As GSG is made to be "easy-to-use", we optimize by default.
+    // We expect limit to be small enough to not cause performance issues.
+    // If you are in a case where you need to fetch a big offset, you should disable the optimization.
+    (!graphqlTypeDeclaration.list ||
+      typeof graphqlTypeDeclaration.list.disableOptimizationForLimitOffset ===
+        'undefined' ||
+      graphqlTypeDeclaration.list.disableOptimizationForLimitOffset !== true)
+  ) {
+    // then we pre-fetch the ids to avoid slowness problems for big offsets.
+    const fetchIdsFindOptions = {
+      ...trimedFindOptions,
+      // We only fetch the primary attribute
+      attributes: [graphqlTypeDeclaration.model.primaryKeyAttribute],
+    }
+    const result = await graphqlTypeDeclaration.model.findAll(
+      fetchIdsFindOptions
+    )
+
+    return {
+      ...trimedFindOptions,
+      offset: undefined,
+      limit: undefined,
+      // We override the where to only fetch the rows we want.
+      where: {
+        [graphqlTypeDeclaration.model.primaryKeyAttribute]: result.map(
+          (r: any) => r[graphqlTypeDeclaration.model.primaryKeyAttribute]
+        ),
+      },
+    }
+  }
+
+  return trimedFindOptions
+}
+
+export default function createListResolver(
+  graphqlTypeDeclaration: ModelDeclarationType<any>,
   models: any,
   globalPreCallback: any,
   relation = null
 ) {
-  if (
-    graphqlTypeDeclaration &&
-    graphqlTypeDeclaration.list &&
-    graphqlTypeDeclaration.list.resolver
-  ) {
+  if (graphqlTypeDeclaration?.list?.resolver) {
     return async (source: any, args: any, context: any, info: any) => {
       const customResolverHandle = globalPreCallback('customListBefore')
-      const customResult = await graphqlTypeDeclaration.list.resolver(
-        source,
-        args,
-        context,
-        info
-      )
-      if (customResolverHandle) {
-        customResolverHandle()
+      if (graphqlTypeDeclaration?.list?.resolver) {
+        const customResult = await graphqlTypeDeclaration.list.resolver(
+          source,
+          args,
+          context,
+          info
+        )
+        if (customResolverHandle) {
+          customResolverHandle()
+        }
+        return customResult
       }
-      return customResult
     }
   }
 
@@ -166,7 +230,7 @@ export default function createResolver(
       ? graphqlTypeDeclaration.list.contextToOptions
       : undefined,
     before: async (findOptions: any, args: any, context: any, info: any) => {
-      const processedFindOptions = argsAdvancedProcessing(
+      let processedFindOptions = argsAdvancedProcessing(
         findOptions,
         args,
         context,
@@ -193,11 +257,15 @@ export default function createResolver(
           findOptions.limit = graphqlTypeDeclaration.list.enforceMaxLimit
         }
       }
+
+      // Global hooks, cannot impact the findOptions
       if (graphqlTypeDeclaration.before) {
-        const beforeList =
+        const beforeList: GlobalBeforeHook[] =
           typeof graphqlTypeDeclaration.before.length !== 'undefined'
-            ? graphqlTypeDeclaration.before
-            : [graphqlTypeDeclaration.before]
+            ? (graphqlTypeDeclaration.before as GlobalBeforeHook[])
+            : ([
+                graphqlTypeDeclaration.before as GlobalBeforeHook,
+              ] as GlobalBeforeHook[])
 
         for (const before of beforeList) {
           const handle = globalPreCallback('listGlobalBefore')
@@ -208,39 +276,42 @@ export default function createResolver(
         }
       }
 
+      // before hook, can mutate the findOptions
       if (listBefore) {
         const handle = globalPreCallback('listBefore')
-        const result = await listBefore(
+        const resultBefore = await listBefore(
           processedFindOptions,
           args,
           context,
           info
         )
+        if (!resultBefore) {
+          throw new Error(
+            'The before hook of the list endpoint must return a value.'
+          )
+        }
+
+        // The list overwrite the findOptions
+        processedFindOptions = resultBefore
+
         if (handle) {
           handle()
         }
-        return graphqlTypeDeclaration.list &&
-          graphqlTypeDeclaration.list.removeUnusedAttributes === false
-          ? result
-          : removeUnusedAttributes(
-              result,
-              info,
-              graphqlTypeDeclaration.model,
-              models
-            )
       }
 
-      return graphqlTypeDeclaration.list &&
-        graphqlTypeDeclaration.list.removeUnusedAttributes === false
-        ? processedFindOptions
-        : removeUnusedAttributes(
-            processedFindOptions,
-            info,
-            graphqlTypeDeclaration.model,
-            models
-          )
+      return trimAndOptimizeFindOptions({
+        findOptions: processedFindOptions,
+        graphqlTypeDeclaration,
+        info,
+        models,
+      })
     },
-    after: async (result: any, args: any, context: any, info: any) => {
+    after: async (
+      result: Model<any> | Model<any>[],
+      args: any,
+      context: any,
+      info: any
+    ) => {
       if (listAfter) {
         const handle = globalPreCallback('listAfter')
         const modifiedResult = await listAfter(result, args, context, info)

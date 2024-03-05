@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
-const { createServer, closeServer, resetDb } = require('./setupServer')
+const { createServer, closeServer, resetDb } = require('./setupTestServer')
 
 /**
  * Starting the tests
@@ -8,7 +8,7 @@ const { createServer, closeServer, resetDb } = require('./setupServer')
 describe('Test the custom mutations', () => {
   let server = null
   let trace = []
-  const globalPreCallback = type => {
+  const globalPreCallback = (type) => {
     trace.push(type)
   }
 
@@ -38,9 +38,9 @@ describe('Test the custom mutations', () => {
               }
             }`,
         variables: {
-          message: 'Hello'
+          message: 'Hello',
         },
-        operationName: 'logThat'
+        operationName: 'logThat',
       })
     expect(responseUserCreate.body.errors).toBeUndefined()
     expect(responseUserCreate.body.data.logThat).not.toBeUndefined()

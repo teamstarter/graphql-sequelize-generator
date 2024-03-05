@@ -1,4 +1,4 @@
-import { Associations } from '../../types'
+import { Associations } from '../types/types'
 import generateAssociationField from './field'
 
 /**

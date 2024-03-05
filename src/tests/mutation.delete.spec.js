@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
-const { createServer, closeServer, resetDb } = require('./setupServer')
+const { createServer, closeServer, resetDb } = require('./setupTestServer')
 const models = require('./models')
 
 /**
@@ -9,7 +9,7 @@ const models = require('./models')
 describe('Test the delete mutation', () => {
   let server = null
   let trace = []
-  const globalPreCallback = type => {
+  const globalPreCallback = (type) => {
     trace.push(type)
   }
 
@@ -53,9 +53,9 @@ describe('Test the delete mutation', () => {
               userDelete(id: $id)
             }`,
         variables: {
-          id: 5
+          id: 5,
         },
-        operationName: 'userDelete'
+        operationName: 'userDelete',
       })
     expect(responseMutation.body.errors).toBeUndefined()
     expect(responseMutation.body.data.userDelete).not.toBeUndefined()
@@ -99,7 +99,7 @@ describe('Test the delete mutation', () => {
     expect(user).toMatchSnapshot('The user 5 should not exist anymore')
 
     const lastId = await models.log.max('id')
-    expect(isNaN(lastId)).toBe(true)
+    expect(lastId).toBe(null)
 
     const responseMutation = await request(server)
       .post('/graphql')
@@ -109,9 +109,9 @@ describe('Test the delete mutation', () => {
               userDelete(id: $id, log: true)
             }`,
         variables: {
-          id: 5
+          id: 5,
         },
-        operationName: 'userDelete'
+        operationName: 'userDelete',
       })
     expect(responseMutation.body.errors).toBeUndefined()
     expect(responseMutation.body.data.userDelete).not.toBeUndefined()
@@ -138,7 +138,7 @@ describe('Test the delete mutation', () => {
     const logs = await models.log.findAll()
 
     expect(
-      logs.map(t => {
+      logs.map((t) => {
         const { createdAt, updatedAt, ...rest } = t.get({ plain: true })
         return rest
       })

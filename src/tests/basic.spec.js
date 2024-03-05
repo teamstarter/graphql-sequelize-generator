@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
-const { createServer, closeServer, resetDb } = require('./setupServer')
+const { createServer, closeServer, resetDb } = require('./setupTestServer')
 
 /**
  * Starting the tests
@@ -282,5 +282,23 @@ describe('Test the API queries', () => {
       .set('userId', 1)
     expect(responseNull.body.errors).toBeUndefined()
     expect(responseNull.body.data.locations.length).toBe(2)
+
+    const responseWorksWithLimitAndOffsetOptimization = await request(server)
+      .get(
+        `/graphql?query=
+          query getLocations {
+            locations: location(limit: 10, offset:10) {
+              id
+            }
+          }
+          &operationName=getLocations`
+      )
+      .set('userId', 1)
+    expect(
+      responseWorksWithLimitAndOffsetOptimization.body.errors
+    ).toBeUndefined()
+    expect(
+      responseWorksWithLimitAndOffsetOptimization.body.data.locations.length
+    ).toBe(2)
   })
 })

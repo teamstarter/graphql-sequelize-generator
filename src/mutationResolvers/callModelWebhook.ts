@@ -1,7 +1,9 @@
+import { WebhookType, WebhookTypeList } from '../types/types'
+
 export default async function callModelWebhook(
   modelName: string,
-  webhooks: string[],
-  action: string,
+  webhooks: WebhookTypeList | undefined,
+  action: WebhookType,
   context: any,
   data: any,
   callWebhook: Function

@@ -5,18 +5,18 @@ import {
   GraphQLSchemaConfig,
 } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
-import { FindOptions } from 'sequelize/types'
+import { FindOptions, ModelStatic } from 'sequelize/types'
 import {
   GlobalPreCallback,
   GraphqlSchemaDeclarationType,
+  InAndOutTypes,
   ModelDeclarationType,
   MutationList,
   OutputTypes,
   SequelizeModel,
   SequelizeModels,
   TInfo,
-  InAndOutTypes,
-} from '../types'
+} from './types/types'
 
 export function generateApolloServer({
   graphqlSchemaDeclaration,
@@ -58,14 +58,14 @@ export function generateSchema({
 }): GraphQLSchemaConfig
 export function generateModelTypes(models: SequelizeModels): InAndOutTypes
 export function generateCount(
-  model: SequelizeModel,
-  schemaDeclaration: ModelDeclarationType,
+  model: ModelStatic<any>,
+  schemaDeclaration: ModelDeclarationType<any>,
   globalPreCallback: GlobalPreCallback
 ): GraphQLFieldResolver<any, any, any>
 export function removeUnusedAttributes(
   findOptions: FindOptions,
   info: TInfo,
-  currentModel: SequelizeModel,
+  currentModel: SequelizeModel<any>,
   models: SequelizeModels,
   keep: Array<string>
 ): FindOptions

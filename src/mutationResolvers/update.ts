@@ -1,9 +1,10 @@
-import { PubSub } from 'graphql-subscriptions'
 import {
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql'
+import { PubSub } from 'graphql-subscriptions'
+import { GlobalBeforeHook, ModelDeclarationType } from '../types/types'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
 
@@ -22,7 +23,7 @@ export default function generateMutationUpdate(
   modelName: string,
   inputType: GraphQLInputObjectType,
   outputType: GraphQLObjectType,
-  graphqlModelDeclaration: any,
+  graphqlModelDeclaration: ModelDeclarationType<any>,
   models: any,
   globalPreCallback: any,
   pubSubInstance: PubSub | null = null,
@@ -34,18 +35,19 @@ export default function generateMutationUpdate(
     args: {
       [modelName]: { type: new GraphQLNonNull(inputType) },
       ...(graphqlModelDeclaration.update &&
+      'extraArg' in graphqlModelDeclaration.update &&
       graphqlModelDeclaration.update.extraArg
-        ? graphqlModelDeclaration.update.extraArg
+        ? (graphqlModelDeclaration.update.extraArg as object)
         : {}),
     },
     resolve: async (source: any, args: any, context: any, info: any) => {
       let data = args[modelName]
 
       if (graphqlModelDeclaration.before) {
-        const beforeList =
+        const beforeList: GlobalBeforeHook[] =
           typeof graphqlModelDeclaration.before.length !== 'undefined'
-            ? graphqlModelDeclaration.before
-            : [graphqlModelDeclaration.before]
+            ? (graphqlModelDeclaration.before as GlobalBeforeHook[])
+            : ([graphqlModelDeclaration.before] as GlobalBeforeHook[])
 
         for (const before of beforeList) {
           const handle = globalPreCallback('updateGlobalBefore')
@@ -58,6 +60,7 @@ export default function generateMutationUpdate(
 
       if (
         graphqlModelDeclaration.update &&
+        'before' in graphqlModelDeclaration.update &&
         graphqlModelDeclaration.update.before
       ) {
         const beforeHandle = globalPreCallback('updateBefore')
@@ -84,6 +87,7 @@ export default function generateMutationUpdate(
 
       if (
         graphqlModelDeclaration.update &&
+        'after' in graphqlModelDeclaration.update &&
         graphqlModelDeclaration.update.after
       ) {
         const hookData = {
@@ -124,22 +128,6 @@ export default function generateMutationUpdate(
 
         return updatedEntity
       }
-
-      if (pubSubInstance) {
-        pubSubInstance.publish(`${modelName}Updated`, {
-          [`${modelName}Updated`]: entity.get(),
-        })
-      }
-
-      await callModelWebhook(
-        modelName,
-        graphqlModelDeclaration.webhooks,
-        'update',
-        context,
-        { ...snapshotBeforeUpdate },
-        callWebhook
-      )
-
       return entity
     },
   }

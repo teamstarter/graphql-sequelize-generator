@@ -1,5 +1,13 @@
+import { GraphQLFieldConfig, GraphQLInt, GraphQLNonNull } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
-import { GraphQLInt, GraphQLNonNull } from 'graphql'
+import { Model } from 'sequelize'
+import {
+  GlobalBeforeHook,
+  ModelDeclarationType,
+  TArgs,
+  TContext,
+  TSource,
+} from '../types/types'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
 
@@ -15,7 +23,7 @@ import callModelWebhook from './callModelWebhook'
  */
 export default function generateMutationDelete(
   modelName: string,
-  graphqlModelDeclaration: any,
+  graphqlModelDeclaration: ModelDeclarationType<any>,
   models: any,
   globalPreCallback: any,
   pubSubInstance: PubSub | null = null,
@@ -27,17 +35,18 @@ export default function generateMutationDelete(
     args: {
       id: { type: new GraphQLNonNull(GraphQLInt) },
       ...(graphqlModelDeclaration.delete &&
+      'extraArg' in graphqlModelDeclaration.delete &&
       graphqlModelDeclaration.delete.extraArg
-        ? graphqlModelDeclaration.delete.extraArg
+        ? (graphqlModelDeclaration.delete.extraArg as object)
         : {}),
     },
-    resolve: async (source: any, args: any, context: any, info: any) => {
+    resolve: async (source, args, context, info) => {
       let where = { id: args.id }
 
       if (graphqlModelDeclaration.before) {
-        const beforeList =
-          typeof graphqlModelDeclaration.before.length !== 'undefined'
-            ? graphqlModelDeclaration.before
+        const beforeList: GlobalBeforeHook[] =
+          'length' in graphqlModelDeclaration.before
+            ? (graphqlModelDeclaration.before as GlobalBeforeHook[])
             : [graphqlModelDeclaration.before]
 
         for (const before of beforeList) {
@@ -51,6 +60,7 @@ export default function generateMutationDelete(
 
       if (
         graphqlModelDeclaration.delete &&
+        'before' in graphqlModelDeclaration.delete &&
         graphqlModelDeclaration.delete.before
       ) {
         const beforeHandle = globalPreCallback('deleteBefore')
@@ -66,7 +76,7 @@ export default function generateMutationDelete(
         }
       }
 
-      const entity = await models[modelName].findOne({ where })
+      const entity: Model = await models[modelName].findOne({ where })
       const snapshotBeforeDelete = { ...entity.get({ plain: true }) }
 
       if (!entity) {
@@ -85,6 +95,7 @@ export default function generateMutationDelete(
 
       if (
         graphqlModelDeclaration.delete &&
+        'after' in graphqlModelDeclaration.delete &&
         graphqlModelDeclaration.delete.after
       ) {
         const hookData = { data: { ...snapshotBeforeDelete } }
@@ -123,5 +134,5 @@ export default function generateMutationDelete(
 
       return rowDeleted
     },
-  }
+  } as GraphQLFieldConfig<TSource, TContext, TArgs>
 }

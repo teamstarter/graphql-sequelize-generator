@@ -8,7 +8,7 @@ const { expressMiddleware } = require('@apollo/server/express4')
 const { generateApolloServer, generateModelTypes } = require('./../../lib')
 
 const { deleteTables } = require('./testDatabase.js')
-const { resetDb } = require('./setupServer')
+const { resetDb } = require('./setupTestServer')
 const models = require('./models')
 
 /**
@@ -29,15 +29,15 @@ describe('Test the creation a schema without mutations', () => {
 
     graphqlSchemaDeclaration.company = {
       model: models.companyType,
-      actions: ['list']
+      actions: ['list'],
     }
 
     const app = express()
     const httpServer = http.createServer(
       {
         spdy: {
-          plain: true
-        }
+          plain: true,
+        },
       },
       app
     )
@@ -48,8 +48,8 @@ describe('Test the creation a schema without mutations', () => {
       models,
       apolloServerOptions: {
         playground: true,
-        csrfPrevention: false
-      }
+        csrfPrevention: false,
+      },
     })
 
     await graphqlServer.start()
@@ -59,11 +59,11 @@ describe('Test the creation a schema without mutations', () => {
       cors(),
       json(),
       expressMiddleware(graphqlServer, {
-        context: async ({ req }) => ({ token: req.headers.token })
+        context: async ({ req }) => ({ token: req.headers.token }),
       })
     )
 
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       httpServer.listen(process.env.PORT || 8080, () => {
         resolve()
       })
@@ -86,7 +86,7 @@ describe('Test the creation a schema without mutations', () => {
     expect(companies).toMatchSnapshot('All companies')
 
     await Promise.all([
-      new Promise(resolve => httpServer.close(() => resolve()))
+      new Promise((resolve) => httpServer.close(() => resolve())),
     ])
   })
 })

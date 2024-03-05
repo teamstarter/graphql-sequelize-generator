@@ -1,13 +1,14 @@
 import { argsToFindOptions } from 'graphql-sequelize'
+import { Model, ModelStatic } from 'sequelize'
 import {
+  GlobalBeforeHook,
   GlobalPreCallback,
   ModelDeclarationType,
-  SequelizeModel,
-} from '../../types'
+} from '../types/types'
 
-export default function countResolver(
-  model: SequelizeModel,
-  schemaDeclaration: ModelDeclarationType,
+export default function countResolver<M extends Model<any>>(
+  model: ModelStatic<M>,
+  schemaDeclaration: ModelDeclarationType<M>,
   globalPreCallback: GlobalPreCallback
 ) {
   const countResolver =
@@ -32,10 +33,11 @@ export default function countResolver(
 
   return async (source: any, args: any, context: any, info: any) => {
     if (schemaDeclaration.before) {
-      const beforeList = schemaDeclaration.before
-      typeof schemaDeclaration.before.length !== 'undefined'
-        ? schemaDeclaration.before
-        : [schemaDeclaration.before]
+      const beforeList: GlobalBeforeHook[] =
+        schemaDeclaration.before &&
+        typeof schemaDeclaration.before.length !== 'undefined'
+          ? (schemaDeclaration.before as GlobalBeforeHook[])
+          : ([schemaDeclaration.before] as GlobalBeforeHook[])
 
       for (const before of beforeList) {
         const handle = globalPreCallback('listGlobalBefore')
@@ -49,7 +51,7 @@ export default function countResolver(
     if (typeof countBefore !== 'undefined') {
       const handle = globalPreCallback('countBefore')
       const countOptions = await countBefore(
-        argsToFindOptions.default(args, Object.keys(model.rawAttributes)),
+        argsToFindOptions.default(args, Object.keys(model.getAttributes())),
         args,
         context,
         info
@@ -60,7 +62,7 @@ export default function countResolver(
       return model.count(countOptions)
     }
     return model.count(
-      argsToFindOptions.default(args, Object.keys(model.rawAttributes))
+      argsToFindOptions.default(args, Object.keys(model.getAttributes()))
     )
   }
 }

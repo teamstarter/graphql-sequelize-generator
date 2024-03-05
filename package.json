@@ -1,6 +1,6 @@
 {
   "name": "@teamstarter/graphql-sequelize-generator",
-  "version": "8.3.0",
+  "version": "8.5.0",
   "description": "A set of tools to easily generate a Graphql API from sequelize models.",
   "keywords": [
     "graphql",
@@ -43,18 +43,19 @@
     "prettier": "^2.7.1",
     "prettier-eslint": "^v13.0.0",
     "prettier-tslint": "^0.4.2",
-    "sequelize": "5.22.3",
+    "sequelize": "6.28.0",
     "sequelize-cli": "^6.2.0",
     "spdy": "^3.4.7",
     "sqlite3": "^5.1.6",
     "standard-version": "^6.0.1",
     "supertest": "^3.0.0",
     "ts-migrate": "^0.1.7",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^1.0.0-pre.63",
     "umzug": "^2.1.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test DEBUG=-* PORT=8282 jest -i",
+    "test": "NODE_ENV=test DEBUG=-* PORT=8282 node ./node_modules/.bin/jest -i",
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
     "start": "rm -f ./src/tests/data/main.db && DEBUG=gsg node ./src/tests/testServer.js",
@@ -66,7 +67,7 @@
     "graphql": "^16.6.0",
     "graphql-relay": "^0.10.0",
     "graphql-sequelize": "^9.5.1",
-    "sequelize": "6.3.5"
+    "sequelize": "6.28.0"
   },
   "dependencies": {
     "@apollo/server": "^4.1.1",

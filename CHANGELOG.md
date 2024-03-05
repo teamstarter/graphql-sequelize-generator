@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.3...v8.5.0) (2024-03-04)
+
+
+### Features
+
+* **list:** Optimize limit/offset queries by pre-fetching the primary keys that should be returned. ([74c1959](https://github.com/teamstarter/graphql-sequelize-generator/commit/74c1959))
+
+
+
+### [8.4.3](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.2...v8.4.3) (2024-03-01)
+
+
+### Bug Fixes
+
+* **hooks:** Fix update after entity not returned when no hooks were defined. ([077e365](https://github.com/teamstarter/graphql-sequelize-generator/commit/077e365))
+
+
+
+### [8.4.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.1...v8.4.2) (2024-02-29)
+
+
+### Bug Fixes
+
+* **types:** Fix findOptions types ([e254092](https://github.com/teamstarter/graphql-sequelize-generator/commit/e254092))
+
+
+
+### [8.4.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.0...v8.4.1) (2024-02-29)
+
+
+### Bug Fixes
+
+* **types:** Add webhook types missing from some hooks. Fix differences between the row and table class. ([3c0c9df](https://github.com/teamstarter/graphql-sequelize-generator/commit/3c0c9df))
+
+
+
+## [8.4.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.3.2...v8.4.0) (2024-02-29)
+
+
+### Features
+
+* **types:** By types update in order to improve the signature pertinence of all the major functions and structures. ([c350fd5](https://github.com/teamstarter/graphql-sequelize-generator/commit/c350fd5))
+
+
+
+### [8.3.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.3.1...v8.3.2) (2024-02-23)
+
+
+### Bug Fixes
+
+* **types:** Fix schema declartion types missing enforceMaxLimit and contextToOptions properties. ([39af964](https://github.com/teamstarter/graphql-sequelize-generator/commit/39af964))
+
+
+
+### [8.3.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.3.0...v8.3.1) (2024-02-23)
+
+
+### Bug Fixes
+
+* **types:** Fix resolver types not reflecting the fact that you can provide fields instead of declarations for each mutation. And cleanup a few warnings. ([#84](https://github.com/teamstarter/graphql-sequelize-generator/issues/84)) ([629c157](https://github.com/teamstarter/graphql-sequelize-generator/commit/629c157)), closes [#74](https://github.com/teamstarter/graphql-sequelize-generator/issues/74) [#81](https://github.com/teamstarter/graphql-sequelize-generator/issues/81)
+
+
+
 ## [8.3.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.2.0...v8.3.0) (2023-10-10)
 
 

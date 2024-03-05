@@ -49,3 +49,11 @@ Array [
   },
 ]
 `;
+
+exports[`Test the create mutation Check that you can update an entity: Updated company 1`] = `
+Object {
+  "__typename": "company",
+  "id": 5,
+  "name": "updated name",
+}
+`;

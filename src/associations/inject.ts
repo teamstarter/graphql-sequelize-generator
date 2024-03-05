@@ -2,14 +2,14 @@ import _debug from 'debug'
 import { GraphQLObjectType } from 'graphql'
 import { attributeFields } from 'graphql-sequelize'
 
+import createResolver from '../createListResolver'
 import {
   GlobalPreCallback,
   GraphqlSchemaDeclarationType,
   ModelDeclarationType,
   OutputTypes,
   SequelizeModels,
-} from '../../types'
-import createResolver from '../createResolver'
+} from '../types/types'
 import generateAssociationField from './field'
 
 const debug = _debug('gsg')
@@ -51,7 +51,10 @@ export default function injectAssociations(
       models,
       globalPreCallback,
       createResolver(
-        graphqlSchemaDeclaration[associations[associationName].target.name],
+        graphqlSchemaDeclaration[
+          associations[associationName].target.name
+          // Models MUST be ModelDeclarationType. GraphQLFieldConfig are for custom endpoints.
+        ] as ModelDeclarationType<any>,
         models,
         globalPreCallback,
         associations[associationName]
@@ -65,7 +68,7 @@ export default function injectAssociations(
   let baseFields: any = {}
   const modelDefinition = graphqlSchemaDeclaration[
     modelName
-  ] as ModelDeclarationType
+  ] as ModelDeclarationType<any>
 
   if (typeof modelDefinition !== 'undefined') {
     baseFields = attributeFields(modelDefinition.model, {

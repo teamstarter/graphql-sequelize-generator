@@ -1,13 +1,13 @@
 import { GraphQLInt, GraphQLObjectType } from 'graphql'
 import { PubSub, withFilter } from 'graphql-subscriptions'
+import { isGraphqlFieldDeclaration } from '../isGraphqlFieldDeclaration'
 import {
   CreateFieldDeclarationType,
   DeleteFieldDeclarationType,
   EventList,
   GraphqlSchemaDeclarationType,
   UpdateFieldDeclarationType,
-} from '../../types'
-import { isGraphqlFieldDeclaration } from '../isGraphqlFieldDeclaration'
+} from '../types/types'
 
 const availableActions: EventList = ['create', 'update', 'delete']
 
@@ -52,9 +52,9 @@ export default function generateSubscriptions(
           ) {
             subscriptionFunction = (
               configuration as
-                | CreateFieldDeclarationType
-                | DeleteFieldDeclarationType
-                | UpdateFieldDeclarationType
+                | CreateFieldDeclarationType<any>
+                | DeleteFieldDeclarationType<any>
+                | UpdateFieldDeclarationType<any>
             ).subscriptionFilter
           }
 

@@ -1,6 +1,6 @@
 const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
-const { createServer, closeServer, resetDb } = require('./setupServer')
+const { createServer, closeServer, resetDb } = require('./setupTestServer')
 
 /**
  * Starting the tests
@@ -95,5 +95,32 @@ describe('Test the create mutation', () => {
       'User 5 post update'
     )
     expect(trace).toMatchSnapshot()
+  })
+
+  it('Check that you can update an entity', async () => {
+    const responseCompanyUpdate = await request(server)
+      .post('/graphql')
+      .set('userid', 1)
+      .send({
+        query: `mutation companyUpdate($company: companyInput!) {
+              company : companyUpdate(company: $company) {
+                id
+                name
+                __typename
+              }
+            }`,
+        variables: {
+          company: {
+            id: 5,
+            name: 'updated name',
+          },
+        },
+        operationName: 'companyUpdate',
+      })
+    expect(responseCompanyUpdate.body.errors).toBeUndefined()
+    expect(responseCompanyUpdate.body.data.company).not.toBeUndefined()
+    expect(responseCompanyUpdate.body.data.company).toMatchSnapshot(
+      'Updated company'
+    )
   })
 })

@@ -9,12 +9,15 @@ program
     'Synchronizes the given sequelize models to the integromat modules'
   )
   .action(async function (configPath) {
-    let config = null
+    let config: any = null
     try {
       config = require(configPath)
     } catch (e: any) {
       throw new Error('Could not load the given config.' + e.message)
     }
+
+    if (!config) return
+
     const models = require(config.modelsPath)
     synchronizeWithIntegromat(models, config.token, config.appName)
   })

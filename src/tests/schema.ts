@@ -2,6 +2,20 @@
 // We disable this rule as we want to always show all the arguments of each functions
 // so that the API is easier to understand
 
+import { GraphQLFieldConfig } from 'graphql'
+import { InferAttributes, InferCreationAttributes, Model } from 'sequelize'
+import {
+  GraphqlSchemaDeclarationType,
+  ModelDeclarationType,
+  MutationList,
+} from '../types/types'
+import {
+  generateApolloServer,
+  generateModelTypes,
+  injectAssociations,
+  resolver,
+} from './../../src'
+
 const {
   GraphQLObjectType,
   GraphQLString,
@@ -11,29 +25,43 @@ const {
   GraphQLError,
 } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
-const { resolver, defaultListArgs } = require('graphql-sequelize')
+const { defaultListArgs } = require('graphql-sequelize')
 const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
 const { WebSocketServer } = require('ws')
 
 const { Op } = require('sequelize')
-const {
-  generateApolloServer,
-  generateModelTypes,
-  injectAssociations,
-} = require('./../../lib')
 const models = require('./models')
 
 // If you want to enable the dataloader everywhere, you can do this:
 // From https://github.com/mickhansen/graphql-sequelize#options
 resolver.contextToOptions = { [EXPECTED_OPTIONS_KEY]: EXPECTED_OPTIONS_KEY }
 
-const graphqlSchemaDeclaration = {}
+const graphqlSchemaDeclaration: GraphqlSchemaDeclarationType = {}
 const types = generateModelTypes(models)
 const pubSubInstance = new PubSub()
 
 graphqlSchemaDeclaration.companyType = {
   model: models.companyType,
   actions: ['list', 'create'],
+}
+
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  declare id: number | null
+  declare name: string | null
+}
+
+class Department extends Model<
+  InferAttributes<Department>,
+  InferCreationAttributes<Department>
+> {
+  declare name: string | null
+}
+
+class Company extends Model<
+  InferAttributes<Company>,
+  InferCreationAttributes<Company>
+> {
+  declare name: string | null
 }
 
 graphqlSchemaDeclaration.user = {
@@ -74,6 +102,10 @@ graphqlSchemaDeclaration.user = {
     before: async (findOptions, source, args) => {
       // example of an extra argument usage
       if (args.departmentId) {
+        if (!findOptions.include) {
+          findOptions.include = []
+        }
+
         findOptions.include.push({
           model: models.company,
           required: true,
@@ -99,19 +131,17 @@ graphqlSchemaDeclaration.user = {
   },
   list: {
     removeUnusedAttributes: false,
-    enforceMaxLimit: false,
+    enforceMaxLimit: 50,
     before: (findOptions, args, context, info) => {
       if (typeof findOptions.where === 'undefined') {
         findOptions.where = {}
       }
-      findOptions.where = {
-        [Op.and]: [findOptions.where, { departmentId: [1] }],
-      }
+      findOptions.where = { ...findOptions.where, id: 1 }
       return findOptions
     },
     after: (result, args, context, info) => {
-      if (result && typeof result.length !== 'undefined') {
-        for (const user of result) {
+      if (result && Object.hasOwnProperty.call(result, 'length')) {
+        for (const user of result as User[]) {
           if (user.name === 'Test 5 c 2') {
             user.name = `Mr ${user.name}`
           }
@@ -138,7 +168,7 @@ graphqlSchemaDeclaration.user = {
     after: async (newEntity, source, args, context, info, setWebhookData) => {
       // You can log what happened here
 
-      setWebhookData((defaultData) => {
+      setWebhookData((defaultData: any) => {
         return {
           ...defaultData,
           gsg: 'This hook will be triggered ig gsg',
@@ -185,7 +215,7 @@ graphqlSchemaDeclaration.user = {
       return deletedEntity
     },
   },
-}
+} as ModelDeclarationType<typeof models.user>
 
 graphqlSchemaDeclaration.company = {
   model: models.company,
@@ -205,7 +235,7 @@ graphqlSchemaDeclaration.company = {
       return findOptions
     },
   },
-}
+} as ModelDeclarationType<typeof models.company>
 
 graphqlSchemaDeclaration.department = {
   model: models.department,
@@ -244,7 +274,7 @@ graphqlSchemaDeclaration.department = {
       })
     },
   },
-}
+} as ModelDeclarationType<typeof models.department>
 
 graphqlSchemaDeclaration.location = {
   model: models.location,
@@ -277,7 +307,7 @@ graphqlSchemaDeclaration.serverStatistics = {
       serverBootDate: context.bootDate,
     }
   },
-}
+} as GraphQLFieldConfig<any, any, any>
 
 const OddUser = new GraphQLObjectType({
   name: 'OddUser',
@@ -323,11 +353,11 @@ graphqlSchemaDeclaration.oddUser = {
       return findOptions
     },
   }),
-}
+} as GraphQLFieldConfig<any, any, any>
 
 // Sometimes you want to add an action that do not match an existing model
 // ex: Trigger a process
-const customMutations = {}
+const customMutations: MutationList = {}
 customMutations.logThat = {
   type: new GraphQLObjectType({
     name: 'logThat',
@@ -357,7 +387,7 @@ graphqlSchemaDeclaration.companySetting = {
   actions: ['list'],
 }
 
-module.exports = (globalPreCallback, httpServer) => {
+module.exports = (globalPreCallback: any, httpServer: any) => {
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
     // This is the `httpServer` we created in a previous step.
@@ -368,7 +398,7 @@ module.exports = (globalPreCallback, httpServer) => {
   })
 
   return {
-    server: generateApolloServer({
+    server: generateApolloServer<{ user: any }>({
       graphqlSchemaDeclaration,
       customMutations,
       types,
@@ -380,7 +410,7 @@ module.exports = (globalPreCallback, httpServer) => {
         csrfPrevention: false,
         playground: true,
       },
-      callWebhook: (data) => {
+      callWebhook: (data: any) => {
         return data
       },
       pubSubInstance,
@@ -389,7 +419,7 @@ module.exports = (globalPreCallback, httpServer) => {
           // Returning an object will add that information to
           // contextValue, which all of our resolvers have access to.
           const user = { id: 1, name: 'John', companyId: 1, role: 'admin' }
-          ctx.user = user
+          ctx.extra.user = user
           return { ctx, msg, args }
         },
       },

@@ -1,6 +1,6 @@
 import { simplifyAST } from 'graphql-sequelize'
-import { FindOptions } from 'sequelize/types'
-import { SequelizeModel, SequelizeModels, TInfo } from '../types'
+import { FindOptions, ModelStatic } from 'sequelize'
+import { SequelizeModels, TInfo } from './types/types'
 
 /**
  * This functions returns the findOptions for a findAll/One with only the attributes required in the info.
@@ -13,7 +13,7 @@ import { SequelizeModel, SequelizeModels, TInfo } from '../types'
 export default function removeUnusedAttributes(
   findOptions: FindOptions,
   info: TInfo,
-  currentModel: SequelizeModel,
+  currentModel: ModelStatic<any>,
   models: SequelizeModels,
   keep: Array<string> = []
 ): FindOptions {
@@ -93,7 +93,7 @@ export default function removeUnusedAttributes(
    * that the reconcilier can match the cars with the user.
    *
    */
-  const parentModelReferenceAttributes = []
+  const parentModelReferenceAttributes: string[] = []
   // The relation can be direct
   if (currentModel.associations[info.parentType.name]) {
     if (
@@ -127,6 +127,7 @@ export default function removeUnusedAttributes(
   return {
     ...findOptions,
     attributes: [
+      // @ts-ignore
       ...new Set([
         ...attributes,
         ...linkFields,

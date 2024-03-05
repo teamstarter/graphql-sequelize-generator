@@ -1,10 +1,12 @@
-import { PubSub } from 'graphql-subscriptions'
 import {
   GraphQLError,
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql'
+import { PubSub } from 'graphql-subscriptions'
+import { Model, ModelStatic } from 'sequelize'
+import { GlobalBeforeHook, ModelDeclarationType } from '../types/types'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
 
@@ -22,8 +24,8 @@ export default function generateMutationCreate(
   modelName: string,
   inputType: GraphQLInputObjectType,
   outputType: GraphQLObjectType,
-  model: any,
-  graphqlModelDeclaration: any,
+  model: ModelStatic<any>,
+  graphqlModelDeclaration: ModelDeclarationType<any>,
   globalPreCallback: any,
   pubSubInstance: PubSub | null = null,
   callWebhook: Function
@@ -34,6 +36,7 @@ export default function generateMutationCreate(
     args: {
       [modelName]: { type: new GraphQLNonNull(inputType) },
       ...(graphqlModelDeclaration.create &&
+      'extraArg' in graphqlModelDeclaration.create &&
       graphqlModelDeclaration.create.extraArg
         ? graphqlModelDeclaration.create.extraArg
         : {}),
@@ -42,10 +45,10 @@ export default function generateMutationCreate(
       let attributes = args[modelName]
 
       if (graphqlModelDeclaration.before) {
-        const beforeList =
+        const beforeList: GlobalBeforeHook[] =
           typeof graphqlModelDeclaration.before.length !== 'undefined'
-            ? graphqlModelDeclaration.before
-            : [graphqlModelDeclaration.before]
+            ? (graphqlModelDeclaration.before as GlobalBeforeHook[])
+            : ([graphqlModelDeclaration.before] as GlobalBeforeHook[])
 
         for (const before of beforeList) {
           const handle = globalPreCallback('createGlobalBefore')
@@ -58,6 +61,7 @@ export default function generateMutationCreate(
 
       if (
         graphqlModelDeclaration.create &&
+        'before' in graphqlModelDeclaration.create &&
         graphqlModelDeclaration.create.before
       ) {
         const beforeHandle = globalPreCallback('createBefore')
@@ -81,6 +85,7 @@ export default function generateMutationCreate(
 
       if (
         graphqlModelDeclaration.create &&
+        'preventDuplicateOnAttributes' in graphqlModelDeclaration.create &&
         graphqlModelDeclaration.create.preventDuplicateOnAttributes
       ) {
         const preventDuplicateAttributes =
@@ -108,7 +113,7 @@ export default function generateMutationCreate(
         }
       }
 
-      let newEntity = undefined
+      let newEntity: Model<any> | undefined = undefined
       try {
         newEntity = await model.create(attributes)
       } catch (error) {
@@ -116,8 +121,13 @@ export default function generateMutationCreate(
         throw new GraphQLError(error.message)
       }
 
+      if (!newEntity) {
+        return
+      }
+
       if (
         graphqlModelDeclaration.create &&
+        'after' in graphqlModelDeclaration.create &&
         graphqlModelDeclaration.create.after
       ) {
         const afterHandle = globalPreCallback('createAfter')
