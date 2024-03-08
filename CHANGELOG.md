@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.7.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.6.1...v8.7.0) (2024-03-08)
+
+
+### Bug Fixes
+
+* **list-resolver:** Fix a bug when an empty where is given to a resolver. Due to an implementation detail in graphql-sequelize we have to avoid optimizing in that case. Should not be a big deal as this should never be the case for n+1 queries. This time with the build. ([d304828](https://github.com/teamstarter/graphql-sequelize-generator/commit/d304828))
+
+
+### Features
+
+* **release:** Make sure the build is run before releasing. ([3f43265](https://github.com/teamstarter/graphql-sequelize-generator/commit/3f43265))
+
+
+
 ### [8.6.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.6.0...v8.6.1) (2024-03-08)
 
 
