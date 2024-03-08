@@ -10,20 +10,11 @@ import {
 } from 'graphql'
 import {
   Association,
-  Attributes,
-  FindOptions as FO,
-  Includeable,
+  FindOptions,
   Model,
   ModelStatic,
   Sequelize,
 } from 'sequelize/types'
-
-// graphql-sequelize does not have typescript support. So we have to reproduce what it is based on
-// the sequelize implementation.
-export type FindOptions<M extends Model> = Omit<
-  FO<Attributes<M>>,
-  'include'
-> & { include: Includeable[] }
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
 export type ActionList = Array<Action>
