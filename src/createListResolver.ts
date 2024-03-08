@@ -143,11 +143,13 @@ async function trimAndOptimizeFindOptions({
   graphqlTypeDeclaration,
   info,
   models,
+  args,
 }: {
   findOptions: FindOptions<any>
   graphqlTypeDeclaration: any
   info: any
   models: any
+  args: any
 }) {
   const trimedFindOptions =
     graphqlTypeDeclaration.list &&
@@ -175,6 +177,9 @@ async function trimAndOptimizeFindOptions({
   // It does not differenciate between an empty where and a where with properties so we have to remove it.
   if (
     trimedFindOptions.where &&
+    // We can only optimize the where if it was not passed as an argument.
+    // This is due to an implementation detail of /node_modules/graphql-sequelize/lib/resolver.js:28:39
+    !args.where &&
     // Symbols like [Op.and] are not returned by Object.keys and must be handled separately.
     Object.getOwnPropertySymbols(trimedFindOptions.where).length === 0 &&
     Object.keys(trimedFindOptions.where).length === 0
@@ -335,6 +340,7 @@ export default function createListResolver(
         graphqlTypeDeclaration,
         info,
         models,
+        args,
       })
     },
     after: async (
