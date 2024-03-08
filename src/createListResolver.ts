@@ -1,9 +1,9 @@
 import { resolver } from 'graphql-sequelize'
-import { Model } from 'sequelize'
+import { FindOptions, Model } from 'sequelize'
 import removeUnusedAttributes from './removeUnusedAttributes'
 import { GlobalBeforeHook, ModelDeclarationType } from './types/types'
 
-function allowOrderOnAssociations(findOptions: any, model: any) {
+function allowOrderOnAssociations(findOptions: FindOptions<any>, model: any) {
   if (typeof findOptions.order === 'undefined') {
     return findOptions
   }
@@ -16,7 +16,8 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
     // By default we take the direction detected by GraphQL-sequelize
     // It will be 'ASC' if 'reverse:' was not specified.
     // But this will only work for the first field.
-    let direction = index === 0 ? findOptions.order[0][1] : 'ASC'
+    let direction =
+      index === 0 && findOptions.order ? findOptions.order[0][1] : 'ASC'
     // When reverse is not already removed by graphql-sequelize
     // we try to detect it ourselves. Happens for multiple fields sort.
     if (singleOrder.search('reverse:') === 0) {
@@ -35,7 +36,10 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
           `Association ${associationName} unknown on model ${model.name} order`
         )
       }
-      if (typeof findOptions.include === 'undefined') {
+      if (
+        typeof findOptions.include === 'undefined' ||
+        typeof findOptions.include === 'string'
+      ) {
         findOptions.include = []
       }
 
@@ -47,7 +51,10 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
         modelInclude.as = model.associations[associationName].as
       }
 
-      findOptions.include.push(modelInclude)
+      // Type assertion to specify the type of findOptions.include as an array
+      if ('push' in findOptions.include) {
+        findOptions.include.push(modelInclude)
+      }
 
       const modelSort: any = {
         model: model.associations[associationName].target,
@@ -89,23 +96,25 @@ function allowOrderOnAssociations(findOptions: any, model: any) {
    * to
    * order = [['id', 'ASC'], ['fullname', 'DESC']
    */
-  findOptions.order.map((order: any) => {
-    // Handle multiple sort fields.
-    if (order[0].search(',') === -1) {
-      checkForAssociationSort(order[0], 0)
-      return
-    }
-    const multipleOrder = order[0].split(',')
-    for (const index in multipleOrder) {
-      checkForAssociationSort(multipleOrder[index], parseInt(index))
-    }
-  })
+  if ('map' in findOptions.order) {
+    findOptions.order.map((order: any) => {
+      // Handle multiple sort fields.
+      if (order[0].search(',') === -1) {
+        checkForAssociationSort(order[0], 0)
+        return
+      }
+      const multipleOrder = order[0].split(',')
+      for (const index in multipleOrder) {
+        checkForAssociationSort(multipleOrder[index], parseInt(index))
+      }
+    })
+  }
   findOptions.order = processedOrder
   return findOptions
 }
 
 const argsAdvancedProcessing = (
-  findOptions: any,
+  findOptions: FindOptions<any>,
   args: any,
   context: any,
   info: any,
@@ -135,7 +144,7 @@ async function trimAndOptimizeFindOptions({
   info,
   models,
 }: {
-  findOptions: any
+  findOptions: FindOptions<any>
   graphqlTypeDeclaration: any
   info: any
   models: any
@@ -150,6 +159,28 @@ async function trimAndOptimizeFindOptions({
           graphqlTypeDeclaration.model,
           models
         )
+
+  // As sequelize-dataloader does not support the include option, we have to remove it.
+  // It does not differenciate between an empty include and an include with models so we have to remove it.
+  if (
+    trimedFindOptions.include &&
+    typeof trimedFindOptions.include === 'object' &&
+    'length' in trimedFindOptions.include &&
+    trimedFindOptions.include.length === 0
+  ) {
+    delete trimedFindOptions.include
+  }
+
+  // As sequelize-dataloader does not support the where option, we have to remove it.
+  // It does not differenciate between an empty where and a where with properties so we have to remove it.
+  if (
+    trimedFindOptions.where &&
+    // Symbols like [Op.and] are not returned by Object.keys and must be handled separately.
+    Object.getOwnPropertySymbols(trimedFindOptions.where).length === 0 &&
+    Object.keys(trimedFindOptions.where).length === 0
+  ) {
+    delete trimedFindOptions.where
+  }
 
   if (
     // If we have a list with a limit and an offset
@@ -230,7 +261,7 @@ export default function createListResolver(
       ? graphqlTypeDeclaration.list.contextToOptions
       : undefined,
     before: async (findOptions: any, args: any, context: any, info: any) => {
-      let processedFindOptions = argsAdvancedProcessing(
+      let processedFindOptions: FindOptions<any> = argsAdvancedProcessing(
         findOptions,
         args,
         context,
