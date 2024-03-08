@@ -60,7 +60,7 @@
     "lint-check": "eslint src",
     "start": "rm -f ./src/tests/data/main.db && DEBUG=gsg node ./src/tests/testServer.js",
     "build": "rm -rf ./lib/* && tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts ./src/scripts/*.ts ./src/gsg.ts",
-    "release": "standard-version",
+    "release": "yarn build && standard-version",
     "gsg": "node ./lib/gsg.js"
   },
   "peerDependencies": {
