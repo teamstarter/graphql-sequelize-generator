@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [8.6.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.5.0...v8.6.0) (2024-03-08)
+
+
+### Bug Fixes
+
+* **build:** Update the build. ([b8b2c2a](https://github.com/teamstarter/graphql-sequelize-generator/commit/b8b2c2a))
+* **types:** Fix resolver types not reflecting the fact that you can provide fields instead of declarations for each mutation. And cleanup a few warnings. ([bb16cb0](https://github.com/teamstarter/graphql-sequelize-generator/commit/bb16cb0))
+
+
+### Features
+
+* **dataloader:** Optimize all list calls by removing useless where and include properties to allow batching. Small clean on internal types. ([60fdde3](https://github.com/teamstarter/graphql-sequelize-generator/commit/60fdde3))
+* **websockets:** add serverOption tu be able to use context operations while using web sockets ([#74](https://github.com/teamstarter/graphql-sequelize-generator/issues/74)) ([cc66160](https://github.com/teamstarter/graphql-sequelize-generator/commit/cc66160))
+
+
+
 ## [8.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.4.3...v8.5.0) (2024-03-04)
 
 
