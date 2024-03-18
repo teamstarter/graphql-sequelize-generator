@@ -365,6 +365,16 @@ graphqlSchemaDeclaration.companySetting = {
   actions: ['list'],
 }
 
+graphqlSchemaDeclaration.userLocation = {
+  model: models.userLocation,
+  actions: ['list'],
+  list: {
+    before: async (findOptions) => {
+      return findOptions
+    },
+  },
+}
+
 module.exports = (globalPreCallback, httpServer) => {
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({

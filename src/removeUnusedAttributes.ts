@@ -127,7 +127,6 @@ export default function removeUnusedAttributes(
   return {
     ...findOptions,
     attributes: [
-      // @ts-ignore
       ...new Set([
         ...attributes,
         ...linkFields,

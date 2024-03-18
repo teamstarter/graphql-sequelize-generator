@@ -106,6 +106,7 @@ graphqlSchemaDeclaration.user = {
           findOptions.include = []
         }
 
+        // @ts-ignore
         findOptions.include.push({
           model: models.company,
           required: true,
@@ -386,6 +387,16 @@ graphqlSchemaDeclaration.companySetting = {
   excludeFromRoot: true,
   actions: ['list'],
 }
+
+graphqlSchemaDeclaration.userLocation = {
+  model: models.userLocation,
+  actions: ['list'],
+  list: {
+    before: async (findOptions) => {
+      return findOptions
+    },
+  },
+} as ModelDeclarationType<typeof models.userLocation>
 
 module.exports = (globalPreCallback: any, httpServer: any) => {
   // Creating the WebSocket server

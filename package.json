@@ -58,7 +58,7 @@
     "test": "NODE_ENV=test DEBUG=-* PORT=8282 node ./node_modules/.bin/jest -i",
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
-    "start": "rm -f ./src/tests/data/main.db && DEBUG=gsg node ./src/tests/testServer.js",
+    "start": "rm -f ./src/tests/data/main.db && DEBUG=gsg TS_NODE_PROJECT=./tsconfig.json node  --require ts-node/register --require tsconfig-paths/register ./src/tests/testServer.js",
     "build": "rm -rf ./lib/* && tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts ./src/scripts/*.ts ./src/gsg.ts",
     "release": "yarn build && standard-version",
     "gsg": "node ./lib/gsg.js"

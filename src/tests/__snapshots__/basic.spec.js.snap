@@ -120,6 +120,53 @@ Array [
 ]
 `;
 
+exports[`Test the API queries Limit can be enforced.: Limit and offset optimization works with multi primary key tables. 1`] = `
+Object {
+  "userLocations": Array [
+    Object {
+      "locationId": 2,
+      "userId": "1",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "2",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "3",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "4",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "5",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "6",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "7",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "8",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "9",
+    },
+    Object {
+      "locationId": 2,
+      "userId": "10",
+    },
+  ],
+}
+`;
+
 exports[`Test the API queries One can exclude a basic field from a model 1`] = `
 Array [
   Object {

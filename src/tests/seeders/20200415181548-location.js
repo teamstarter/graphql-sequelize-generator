@@ -1,25 +1,25 @@
 'use strict'
-const timestamp = entry =>
+const timestamp = (entry) =>
   Object.assign(entry, {
     createdAt: entry.createdAt || new Date('2007-07-12 00:04:22'),
-    updatedAt: new Date('2007-07-12 00:04:22')
+    updatedAt: new Date('2007-07-12 00:04:22'),
   })
 
-const departmentPerCompany = 3
+const locationPerCompany = 3
 
 module.exports = {
-  up: function(queryInterface, Sequelize) {
+  up: function (queryInterface, Sequelize) {
     let locations = []
     for (let companyId = 0; companyId < 50; companyId++) {
       locations = [
         ...locations,
-        ...[...Array(departmentPerCompany)].map((u, index) => ({
-          id: companyId * departmentPerCompany + 1 + index,
-          name: `Location ${companyId * departmentPerCompany +
-            1 +
-            index} c ${companyId + 1}`,
-          companyId: companyId + 1
-        }))
+        ...[...Array(locationPerCompany)].map((u, index) => ({
+          id: companyId * locationPerCompany + 1 + index,
+          name: `Location ${companyId * locationPerCompany + 1 + index} c ${
+            companyId + 1
+          }`,
+          companyId: companyId + 1,
+        })),
       ]
     }
 
@@ -28,7 +28,7 @@ module.exports = {
     return queryInterface.bulkInsert('location', locations, {})
   },
 
-  down: function(queryInterface, Sequelize) {
+  down: function (queryInterface, Sequelize) {
     return queryInterface.bulkDelete('location', null, {})
-  }
+  },
 }

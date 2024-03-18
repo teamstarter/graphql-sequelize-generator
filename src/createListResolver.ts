@@ -1,5 +1,5 @@
 import { resolver } from 'graphql-sequelize'
-import { FindOptions, Model } from 'sequelize'
+import { FindOptions, Model, Op } from 'sequelize'
 import removeUnusedAttributes from './removeUnusedAttributes'
 import { GlobalBeforeHook, ModelDeclarationType } from './types/types'
 
@@ -203,6 +203,46 @@ async function trimAndOptimizeFindOptions({
       graphqlTypeDeclaration.list.disableOptimizationForLimitOffset !== true)
   ) {
     // then we pre-fetch the ids to avoid slowness problems for big offsets.
+
+    // There might be many primary keys.
+    if (
+      graphqlTypeDeclaration.model.primaryKeyAttributes &&
+      graphqlTypeDeclaration.model.primaryKeyAttributes.length > 0
+    ) {
+      const fetchIdsMultiColumnsFindOptions = {
+        ...trimedFindOptions,
+        // We only fetch the primary attribute
+        attributes: graphqlTypeDeclaration.model.primaryKeyAttributes,
+      }
+      const result = await graphqlTypeDeclaration.model.findAll(
+        fetchIdsMultiColumnsFindOptions
+      )
+
+      return {
+        ...trimedFindOptions,
+        offset: undefined,
+        limit: undefined,
+        // We override the where to only fetch the rows we want.
+        where: {
+          [Op.or]: result.map((r: any) => {
+            const where: any = {}
+            graphqlTypeDeclaration.model.primaryKeyAttributes.forEach(
+              (attr: string) => {
+                if (!r[attr]) {
+                  throw new Error(
+                    `Got a null value for Primary key ${attr}, for model ${graphqlTypeDeclaration.model.name}. This should never be the case. Disable the optimization for this model with disableOptimizationForLimitOffset or make sure the primary keys of the table have no null values.`
+                  )
+                }
+                where[attr] = r[attr]
+              }
+            )
+            return where
+          }),
+        },
+      }
+    }
+
+    // Or a single key
     const fetchIdsFindOptions = {
       ...trimedFindOptions,
       // We only fetch the primary attribute

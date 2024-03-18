@@ -300,5 +300,32 @@ describe('Test the API queries', () => {
     expect(
       responseWorksWithLimitAndOffsetOptimization.body.data.locations.length
     ).toBe(2)
+
+    const responseWorksWithLimitAndOffsetOptimizationAndMutliFieldTables =
+      await request(server)
+        .get(
+          `/graphql?query=
+          query getUserLocations {
+            userLocations: userLocation(order: "locationId,userId", limit: 10, offset:10) {
+              userId
+              locationId
+            }
+          }
+          &operationName=getUserLocations`
+        )
+        .set('userId', 1)
+    expect(
+      responseWorksWithLimitAndOffsetOptimizationAndMutliFieldTables.body.errors
+    ).toBeUndefined()
+    expect(
+      responseWorksWithLimitAndOffsetOptimizationAndMutliFieldTables.body.data
+        .userLocations.length
+    ).toBe(10)
+
+    expect(
+      responseWorksWithLimitAndOffsetOptimizationAndMutliFieldTables.body.data
+    ).toMatchSnapshot(
+      'Limit and offset optimization works with multi primary key tables.'
+    )
   })
 })
