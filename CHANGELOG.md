@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.7.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.7.0...v8.7.1) (2024-03-18)
+
+
+### Bug Fixes
+
+* **optimize:** Fix the limit/offset optimization not working with a table with multiple primary keys ([514fffb](https://github.com/teamstarter/graphql-sequelize-generator/commit/514fffb))
+
+
+
 ## [8.7.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.6.1...v8.7.0) (2024-03-08)
 
 
