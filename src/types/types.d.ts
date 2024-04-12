@@ -188,7 +188,6 @@ export type ListDeclarationType<M extends Model<any>> = {
   resolver?: GraphQLFieldResolver<TSource, TArgs, TContext>
   enforceMaxLimit?: number
   contextToOptions?: boolean
-  subscriptionFilter?: SubscriptionFilterHook
 }
 
 export type ModelDeclarationType<M extends Model> = {
