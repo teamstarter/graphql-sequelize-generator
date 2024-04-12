@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [8.7.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.7.1...v8.7.2) (2024-04-12)
+
+
+### Bug Fixes
+
+* **subscription:** Fix type declaration as list is not a mutation and has no subscriptions. ([fbc9f4d](https://github.com/teamstarter/graphql-sequelize-generator/commit/fbc9f4d))
+
+
+
 ### [8.7.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.7.0...v8.7.1) (2024-03-18)
 
 

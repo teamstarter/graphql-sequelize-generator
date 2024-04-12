@@ -1,6 +1,6 @@
 {
   "name": "@teamstarter/graphql-sequelize-generator",
-  "version": "8.7.1",
+  "version": "8.7.2",
   "description": "A set of tools to easily generate a Graphql API from sequelize models.",
   "keywords": [
     "graphql",
