@@ -174,6 +174,7 @@ export type UpdateFieldDeclarationType<M extends Model> = {
 }
 
 export type DeleteFieldDeclarationType<M extends Model<M>> = {
+  extraArg?: ExtraArg
   before?: DeleteBeforeHook<M>
   after?: DeleteAfterHook<M>
   subscriptionFilter?: SubscriptionFilterHook
