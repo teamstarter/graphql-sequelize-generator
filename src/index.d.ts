@@ -5,7 +5,8 @@ import {
   GraphQLSchemaConfig,
 } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
-import { FindOptions, ModelStatic } from 'sequelize/types'
+
+import { FindOptions, ModelStatic } from 'sequelize'
 import {
   GlobalPreCallback,
   GraphqlSchemaDeclarationType,
@@ -13,7 +14,6 @@ import {
   ModelDeclarationType,
   MutationList,
   OutputTypes,
-  SequelizeModel,
   SequelizeModels,
   TInfo,
 } from './types/types'
@@ -65,7 +65,7 @@ export function generateCount(
 export function removeUnusedAttributes(
   findOptions: FindOptions,
   info: TInfo,
-  currentModel: SequelizeModel<any>,
+  currentModel: ModelStatic<any>,
   models: SequelizeModels,
   keep: Array<string>
 ): FindOptions

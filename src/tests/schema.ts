@@ -216,7 +216,7 @@ graphqlSchemaDeclaration.user = {
       return deletedEntity
     },
   },
-} as ModelDeclarationType<typeof models.user>
+} as ModelDeclarationType<User>
 
 graphqlSchemaDeclaration.company = {
   model: models.company,
