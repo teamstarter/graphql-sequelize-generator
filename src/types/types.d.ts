@@ -9,6 +9,7 @@ import {
   GraphQLScalarType,
   GraphQLType,
 } from 'graphql'
+import { FilterFn } from 'graphql-subscriptions'
 import {
   Association,
   Filterable,
@@ -153,11 +154,12 @@ export type DeleteMutationAfterHook<M extends Model<any>> = (params: {
   info: TInfo
 }) => M | Promise<M>
 
-export type SubscriptionFilterHook = (params: {
-  payload: any
-  args: TArgs
-  context: TContext
-}) => boolean | Promise<boolean>
+export type SubscriptionFilterHook = (
+  payload: any,
+  args: TArgs,
+  context: TContext,
+  info: TInfo
+) => boolean | Promise<boolean>
 
 export type GraphqlSchemaDeclarationType = {
   [key: string]: ModelDeclarationType<any> | GraphQLFieldConfig<any, any, any>
@@ -168,21 +170,21 @@ export type CreateFieldDeclarationType<M extends Model<any>> = {
   before?: MutationBeforeHook<M>
   after?: MutationAfterHook<M>
   preventDuplicateOnAttributes?: string[]
-  subscriptionFilter?: SubscriptionFilterHook
+  subscriptionFilter?: FilterFn
 }
 
 export type UpdateFieldDeclarationType<M extends Model<any>> = {
   extraArg?: Record<string, { type: GraphQLInputType }>
   before?: MutationBeforeHook<M>
   after?: UpdateMutationAfterHook<M>
-  subscriptionFilter?: SubscriptionFilterHook
+  subscriptionFilter?: FilterFn
 }
 
 export type DeleteFieldDeclarationType<M extends Model<any>> = {
   extraArg?: Record<string, { type: GraphQLInputType }>
   before?: DeleteMutationBeforeHook<M>
   after?: DeleteMutationAfterHook<M>
-  subscriptionFilter?: SubscriptionFilterHook
+  subscriptionFilter?: FilterFn
 }
 
 export type ListDeclarationType<M extends Model<any>> = {
@@ -191,7 +193,6 @@ export type ListDeclarationType<M extends Model<any>> = {
   before?: QueryBeforeHook<M>
   after?: QueryAfterHook<M>
   resolver?: Resolver
-  subscriptionFilter?: SubscriptionFilterHook
   contextToOptions?: boolean
   extraArg?: Record<string, { type: GraphQLInputType }>
   disableOptimizationForLimitOffset?: boolean

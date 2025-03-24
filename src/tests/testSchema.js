@@ -167,6 +167,12 @@ graphqlSchemaDeclaration.user = {
       return newEntity
     },
     preventDuplicateOnAttributes: ['type'],
+    subscriptionFilter: (rootValue, args, context, info) => {
+      if (args.user.name === 'Test 5 c 2') {
+        return false
+      }
+      return true
+    },
   },
   update: {
     before: ({ source, args, context, info }) => {
