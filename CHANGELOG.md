@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.0.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.0.0...v9.0.1) (2025-03-24)
+
+
+### Bug Fixes
+
+* **types:** Fix regression on declaration. ([d3b3545](https://github.com/teamstarter/graphql-sequelize-generator/commit/d3b3545))
+
+
+
 ## [9.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.7.4...v9.0.0) (2025-03-24)
 
 
