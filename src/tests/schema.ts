@@ -16,14 +16,14 @@ import {
   resolver,
 } from './../../src'
 
-const {
+import {
+  GraphQLBoolean,
+  GraphQLError,
+  GraphQLInt,
+  GraphQLList,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLList,
-  GraphQLBoolean,
-  GraphQLInt,
-  GraphQLError,
-} = require('graphql')
+} from 'graphql'
 const { PubSub } = require('graphql-subscriptions')
 const { defaultListArgs } = require('graphql-sequelize')
 const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
@@ -70,7 +70,7 @@ graphqlSchemaDeclaration.user = {
   subscriptions: ['create', 'update'],
   webhooks: ['create', 'update', 'delete'],
   before: [
-    (args, context, info) => {
+    ({ args, context, info }) => {
       // Global before hook only have args, context and info.
       // You can use many functions or just one.
 
@@ -99,7 +99,7 @@ graphqlSchemaDeclaration.user = {
     extraArg: {
       departmentId: { type: GraphQLInt },
     },
-    before: async (findOptions, source, args) => {
+    before: async ({ findOptions, args, context, info }) => {
       // example of an extra argument usage
       if (args.departmentId) {
         if (!findOptions.include) {
@@ -133,14 +133,14 @@ graphqlSchemaDeclaration.user = {
   list: {
     removeUnusedAttributes: false,
     enforceMaxLimit: 50,
-    before: (findOptions, args, context, info) => {
+    before: ({ findOptions, args, context, info }) => {
       if (typeof findOptions.where === 'undefined') {
         findOptions.where = {}
       }
       findOptions.where = { ...findOptions.where, id: 1 }
       return findOptions
     },
-    after: (result, args, context, info) => {
+    after: ({ result, args, context, info }) => {
       if (result && Object.hasOwnProperty.call(result, 'length')) {
         for (const user of result as User[]) {
           if (user.name === 'Test 5 c 2') {
@@ -151,7 +151,7 @@ graphqlSchemaDeclaration.user = {
 
       return result
     },
-    subscriptionFilter: (payload, args, context) => {
+    subscriptionFilter: ({ payload, args, context }) => {
       // Exemple of subscription check
       if (context.user.role !== 'admin') {
         return false
@@ -162,48 +162,57 @@ graphqlSchemaDeclaration.user = {
   // The followings hooks are just here to demo their signatures.
   // They are not required and can be omited if you don't need them.
   create: {
-    before: (source, args, context, info) => {
+    before: ({ source, args, context, info }) => {
       // You can restrict the creation if needed
       return args.user
     },
-    after: async (newEntity, source, args, context, info, setWebhookData) => {
+    after: async ({
+      newEntity,
+      source,
+      args,
+      context,
+      info,
+      setWebhookData,
+    }) => {
       // You can log what happened here
 
-      setWebhookData((defaultData: any) => {
-        return {
-          ...defaultData,
-          gsg: 'This hook will be triggered ig gsg',
-        }
-      })
+      if (setWebhookData) {
+        setWebhookData((defaultData: any) => {
+          return {
+            ...defaultData,
+            gsg: 'This hook will be triggered ig gsg',
+          }
+        })
+      }
 
       return newEntity
     },
     preventDuplicateOnAttributes: ['type'],
   },
   update: {
-    before: (source, args, context, info) => {
+    before: ({ source, args, context, info }) => {
       // You can restrict the creation if needed
       return args.user
     },
-    after: async (
+    after: async ({
       updatedEntity,
       entitySnapshot,
       source,
       args,
       context,
-      info
-    ) => {
+      info,
+    }) => {
       // You can log what happened here
       return updatedEntity
     },
   },
   delete: {
     extraArg: { log: { type: GraphQLBoolean } },
-    before: (where, source, args, context, info) => {
+    before: ({ where, source, args, context, info }) => {
       // You can restrict the creation if needed
       return where
     },
-    after: async (deletedEntity, source, args, context, info) => {
+    after: async ({ deletedEntity, source, args, context, info }) => {
       // You can log what happened here
       if (args.log) {
         const date = Date.now()
@@ -224,7 +233,7 @@ graphqlSchemaDeclaration.company = {
   subscriptions: ['create', 'update'],
   list: {
     removeUnusedAttributes: false,
-    before: (findOptions, args, context, info) => {
+    before: ({ findOptions, args, context, info }) => {
       if (typeof findOptions.where === 'undefined') {
         findOptions.where = {}
       }
@@ -236,7 +245,7 @@ graphqlSchemaDeclaration.company = {
       return findOptions
     },
   },
-} as ModelDeclarationType<typeof models.company>
+} as ModelDeclarationType<Company>
 
 graphqlSchemaDeclaration.department = {
   model: models.department,
@@ -344,7 +353,7 @@ graphqlSchemaDeclaration.oddUser = {
     ...defaultListArgs(),
   },
   resolve: resolver(models.user, {
-    before: async (findOptions, args, context, info) => {
+    before: async ({ findOptions, args, context, info }) => {
       findOptions.where = {
         [Op.and]: [
           findOptions.where,
@@ -392,7 +401,7 @@ graphqlSchemaDeclaration.userLocation = {
   model: models.userLocation,
   actions: ['list'],
   list: {
-    before: async (findOptions) => {
+    before: async ({ findOptions }) => {
       return findOptions
     },
   },

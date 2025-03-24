@@ -1,5 +1,5 @@
 import { simplifyAST } from 'graphql-sequelize'
-import { FindOptions, ModelStatic } from 'sequelize'
+import { FindOptions, Model, ModelStatic } from 'sequelize'
 import { SequelizeModels, TInfo } from './types/types'
 
 /**
@@ -10,10 +10,10 @@ import { SequelizeModels, TInfo } from './types/types'
  * @param {*} info
  * @param {Array<string>} keep An array of all the attributes to keep
  */
-export default function removeUnusedAttributes(
-  findOptions: FindOptions,
+export default function removeUnusedAttributes<M extends Model<any>>(
+  findOptions: FindOptions<M>,
   info: TInfo,
-  currentModel: ModelStatic<any>,
+  currentModel: ModelStatic<M>,
   models: SequelizeModels,
   keep: Array<string> = []
 ): FindOptions {
