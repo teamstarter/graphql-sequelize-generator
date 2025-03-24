@@ -49,4 +49,28 @@ describe('Test the custom mutations', () => {
     )
     expect(trace).toMatchSnapshot()
   })
+
+  it('Check that you can call an additional mutation on a model', async () => {
+    const response = await request(server)
+      .post('/graphql')
+      .set('userid', 1)
+      .send({
+        query: `mutation anonymizeLog($logId: String) {
+              anonymizeLog(logId: $logId) {
+                id
+                message
+              }
+            }`,
+        variables: {
+          logId: '123',
+        },
+        operationName: 'anonymizeLog',
+      })
+    expect(response.body.errors).toBeUndefined()
+    expect(response.body.data.anonymizeLog).not.toBeUndefined()
+    expect(response.body.data.anonymizeLog).toMatchSnapshot(
+      'The anonymized log'
+    )
+    expect(trace).toMatchSnapshot()
+  })
 })

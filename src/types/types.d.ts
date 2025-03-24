@@ -220,6 +220,7 @@ export type ModelDeclarationType<M extends Model<any>> = {
   args?: Record<string, { type: GraphQLInputType }>
   contextToOptions?: boolean
   additionalSubscriptions?: SubscriptionList
+  additionalMutations?: MutationList
 }
 
 export type SequelizeModels = { [key: string]: ModelStatic<any> } & {

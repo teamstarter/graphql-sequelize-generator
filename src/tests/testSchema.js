@@ -310,6 +310,21 @@ const OddUser = new GraphQLObjectType({
 graphqlSchemaDeclaration.log = {
   model: models.log,
   actions: ['list', 'create'],
+  additionalMutations: {
+    anonymizeLog: {
+      type: types.outputTypes.log,
+      description: 'Just a random example to test the additional mutations.',
+      args: {
+        logId: { type: GraphQLString },
+      },
+      resolve: async (source, args, context) => {
+        return {
+          id: 1,
+          message: 'Anonymized',
+        }
+      },
+    },
+  },
 }
 
 // Testing the many to many relationships
