@@ -345,7 +345,7 @@ export default function createListResolver(
 
         for (const before of beforeList) {
           const handle = globalPreCallback('listGlobalBefore')
-          await before(args, context, info)
+          await before({ args, context, info })
           if (handle) {
             handle()
           }

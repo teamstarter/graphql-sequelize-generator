@@ -44,7 +44,7 @@ graphqlSchemaDeclaration.user = {
   subscriptions: ['create', 'update'],
   webhooks: ['create', 'update', 'delete'],
   before: [
-    (args, context, info) => {
+    ({ args, context, info }) => {
       // Global before hook only have args, context and info.
       // You can use many functions or just one.
 

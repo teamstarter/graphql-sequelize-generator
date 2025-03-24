@@ -51,7 +51,7 @@ export default function generateMutationUpdate(
 
         for (const before of beforeList) {
           const handle = globalPreCallback('updateGlobalBefore')
-          await before(args, context, info)
+          await before({ args, context, info })
           if (handle) {
             handle()
           }

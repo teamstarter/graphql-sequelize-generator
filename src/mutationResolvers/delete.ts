@@ -51,7 +51,7 @@ export default function generateMutationDelete(
 
         for (const before of beforeList) {
           const handle = globalPreCallback('deleteGlobalBefore')
-          await before(args, context, info)
+          await before({ args, context, info })
           if (handle) {
             handle()
           }

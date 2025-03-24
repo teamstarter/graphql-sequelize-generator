@@ -90,11 +90,12 @@ export type SubscriptionList = {
 
 export type setWebhookDataType = (defaultData: any) => (f: Function) => void
 
-export type GlobalBeforeHook = (
-  args: TArgs,
-  context: TContext,
+export type GlobalBeforeHook = (params: {
+  args: TArgs
+  context: TContext
   info: TInfo
-) => any | Promise<any>
+}) => any | Promise<any>
+
 export type QueryBeforeHook<M extends Model<any>> = (
   findOptions: FindOptions<M>,
   args: TArgs,

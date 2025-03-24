@@ -52,7 +52,7 @@ export default function generateMutationCreate(
 
         for (const before of beforeList) {
           const handle = globalPreCallback('createGlobalBefore')
-          await before(args, context, info)
+          await before({ args, context, info })
           if (handle) {
             handle()
           }
