@@ -16,6 +16,7 @@ const {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLError,
+  GraphQLInputObjectType,
 } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { defaultListArgs } = require('graphql-sequelize')
@@ -224,7 +225,46 @@ graphqlSchemaDeclaration.company = {
       return findOptions
     },
   },
-  // Do not add the update hooks. This enpoint is used to test the default behavior.
+  create: {
+    type: types.outputTypes.company,
+    description: 'Create a company with additional setup',
+    args: {
+      company: { type: types.inputTypes.company },
+      setupOptions: {
+        type: new GraphQLInputObjectType({
+          name: 'CompanySetupOptions',
+          fields: {
+            createDefaultDepartment: { type: GraphQLBoolean },
+            addDefaultUser: { type: GraphQLBoolean },
+          },
+        }),
+      },
+    },
+    resolve: async (source, args, context) => {
+      const { company, setupOptions } = args
+
+      // Create the company
+      const newCompany = await models.company.create(company)
+
+      // Handle additional setup if requested
+      if (setupOptions?.createDefaultDepartment) {
+        await models.department.create({
+          name: 'Default Department',
+          companyId: newCompany.id,
+        })
+      }
+
+      if (setupOptions?.addDefaultUser) {
+        await models.user.create({
+          name: 'Default User',
+          companyId: newCompany.id,
+          departmentId: 1,
+        })
+      }
+
+      return newCompany
+    },
+  },
 }
 
 graphqlSchemaDeclaration.department = {

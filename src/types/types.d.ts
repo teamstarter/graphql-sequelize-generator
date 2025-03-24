@@ -210,9 +210,15 @@ export type ModelDeclarationType<M extends Model<any>> = {
     resolver?: Resolver
   }
   list?: ListDeclarationType<M>
-  create?: CreateFieldDeclarationType<M>
-  update?: UpdateFieldDeclarationType<M>
-  delete?: DeleteFieldDeclarationType<M>
+  create?:
+    | CreateFieldDeclarationType<M>
+    | GraphQLFieldConfig<TSource, TContext, TArgs>
+  update?:
+    | UpdateFieldDeclarationType<M>
+    | GraphQLFieldConfig<TSource, TContext, TArgs>
+  delete?:
+    | DeleteFieldDeclarationType<M>
+    | GraphQLFieldConfig<TSource, TContext, TArgs>
   excludeFields?: string[]
   excludeFromRoot?: boolean
   type?: GraphQLObjectType

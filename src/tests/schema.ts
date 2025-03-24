@@ -19,6 +19,7 @@ import {
 import {
   GraphQLBoolean,
   GraphQLError,
+  GraphQLInputObjectType,
   GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
@@ -243,6 +244,46 @@ graphqlSchemaDeclaration.company = {
         [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }],
       }
       return findOptions
+    },
+  },
+  create: {
+    type: types.outputTypes.company,
+    description: 'Create a company with additional setup',
+    args: {
+      company: { type: types.inputTypes.company },
+      setupOptions: {
+        type: new GraphQLInputObjectType({
+          name: 'CompanySetupOptions',
+          fields: {
+            createDefaultDepartment: { type: GraphQLBoolean },
+            addDefaultUser: { type: GraphQLBoolean },
+          },
+        }),
+      },
+    },
+    resolve: async (source, args, context) => {
+      const { company, setupOptions } = args
+
+      // Create the company
+      const newCompany = await models.company.create(company)
+
+      // Handle additional setup if requested
+      if (setupOptions?.createDefaultDepartment) {
+        await models.department.create({
+          name: 'Default Department',
+          companyId: newCompany.id,
+        })
+      }
+
+      if (setupOptions?.addDefaultUser) {
+        await models.user.create({
+          name: 'Default User',
+          companyId: newCompany.id,
+          departmentId: 1,
+        })
+      }
+
+      return newCompany
     },
   },
 } as ModelDeclarationType<Company>
