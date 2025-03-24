@@ -73,53 +73,57 @@ graphqlSchemaDeclaration.user = {
     extraArg: {
       departmentId: { type: GraphQLInt },
     },
-    before: async ({ findOptions, source, args }) => {
-      // example of an extra argument usage
-      if (args.departmentId) {
-        if (!findOptions.include) {
-          findOptions.include = []
+    before: [
+      async ({ findOptions, source, args }) => {
+        // example of an extra argument usage
+        if (args.departmentId) {
+          if (!findOptions.include) {
+            findOptions.include = []
+          }
+
+          findOptions.include.push({
+            model: models.company,
+            include: [
+              {
+                model: models.department,
+                required: true,
+                where: {
+                  id: args.departmentId,
+                },
+              },
+            ],
+          })
         }
 
-        findOptions.include.push({
-          model: models.company,
-          include: [
-            {
-              model: models.department,
-              required: true,
-              where: {
-                id: args.departmentId,
-              },
-            },
-          ],
-        })
-      }
-
-      // while keeping the list logic after
-      // If you want to re-use the list before,
-      // can can either call it or duplicate the code.
-      // Or do not specify the extra arg in the count,
-      // and declare it in the list, they will both user it.
-      if (typeof findOptions.where === 'undefined') {
-        findOptions.where = {}
-      }
-      findOptions.where = {
-        [Op.and]: [findOptions.where, { departmentId: [1] }],
-      }
-      return findOptions
-    },
+        // while keeping the list logic after
+        // If you want to re-use the list before,
+        // can can either call it or duplicate the code.
+        // Or do not specify the extra arg in the count,
+        // and declare it in the list, they will both user it.
+        if (typeof findOptions.where === 'undefined') {
+          findOptions.where = {}
+        }
+        findOptions.where = {
+          [Op.and]: [findOptions.where, { departmentId: [1] }],
+        }
+        return findOptions
+      },
+    ],
   },
   list: {
     removeUnusedAttributes: false,
     enforceMaxLimit: 50,
-    before: ({ findOptions, args, context, info }) => {
-      if (typeof findOptions.where === 'undefined') {
-        findOptions.where = {}
-      }
-      findOptions.where = {
-        [Op.and]: [findOptions.where, { departmentId: [1] }],
-      }
-      return findOptions
-    },
+    before: [
+      ({ findOptions, args, context, info }) => {
+        if (typeof findOptions.where === 'undefined') {
+          findOptions.where = {}
+        }
+        findOptions.where = {
+          [Op.and]: [findOptions.where, { departmentId: [1] }],
+        }
+        return findOptions
+      },
+    ],
     after: ({ result, args, context, info }) => {
       if (result && Object.hasOwnProperty.call(result, 'length')) {
         for (const user of result) {
@@ -146,32 +150,29 @@ graphqlSchemaDeclaration.user = {
       // You can restrict the creation if needed
       return args.user
     },
-    after: async ({
-      newEntity,
-      source,
-      args,
-      context,
-      info,
-      setWebhookData,
-    }) => {
-      // You can log what happened here
+    after: [
+      async ({ newEntity, source, args, context, info, setWebhookData }) => {
+        // You can log what happened here
 
-      setWebhookData((defaultData) => {
-        return {
-          ...defaultData,
-          gsg: 'This hook will be triggered ig gsg',
-        }
-      })
+        setWebhookData((defaultData) => {
+          return {
+            ...defaultData,
+            gsg: 'This hook will be triggered ig gsg',
+          }
+        })
 
-      return newEntity
-    },
+        return newEntity
+      },
+    ],
     preventDuplicateOnAttributes: ['type'],
   },
   update: {
-    before: ({ source, args, context, info }) => {
-      // You can restrict the creation if needed
-      return args.user
-    },
+    before: [
+      ({ source, args, context, info }) => {
+        // You can restrict the creation if needed
+        return args.user
+      },
+    ],
     after: async ({
       updatedEntity,
       entitySnapshot,
@@ -212,17 +213,19 @@ graphqlSchemaDeclaration.company = {
   subscriptions: ['create', 'update'],
   list: {
     removeUnusedAttributes: false,
-    before: ({ findOptions, args, context, info }) => {
-      if (typeof findOptions.where === 'undefined') {
-        findOptions.where = {}
-      }
+    before: [
+      ({ findOptions, args, context, info }) => {
+        if (typeof findOptions.where === 'undefined') {
+          findOptions.where = {}
+        }
 
-      // This is an example of rights enforcement
-      findOptions.where = {
-        [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }],
-      }
-      return findOptions
-    },
+        // This is an example of rights enforcement
+        findOptions.where = {
+          [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }],
+        }
+        return findOptions
+      },
+    ],
   },
   // Do not add the update hooks. This enpoint is used to test the default behavior.
 }

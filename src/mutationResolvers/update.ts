@@ -1,10 +1,18 @@
 import {
+  GraphQLFieldConfig,
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
-import { GlobalBeforeHook, ModelDeclarationType } from '../types/types'
+import { Model } from 'sequelize'
+import {
+  GlobalBeforeHook,
+  ModelDeclarationType,
+  SequelizeModels,
+  UpdateAfterHook,
+  UpdateBeforeHook,
+} from '../types/types'
 import callModelWebhook from './callModelWebhook'
 
 /**
@@ -18,16 +26,16 @@ import callModelWebhook from './callModelWebhook'
  * @param {*} models
  * @param {PubSub} pubSubInstance
  */
-export default function generateMutationUpdate(
+export default function generateMutationUpdate<M extends Model<any>>(
   modelName: string,
   inputType: GraphQLInputObjectType,
   outputType: GraphQLObjectType,
-  graphqlModelDeclaration: ModelDeclarationType<any>,
-  models: any,
+  graphqlModelDeclaration: ModelDeclarationType<M>,
+  models: SequelizeModels,
   globalPreCallback: any,
   pubSubInstance: PubSub | null = null,
   callWebhook: Function
-) {
+): GraphQLFieldConfig<any, any, { [key: string]: any }> {
   return {
     type: outputType,
     description: `Update a ${modelName}`,
@@ -43,10 +51,11 @@ export default function generateMutationUpdate(
       let data = args[modelName]
 
       if (graphqlModelDeclaration.before) {
-        const beforeList: GlobalBeforeHook[] =
-          typeof graphqlModelDeclaration.before.length !== 'undefined'
-            ? (graphqlModelDeclaration.before as GlobalBeforeHook[])
-            : ([graphqlModelDeclaration.before] as GlobalBeforeHook[])
+        const beforeList: GlobalBeforeHook[] = Array.isArray(
+          graphqlModelDeclaration.before
+        )
+          ? graphqlModelDeclaration.before
+          : [graphqlModelDeclaration.before as GlobalBeforeHook]
 
         for (const before of beforeList) {
           const handle = globalPreCallback('updateGlobalBefore')
@@ -62,15 +71,23 @@ export default function generateMutationUpdate(
         'before' in graphqlModelDeclaration.update &&
         graphqlModelDeclaration.update.before
       ) {
-        const beforeHandle = globalPreCallback('updateBefore')
-        data = await graphqlModelDeclaration.update.before({
-          source,
-          args,
-          context,
-          info,
-        })
-        if (beforeHandle) {
-          beforeHandle()
+        const beforeList: UpdateBeforeHook<M>[] = Array.isArray(
+          graphqlModelDeclaration.update.before
+        )
+          ? graphqlModelDeclaration.update.before
+          : [graphqlModelDeclaration.update.before as UpdateBeforeHook<M>]
+
+        for (const before of beforeList) {
+          const beforeHandle = globalPreCallback('updateBefore')
+          data = await before({
+            source,
+            args,
+            context,
+            info,
+          })
+          if (beforeHandle) {
+            beforeHandle()
+          }
         }
       }
 
@@ -96,17 +113,26 @@ export default function generateMutationUpdate(
           },
         }
 
-        const afterHandle = globalPreCallback('updateAfter')
-        const updatedEntity = await graphqlModelDeclaration.update.after({
-          updatedEntity: entity,
-          entitySnapshot: snapshotBeforeUpdate,
-          source,
-          args,
-          context,
-          info,
-        })
-        if (afterHandle) {
-          afterHandle()
+        const afterList: UpdateAfterHook<M>[] = Array.isArray(
+          graphqlModelDeclaration.update.after
+        )
+          ? graphqlModelDeclaration.update.after
+          : [graphqlModelDeclaration.update.after as UpdateAfterHook<M>]
+
+        let updatedEntity = entity
+        for (const after of afterList) {
+          const afterHandle = globalPreCallback('updateAfter')
+          updatedEntity = await after({
+            updatedEntity,
+            entitySnapshot: snapshotBeforeUpdate,
+            source,
+            args,
+            context,
+            info,
+          })
+          if (afterHandle) {
+            afterHandle()
+          }
         }
 
         if (pubSubInstance) {
@@ -126,6 +152,25 @@ export default function generateMutationUpdate(
 
         return updatedEntity
       }
+
+      if (pubSubInstance) {
+        pubSubInstance.publish(`${modelName}Updated`, {
+          [`${modelName}Updated`]: entity.get(),
+        })
+      }
+
+      await callModelWebhook(
+        modelName,
+        graphqlModelDeclaration.webhooks,
+        'update',
+        context,
+        {
+          new: { ...entity.get({ plain: true }) },
+          old: { ...snapshotBeforeUpdate },
+        },
+        callWebhook
+      )
+
       return entity
     },
   }

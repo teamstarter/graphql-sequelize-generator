@@ -140,17 +140,19 @@ graphqlSchemaDeclaration.user = {
       findOptions.where = { ...findOptions.where, id: 1 }
       return findOptions
     },
-    after: ({ result, args, context, info }) => {
-      if (result && Object.hasOwnProperty.call(result, 'length')) {
-        for (const user of result as User[]) {
-          if (user.name === 'Test 5 c 2') {
-            user.name = `Mr ${user.name}`
+    after: [
+      ({ result, args, context, info }) => {
+        if (result && Object.hasOwnProperty.call(result, 'length')) {
+          for (const user of result as User[]) {
+            if (user.name === 'Test 5 c 2') {
+              user.name = `Mr ${user.name}`
+            }
           }
         }
-      }
 
-      return result
-    },
+        return result
+      },
+    ],
     subscriptionFilter: ({ payload, args, context }) => {
       // Exemple of subscription check
       if (context.user.role !== 'admin') {
@@ -162,10 +164,12 @@ graphqlSchemaDeclaration.user = {
   // The followings hooks are just here to demo their signatures.
   // They are not required and can be omited if you don't need them.
   create: {
-    before: ({ source, args, context, info }) => {
-      // You can restrict the creation if needed
-      return args.user
-    },
+    before: [
+      ({ source, args, context, info }) => {
+        // You can restrict the creation if needed
+        return args.user
+      },
+    ],
     after: async ({
       newEntity,
       source,
@@ -190,10 +194,12 @@ graphqlSchemaDeclaration.user = {
     preventDuplicateOnAttributes: ['type'],
   },
   update: {
-    before: ({ source, args, context, info }) => {
-      // You can restrict the creation if needed
-      return args.user
-    },
+    before: [
+      ({ source, args, context, info }) => {
+        // You can restrict the creation if needed
+        return args.user
+      },
+    ],
     after: async ({
       updatedEntity,
       entitySnapshot,
@@ -208,10 +214,12 @@ graphqlSchemaDeclaration.user = {
   },
   delete: {
     extraArg: { log: { type: GraphQLBoolean } },
-    before: ({ where, source, args, context, info }) => {
-      // You can restrict the creation if needed
-      return where
-    },
+    before: [
+      ({ where, source, args, context, info }) => {
+        // You can restrict the creation if needed
+        return where
+      },
+    ],
     after: async ({ deletedEntity, source, args, context, info }) => {
       // You can log what happened here
       if (args.log) {
@@ -222,7 +230,7 @@ graphqlSchemaDeclaration.user = {
           updatedAt: date,
         })
       }
-      return deletedEntity
+      return
     },
   },
 } as ModelDeclarationType<User>

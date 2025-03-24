@@ -1,12 +1,17 @@
 import {
-  GraphQLError,
+  GraphQLFieldConfig,
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLObjectType,
 } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
 import { Model, ModelStatic } from 'sequelize'
-import { GlobalBeforeHook, ModelDeclarationType } from '../types/types'
+import {
+  CreateAfterHook,
+  CreateBeforeHook,
+  GlobalBeforeHook,
+  ModelDeclarationType,
+} from '../types/types'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
 
@@ -20,18 +25,18 @@ import callModelWebhook from './callModelWebhook'
  * @param {*} graphqlModelDeclaration
  * @param {PubSub} pubSubInstance
  */
-export default function generateMutationCreate(
+export default function generateMutationCreate<M extends Model<any>>(
   modelName: string,
   inputType: GraphQLInputObjectType,
   outputType: GraphQLObjectType,
-  model: ModelStatic<any>,
-  graphqlModelDeclaration: ModelDeclarationType<any>,
+  model: ModelStatic<M>,
+  graphqlModelDeclaration: ModelDeclarationType<M>,
   globalPreCallback: any,
   pubSubInstance: PubSub | null = null,
   callWebhook: Function
-) {
+): GraphQLFieldConfig<any, any, { [key: string]: any }> {
   return {
-    type: outputType, // what is returned by resolve, must be of type GraphQLObjectType
+    type: outputType,
     description: `Create a ${modelName}`,
     args: {
       [modelName]: { type: new GraphQLNonNull(inputType) },
@@ -41,14 +46,20 @@ export default function generateMutationCreate(
         ? graphqlModelDeclaration.create.extraArg
         : {}),
     },
-    resolve: async (source: any, args: any, context: any, info: any) => {
+    resolve: async (
+      source: any,
+      args: any,
+      context: any,
+      info: any
+    ): Promise<M | undefined> => {
       let attributes = args[modelName]
 
       if (graphqlModelDeclaration.before) {
-        const beforeList: GlobalBeforeHook[] =
-          typeof graphqlModelDeclaration.before.length !== 'undefined'
-            ? (graphqlModelDeclaration.before as GlobalBeforeHook[])
-            : ([graphqlModelDeclaration.before] as GlobalBeforeHook[])
+        const beforeList: GlobalBeforeHook[] = Array.isArray(
+          graphqlModelDeclaration.before
+        )
+          ? graphqlModelDeclaration.before
+          : [graphqlModelDeclaration.before as GlobalBeforeHook]
 
         for (const before of beforeList) {
           const handle = globalPreCallback('createGlobalBefore')
@@ -64,22 +75,30 @@ export default function generateMutationCreate(
         'before' in graphqlModelDeclaration.create &&
         graphqlModelDeclaration.create.before
       ) {
-        const beforeHandle = globalPreCallback('createBefore')
-        attributes = await graphqlModelDeclaration.create.before({
-          source,
-          args,
-          context,
-          info,
-        })
+        const beforeList: CreateBeforeHook<M>[] = Array.isArray(
+          graphqlModelDeclaration.create.before
+        )
+          ? graphqlModelDeclaration.create.before
+          : [graphqlModelDeclaration.create.before as CreateBeforeHook<M>]
 
-        if (!attributes) {
-          throw new Error(
-            'The before hook must always return the create method first parameter.'
-          )
-        }
+        for (const before of beforeList) {
+          const beforeHandle = globalPreCallback('createBefore')
+          attributes = await before({
+            source,
+            args,
+            context,
+            info,
+          })
 
-        if (beforeHandle) {
-          beforeHandle()
+          if (!attributes) {
+            throw new Error(
+              'The before hook must always return the create method first parameter.'
+            )
+          }
+
+          if (beforeHandle) {
+            beforeHandle()
+          }
         }
       }
 
@@ -101,7 +120,7 @@ export default function generateMutationCreate(
           {}
         )
 
-        let entityDuplicate = null
+        let entityDuplicate: M | null = null
         if (Object.keys(filters).length) {
           entityDuplicate = await model.findOne({
             where: filters,
@@ -113,16 +132,18 @@ export default function generateMutationCreate(
         }
       }
 
-      let newEntity: Model<any> | undefined = undefined
+      let newEntity: M | undefined = undefined
       try {
         newEntity = await model.create(attributes)
       } catch (error) {
-        // @ts-ignore
-        throw new GraphQLError(error.message)
+        if (error instanceof Error) {
+          throw error
+        }
+        throw new Error('Unknown error occurred while creating entity')
       }
 
       if (!newEntity) {
-        return
+        return undefined
       }
 
       if (
@@ -130,20 +151,27 @@ export default function generateMutationCreate(
         'after' in graphqlModelDeclaration.create &&
         graphqlModelDeclaration.create.after
       ) {
-        const afterHandle = globalPreCallback('createAfter')
+        const afterList: CreateAfterHook<M>[] = Array.isArray(
+          graphqlModelDeclaration.create.after
+        )
+          ? graphqlModelDeclaration.create.after
+          : [graphqlModelDeclaration.create.after as CreateAfterHook<M>]
 
-        const hookData = { data: newEntity.get({ plain: true }) }
-
-        const updatedEntity = await graphqlModelDeclaration.create.after({
-          newEntity,
-          source,
-          args,
-          context,
-          info,
-          setWebhookData: setWebhookData(hookData),
-        })
-        if (afterHandle) {
-          afterHandle()
+        let updatedEntity = newEntity
+        const hookData = { data: updatedEntity.get({ plain: true }) }
+        for (const after of afterList) {
+          const afterHandle = globalPreCallback('createAfter')
+          updatedEntity = await after({
+            newEntity: updatedEntity,
+            source,
+            args,
+            context,
+            info,
+            setWebhookData: setWebhookData(hookData),
+          })
+          if (afterHandle) {
+            afterHandle()
+          }
         }
 
         if (pubSubInstance) {

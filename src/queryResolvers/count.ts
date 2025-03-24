@@ -1,9 +1,11 @@
 import { argsToFindOptions } from 'graphql-sequelize'
-import { Model, ModelStatic } from 'sequelize'
+import { GroupedCountResultItem, Model, ModelStatic } from 'sequelize'
 import {
+  CountAfterHook,
   GlobalBeforeHook,
   GlobalPreCallback,
   ModelDeclarationType,
+  QueryBeforeHook,
 } from '../types/types'
 
 export default function countResolver<M extends Model<any>>(
@@ -33,11 +35,11 @@ export default function countResolver<M extends Model<any>>(
 
   return async (source: any, args: any, context: any, info: any) => {
     if (schemaDeclaration.before) {
-      const beforeList: GlobalBeforeHook[] =
-        schemaDeclaration.before &&
-        typeof schemaDeclaration.before.length !== 'undefined'
-          ? (schemaDeclaration.before as GlobalBeforeHook[])
-          : ([schemaDeclaration.before] as GlobalBeforeHook[])
+      const beforeList: GlobalBeforeHook[] = Array.isArray(
+        schemaDeclaration.before
+      )
+        ? schemaDeclaration.before
+        : [schemaDeclaration.before as GlobalBeforeHook]
 
       for (const before of beforeList) {
         const handle = globalPreCallback('listGlobalBefore')
@@ -54,25 +56,55 @@ export default function countResolver<M extends Model<any>>(
     )
 
     if (countBefore) {
-      const handle = globalPreCallback('countBefore')
+      const beforeList: QueryBeforeHook<M>[] = Array.isArray(countBefore)
+        ? countBefore
+        : [countBefore as QueryBeforeHook<M>]
 
-      const resultBefore = await countBefore({
-        findOptions,
-        args,
-        context,
-        info,
-      })
-      if (!resultBefore) {
-        throw new Error(
-          'The before hook of the count endpoint must return a value.'
-        )
+      for (const before of beforeList) {
+        const handle = globalPreCallback('countBefore')
+        const resultBefore = await before({
+          findOptions,
+          args,
+          context,
+          info,
+        })
+        if (!resultBefore) {
+          throw new Error(
+            'The before hook of the count endpoint must return a value.'
+          )
+        }
+        findOptions = resultBefore
+        if (handle) {
+          handle()
+        }
       }
-      findOptions = resultBefore
-      if (handle) {
-        handle()
-      }
-      return model.count(findOptions)
     }
-    return model.count(findOptions)
+
+    const count = await model.count(findOptions)
+
+    if (schemaDeclaration.count && schemaDeclaration.count.after) {
+      const afterList: CountAfterHook<M>[] = Array.isArray(
+        schemaDeclaration.count.after
+      )
+        ? schemaDeclaration.count.after
+        : [schemaDeclaration.count.after as CountAfterHook<M>]
+
+      let modifiedCount: number | GroupedCountResultItem[] = count
+      for (const after of afterList) {
+        const handle = globalPreCallback('countAfter')
+        modifiedCount = await after({
+          result: modifiedCount,
+          args,
+          context,
+          info,
+        })
+        if (handle) {
+          handle()
+        }
+      }
+      return modifiedCount
+    }
+
+    return count
   }
 }

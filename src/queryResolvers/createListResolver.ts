@@ -1,11 +1,13 @@
 import { resolver } from 'graphql-sequelize'
 import { FindOptions, Model, ModelStatic, Op } from 'sequelize'
-import removeUnusedAttributes from './removeUnusedAttributes'
+import removeUnusedAttributes from '../removeUnusedAttributes'
 import {
   GlobalBeforeHook,
   ModelDeclarationType,
+  QueryAfterHook,
+  QueryBeforeHook,
   SequelizeModels,
-} from './types/types'
+} from '../types/types'
 
 interface ModelInclude {
   model: ModelStatic<Model<any>>
@@ -343,13 +345,8 @@ export default function createListResolver<M extends Model<any>>(
         graphqlTypeDeclaration.list.enforceMaxLimit
       ) {
         if (
-          // If the limit is not set, nullish or bigger than the max limit
-          // we enforce it.
           (!findOptions.limit ||
             findOptions.limit > graphqlTypeDeclaration.list.enforceMaxLimit) &&
-          // Except if the limit is not on the root query
-          // This is because the limit of sub-Object linked with BelongsToMany is currently not possible
-          // See associationsFields.js L46
           info.parentType &&
           info.parentType.name === 'Root_Query'
         ) {
@@ -359,12 +356,11 @@ export default function createListResolver<M extends Model<any>>(
 
       // Global hooks, cannot impact the findOptions
       if (graphqlTypeDeclaration.before) {
-        const beforeList: GlobalBeforeHook[] =
-          typeof graphqlTypeDeclaration.before.length !== 'undefined'
-            ? (graphqlTypeDeclaration.before as GlobalBeforeHook[])
-            : ([
-                graphqlTypeDeclaration.before as GlobalBeforeHook,
-              ] as GlobalBeforeHook[])
+        const beforeList: GlobalBeforeHook[] = Array.isArray(
+          graphqlTypeDeclaration.before
+        )
+          ? graphqlTypeDeclaration.before
+          : [graphqlTypeDeclaration.before as GlobalBeforeHook]
 
         for (const before of beforeList) {
           const handle = globalPreCallback('listGlobalBefore')
@@ -377,24 +373,27 @@ export default function createListResolver<M extends Model<any>>(
 
       // before hook, can mutate the findOptions
       if (listBefore) {
-        const handle = globalPreCallback('listBefore')
-        const resultBefore = await listBefore({
-          findOptions: processedFindOptions,
-          args,
-          context,
-          info,
-        })
-        if (!resultBefore) {
-          throw new Error(
-            'The before hook of the list endpoint must return a value.'
-          )
-        }
+        const beforeList: QueryBeforeHook<M>[] = Array.isArray(listBefore)
+          ? listBefore
+          : [listBefore as QueryBeforeHook<M>]
 
-        // The list overwrite the findOptions
-        processedFindOptions = resultBefore
-
-        if (handle) {
-          handle()
+        for (const before of beforeList) {
+          const handle = globalPreCallback('listBefore')
+          const resultBefore = await before({
+            findOptions: processedFindOptions,
+            args,
+            context,
+            info,
+          })
+          if (!resultBefore) {
+            throw new Error(
+              'The before hook of the list endpoint must return a value.'
+            )
+          }
+          processedFindOptions = resultBefore
+          if (handle) {
+            handle()
+          }
         }
       }
 
@@ -408,15 +407,22 @@ export default function createListResolver<M extends Model<any>>(
     },
     after: async (result: M | M[], args: any, context: any, info: any) => {
       if (listAfter) {
-        const handle = globalPreCallback('listAfter')
-        const modifiedResult = await listAfter({
-          result,
-          args,
-          context,
-          info,
-        })
-        if (handle) {
-          handle()
+        const afterList: QueryAfterHook<M>[] = Array.isArray(listAfter)
+          ? listAfter
+          : [listAfter as QueryAfterHook<M>]
+
+        let modifiedResult = result
+        for (const after of afterList) {
+          const handle = globalPreCallback('listAfter')
+          modifiedResult = await after({
+            result: modifiedResult,
+            args,
+            context,
+            info,
+          })
+          if (handle) {
+            handle()
+          }
         }
         return modifiedResult
       }
