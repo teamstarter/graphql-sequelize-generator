@@ -65,12 +65,12 @@ export default function generateMutationCreate(
         graphqlModelDeclaration.create.before
       ) {
         const beforeHandle = globalPreCallback('createBefore')
-        attributes = await graphqlModelDeclaration.create.before(
+        attributes = await graphqlModelDeclaration.create.before({
           source,
           args,
           context,
-          info
-        )
+          info,
+        })
 
         if (!attributes) {
           throw new Error(
@@ -134,14 +134,14 @@ export default function generateMutationCreate(
 
         const hookData = { data: newEntity.get({ plain: true }) }
 
-        const updatedEntity = await graphqlModelDeclaration.create.after(
+        const updatedEntity = await graphqlModelDeclaration.create.after({
           newEntity,
           source,
           args,
           context,
           info,
-          setWebhookData(hookData)
-        )
+          setWebhookData: setWebhookData(hookData),
+        })
         if (afterHandle) {
           afterHandle()
         }

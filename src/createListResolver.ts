@@ -1,13 +1,30 @@
 import { resolver } from 'graphql-sequelize'
-import { FindOptions, Model, Op } from 'sequelize'
+import { FindOptions, Model, ModelStatic, Op } from 'sequelize'
 import removeUnusedAttributes from './removeUnusedAttributes'
-import { GlobalBeforeHook, ModelDeclarationType } from './types/types'
+import {
+  GlobalBeforeHook,
+  ModelDeclarationType,
+  SequelizeModels,
+} from './types/types'
 
-function allowOrderOnAssociations(findOptions: FindOptions<any>, model: any) {
+interface ModelInclude {
+  model: ModelStatic<Model<any>>
+  as?: string
+}
+
+interface ModelSort {
+  model: ModelStatic<Model<any>>
+  as?: string
+}
+
+function allowOrderOnAssociations<M extends Model<any>>(
+  findOptions: FindOptions<M>,
+  model: ModelStatic<M>
+) {
   if (typeof findOptions.order === 'undefined') {
     return findOptions
   }
-  const processedOrder: any = []
+  const processedOrder: any[] = []
 
   const checkForAssociationSort = (singleOrder: any, index: any) => {
     // When the comas is used, graphql-sequelize will not handle the 'reverse:' command.
@@ -43,7 +60,7 @@ function allowOrderOnAssociations(findOptions: FindOptions<any>, model: any) {
         findOptions.include = []
       }
 
-      const modelInclude: any = {
+      const modelInclude: ModelInclude = {
         model: model.associations[associationName].target,
       }
 
@@ -56,7 +73,7 @@ function allowOrderOnAssociations(findOptions: FindOptions<any>, model: any) {
         findOptions.include.push(modelInclude)
       }
 
-      const modelSort: any = {
+      const modelSort: ModelSort = {
         model: model.associations[associationName].target,
       }
       // When sorting by a associated table, the alias must be specified
@@ -72,12 +89,12 @@ function allowOrderOnAssociations(findOptions: FindOptions<any>, model: any) {
       if (
         field &&
         model.rawAttributes[field] &&
-        model.rawAttributes[field].type.key === 'VIRTUAL'
+        (model.rawAttributes[field].type as any).key === 'VIRTUAL'
       ) {
         // When a virtual field is used, we must sort with the expression and not
         // the name of the field, as it is not compatible with multiple database engines.
         // IE : Sorting by virtual field is inefficient if using sub-queries.
-        field = model.rawAttributes[field].type.fields[0][0]
+        field = (model.rawAttributes[field].type as any).fields[0][0]
       }
       processedOrder.push([field, direction])
     }
@@ -113,13 +130,13 @@ function allowOrderOnAssociations(findOptions: FindOptions<any>, model: any) {
   return findOptions
 }
 
-const argsAdvancedProcessing = (
-  findOptions: FindOptions<any>,
+const argsAdvancedProcessing = <M extends Model<any>>(
+  findOptions: FindOptions<M>,
   args: any,
   context: any,
   info: any,
-  model: any,
-  models: any
+  model: ModelStatic<M>,
+  models: SequelizeModels
 ) => {
   findOptions = allowOrderOnAssociations(findOptions, model)
 
@@ -127,28 +144,29 @@ const argsAdvancedProcessing = (
   if (
     info.parentType &&
     models[info.parentType.name] &&
-    models[info.parentType.name].associations[info.fieldName].scope
+    (models[info.parentType.name].associations[info.fieldName] as any).scope
   ) {
     findOptions.where = {
       ...(findOptions.where ? findOptions.where : {}),
-      ...models[info.parentType.name].associations[info.fieldName].scope,
+      ...(models[info.parentType.name].associations[info.fieldName] as any)
+        .scope,
     }
   }
 
   return findOptions
 }
 
-async function trimAndOptimizeFindOptions({
+async function trimAndOptimizeFindOptions<M extends Model<any>>({
   findOptions,
   graphqlTypeDeclaration,
   info,
   models,
   args,
 }: {
-  findOptions: FindOptions<any>
-  graphqlTypeDeclaration: any
+  findOptions: FindOptions<M>
+  graphqlTypeDeclaration: ModelDeclarationType<M>
   info: any
-  models: any
+  models: SequelizeModels
   args: any
 }) {
   const trimedFindOptions =
@@ -213,7 +231,7 @@ async function trimAndOptimizeFindOptions({
         ...trimedFindOptions,
         // We only fetch the primary attribute
         attributes: graphqlTypeDeclaration.model.primaryKeyAttributes,
-      }
+      } as FindOptions<M>
       const result = await graphqlTypeDeclaration.model.findAll(
         fetchIdsMultiColumnsFindOptions
       )
@@ -268,11 +286,11 @@ async function trimAndOptimizeFindOptions({
   return trimedFindOptions
 }
 
-export default function createListResolver(
-  graphqlTypeDeclaration: ModelDeclarationType<any>,
-  models: any,
+export default function createListResolver<M extends Model<any>>(
+  graphqlTypeDeclaration: ModelDeclarationType<M>,
+  models: SequelizeModels,
   globalPreCallback: any,
-  relation = null
+  relation: ModelStatic<M> | null = null
 ) {
   if (graphqlTypeDeclaration?.list?.resolver) {
     return async (source: any, args: any, context: any, info: any) => {
@@ -305,8 +323,13 @@ export default function createListResolver(
     contextToOptions: graphqlTypeDeclaration.list
       ? graphqlTypeDeclaration.list.contextToOptions
       : undefined,
-    before: async (findOptions: any, args: any, context: any, info: any) => {
-      let processedFindOptions: FindOptions<any> = argsAdvancedProcessing(
+    before: async (
+      findOptions: FindOptions<M>,
+      args: any,
+      context: any,
+      info: any
+    ) => {
+      let processedFindOptions: FindOptions<M> = argsAdvancedProcessing(
         findOptions,
         args,
         context,
@@ -355,12 +378,12 @@ export default function createListResolver(
       // before hook, can mutate the findOptions
       if (listBefore) {
         const handle = globalPreCallback('listBefore')
-        const resultBefore = await listBefore(
-          processedFindOptions,
+        const resultBefore = await listBefore({
+          findOptions: processedFindOptions,
           args,
           context,
-          info
-        )
+          info,
+        })
         if (!resultBefore) {
           throw new Error(
             'The before hook of the list endpoint must return a value.'
@@ -383,15 +406,15 @@ export default function createListResolver(
         args,
       })
     },
-    after: async (
-      result: Model<any> | Model<any>[],
-      args: any,
-      context: any,
-      info: any
-    ) => {
+    after: async (result: M | M[], args: any, context: any, info: any) => {
       if (listAfter) {
         const handle = globalPreCallback('listAfter')
-        const modifiedResult = await listAfter(result, args, context, info)
+        const modifiedResult = await listAfter({
+          result,
+          args,
+          context,
+          info,
+        })
         if (handle) {
           handle()
         }

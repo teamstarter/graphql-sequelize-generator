@@ -5,7 +5,6 @@ import {
 } from 'graphql'
 import { PubSub } from 'graphql-subscriptions'
 import { GlobalBeforeHook, ModelDeclarationType } from '../types/types'
-import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
 
 /**
@@ -64,12 +63,12 @@ export default function generateMutationUpdate(
         graphqlModelDeclaration.update.before
       ) {
         const beforeHandle = globalPreCallback('updateBefore')
-        data = await graphqlModelDeclaration.update.before(
+        data = await graphqlModelDeclaration.update.before({
           source,
           args,
           context,
-          info
-        )
+          info,
+        })
         if (beforeHandle) {
           beforeHandle()
         }
@@ -98,15 +97,14 @@ export default function generateMutationUpdate(
         }
 
         const afterHandle = globalPreCallback('updateAfter')
-        const updatedEntity = await graphqlModelDeclaration.update.after(
-          entity,
-          snapshotBeforeUpdate,
+        const updatedEntity = await graphqlModelDeclaration.update.after({
+          updatedEntity: entity,
+          entitySnapshot: snapshotBeforeUpdate,
           source,
           args,
           context,
           info,
-          setWebhookData(hookData)
-        )
+        })
         if (afterHandle) {
           afterHandle()
         }

@@ -48,21 +48,31 @@ export default function countResolver<M extends Model<any>>(
       }
     }
 
-    if (typeof countBefore !== 'undefined') {
+    let findOptions = argsToFindOptions.default(
+      args,
+      Object.keys(model.getAttributes())
+    )
+
+    if (countBefore) {
       const handle = globalPreCallback('countBefore')
-      const countOptions = await countBefore(
-        argsToFindOptions.default(args, Object.keys(model.getAttributes())),
+
+      const resultBefore = await countBefore({
+        findOptions,
         args,
         context,
-        info
-      )
+        info,
+      })
+      if (!resultBefore) {
+        throw new Error(
+          'The before hook of the count endpoint must return a value.'
+        )
+      }
+      findOptions = resultBefore
       if (handle) {
         handle()
       }
-      return model.count(countOptions)
+      return model.count(findOptions)
     }
-    return model.count(
-      argsToFindOptions.default(args, Object.keys(model.getAttributes()))
-    )
+    return model.count(findOptions)
   }
 }

@@ -57,6 +57,7 @@ describe('Test the count resolvers', () => {
           }`
       )
       .set('userId', 1)
+    expect(response.body.errors).toBeUndefined()
     expect(response.body.data.user).not.toBeUndefined()
     expect(response.body.data).toMatchSnapshot(
       'Users ids and count with an extra argument'
