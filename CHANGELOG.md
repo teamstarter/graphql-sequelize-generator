@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.7.4...v9.0.0) (2025-03-24)
+
+
+### Features
+
+* **hooks:** Change global hook signature ([b15061b](https://github.com/teamstarter/graphql-sequelize-generator/commit/b15061b))
+* **hooks:** Change the signature of all the hooks to take an object instead of an array. ([bae8017](https://github.com/teamstarter/graphql-sequelize-generator/commit/bae8017))
+
+
+### BREAKING CHANGES
+
+* **hooks:** Change the signature of all the hooks to take an object instead of an array.
+* **hooks:** change global hook signature
+
+
+
 ### [8.7.4](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.7.3...v8.7.4) (2024-06-04)
 
 
