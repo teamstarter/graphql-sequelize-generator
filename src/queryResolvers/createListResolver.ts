@@ -335,6 +335,10 @@ export default function createListResolver<M extends Model<any>>(
         findOptions.where = {}
       }
 
+      if (typeof findOptions.include === 'undefined') {
+        findOptions.include = []
+      }
+
       let processedFindOptions: FindOptionsWithAttributesWhere<M> =
         argsAdvancedProcessing(
           findOptions,

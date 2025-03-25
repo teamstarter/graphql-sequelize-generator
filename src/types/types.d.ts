@@ -14,6 +14,7 @@ import {
   Association,
   Filterable,
   FindOptions,
+  Includeable,
   Model,
   ModelStatic,
   Sequelize,
@@ -259,10 +260,17 @@ export type Resolver = (
   info: any
 ) => any | Promise<any>
 
+// This type is made to ease the developer experience when using a GSG Hook.
+// Having less configuration scenarios reduce the potential sources of bugs and improve readability.
 export type FindOptionsWithAttributesWhere<M extends Model<any>> =
   FindOptions<any> & {
     // In the case of GraphQL, the where is an object with attributes
     // as functions can only be applied on attributes based on their alias.
     // Like { '$or' : {a: 1, b: 2} }
     where: WhereAttributeHash<M>
+    // This should normally be either an Includeable or an array of Includeable[]
+    // We force it as an array of Includeable[] to make it easier to work with.
+    // This allow us to always initialize it and be able to use findOptions.include.push()
+    // without having to check if it's an array or not.
+    include: Includeable[]
   }
