@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.0.3...v9.1.0) (2025-03-25)
+
+
+### Features
+
+* **list:** Improve the list resolver by initializing the where and typing it properly to avoid suggesting it could be a function while it's not possible through Graphql. ([9c6aaa2](https://github.com/teamstarter/graphql-sequelize-generator/commit/9c6aaa2))
+
+
+
 ### [9.0.3](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.0.2...v9.0.3) (2025-03-24)
 
 
