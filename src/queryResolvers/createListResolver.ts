@@ -1,11 +1,12 @@
 import { resolver } from 'graphql-sequelize'
 import { FindOptions, Model, ModelStatic, Op } from 'sequelize'
-import removeUnusedAttributes from './removeUnusedAttributes'
+import removeUnusedAttributes from './../removeUnusedAttributes'
 import {
+  FindOptionsWithAttributesWhere,
   GlobalBeforeHook,
   ModelDeclarationType,
   SequelizeModels,
-} from './types/types'
+} from './../types/types'
 
 interface ModelInclude {
   model: ModelStatic<Model<any>>
@@ -20,9 +21,9 @@ interface ModelSort {
 function allowOrderOnAssociations<M extends Model<any>>(
   findOptions: FindOptions<M>,
   model: ModelStatic<M>
-) {
+): FindOptionsWithAttributesWhere<M> {
   if (typeof findOptions.order === 'undefined') {
-    return findOptions
+    return findOptions as FindOptionsWithAttributesWhere<M>
   }
   const processedOrder: any[] = []
 
@@ -127,7 +128,7 @@ function allowOrderOnAssociations<M extends Model<any>>(
     })
   }
   findOptions.order = processedOrder
-  return findOptions
+  return findOptions as FindOptionsWithAttributesWhere<M>
 }
 
 const argsAdvancedProcessing = <M extends Model<any>>(
@@ -138,7 +139,8 @@ const argsAdvancedProcessing = <M extends Model<any>>(
   model: ModelStatic<M>,
   models: SequelizeModels
 ) => {
-  findOptions = allowOrderOnAssociations(findOptions, model)
+  const findOptionsWithFlatWhere: FindOptionsWithAttributesWhere<M> =
+    allowOrderOnAssociations(findOptions, model)
 
   // When an association uses a scope, we have to add it to the where condition by default.
   if (
@@ -146,14 +148,14 @@ const argsAdvancedProcessing = <M extends Model<any>>(
     models[info.parentType.name] &&
     (models[info.parentType.name].associations[info.fieldName] as any).scope
   ) {
-    findOptions.where = {
+    findOptionsWithFlatWhere.where = {
       ...(findOptions.where ? findOptions.where : {}),
       ...(models[info.parentType.name].associations[info.fieldName] as any)
         .scope,
     }
   }
 
-  return findOptions
+  return findOptionsWithFlatWhere
 }
 
 async function trimAndOptimizeFindOptions<M extends Model<any>>({
@@ -329,14 +331,19 @@ export default function createListResolver<M extends Model<any>>(
       context: any,
       info: any
     ) => {
-      let processedFindOptions: FindOptions<M> = argsAdvancedProcessing(
-        findOptions,
-        args,
-        context,
-        info,
-        graphqlTypeDeclaration.model,
-        models
-      )
+      if (!findOptions.where) {
+        findOptions.where = {}
+      }
+
+      let processedFindOptions: FindOptionsWithAttributesWhere<M> =
+        argsAdvancedProcessing(
+          findOptions,
+          args,
+          context,
+          info,
+          graphqlTypeDeclaration.model,
+          models
+        )
 
       if (
         graphqlTypeDeclaration.list &&
@@ -378,12 +385,13 @@ export default function createListResolver<M extends Model<any>>(
       // before hook, can mutate the findOptions
       if (listBefore) {
         const handle = globalPreCallback('listBefore')
-        const resultBefore = await listBefore({
-          findOptions: processedFindOptions,
-          args,
-          context,
-          info,
-        })
+        const resultBefore: FindOptionsWithAttributesWhere<M> =
+          await listBefore({
+            findOptions: processedFindOptions,
+            args,
+            context,
+            info,
+          })
         if (!resultBefore) {
           throw new Error(
             'The before hook of the list endpoint must return a value.'

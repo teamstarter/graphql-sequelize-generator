@@ -100,9 +100,6 @@ graphqlSchemaDeclaration.user = {
       // can can either call it or duplicate the code.
       // Or do not specify the extra arg in the count,
       // and declare it in the list, they will both user it.
-      if (typeof findOptions.where === 'undefined') {
-        findOptions.where = {}
-      }
       findOptions.where = {
         [Op.and]: [findOptions.where, { departmentId: [1] }],
       }
@@ -113,9 +110,6 @@ graphqlSchemaDeclaration.user = {
     removeUnusedAttributes: false,
     enforceMaxLimit: 50,
     before: ({ findOptions, args, context, info }) => {
-      if (typeof findOptions.where === 'undefined') {
-        findOptions.where = {}
-      }
       findOptions.where = {
         [Op.and]: [findOptions.where, { departmentId: [1] }],
       }
@@ -220,10 +214,6 @@ graphqlSchemaDeclaration.company = {
   list: {
     removeUnusedAttributes: false,
     before: ({ findOptions, args, context, info }) => {
-      if (typeof findOptions.where === 'undefined') {
-        findOptions.where = {}
-      }
-
       // This is an example of rights enforcement
       findOptions.where = {
         [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }],

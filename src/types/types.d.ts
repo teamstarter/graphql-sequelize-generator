@@ -17,6 +17,7 @@ import {
   Model,
   ModelStatic,
   Sequelize,
+  WhereAttributeHash,
 } from 'sequelize/types'
 
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
@@ -100,11 +101,13 @@ export type GlobalBeforeHook = (params: {
 }) => any | Promise<any>
 
 export type QueryBeforeHook<M extends Model<any>> = (params: {
-  findOptions: FindOptions<M>
+  findOptions: FindOptionsWithAttributesWhere<M>
   args: TArgs
   context: TContext
   info: TInfo
-}) => FindOptions<M> | Promise<FindOptions<M>>
+}) =>
+  | FindOptionsWithAttributesWhere<M>
+  | Promise<FindOptionsWithAttributesWhere<M>>
 
 export type QueryAfterHook<M extends Model<any>> = (params: {
   result: M | M[]
@@ -255,3 +258,11 @@ export type Resolver = (
   context: any,
   info: any
 ) => any | Promise<any>
+
+export type FindOptionsWithAttributesWhere<M extends Model<any>> =
+  FindOptions<any> & {
+    // In the case of GraphQL, the where is an object with attributes
+    // as functions can only be applied on attributes based on their alias.
+    // Like { '$or' : {a: 1, b: 2} }
+    where: WhereAttributeHash<M>
+  }
