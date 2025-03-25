@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.1.0...v9.2.0) (2025-03-25)
+
+
+### Features
+
+* **hooks:** Initialize the includes and limit the way they work by default to make it easier to use in hooks. ([4996577](https://github.com/teamstarter/graphql-sequelize-generator/commit/4996577))
+
+
+
 ## [9.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.0.3...v9.1.0) (2025-03-25)
 
 
