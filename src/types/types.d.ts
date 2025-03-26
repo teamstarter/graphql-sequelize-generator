@@ -9,7 +9,6 @@ import {
   GraphQLScalarType,
   GraphQLType,
 } from 'graphql'
-import { FilterFn } from 'graphql-subscriptions'
 import {
   Association,
   Filterable,
@@ -33,7 +32,6 @@ export type ExtraArg = { [key: string]: { type: GraphQLType } }
 
 export type TSource = any
 export type TArgs = { [key: string]: any }
-export type TContext = any
 export type TInfo = any
 
 export type Payload = any
@@ -64,44 +62,44 @@ export type EndpointArgs = {
   [key: string]: EnpointArg
 }
 
-export type CustomResolver = (
+export type CustomResolver<TContext = any> = (
   source: any,
   args: TArgs,
   context: TContext,
   info: TInfo
 ) => Promise<any>
 
-export type CustomMutationConfiguration = {
+export type CustomMutationConfiguration<TContext = any> = {
   type: GraphQLObjectType | GraphQLList<GraphQLObjectType>
   description?: string
   args: EndpointArgs
-  resolve: CustomResolver
+  resolve: CustomResolver<TContext>
 }
 
-export type MutationList = {
-  [key: string]: CustomMutationConfiguration
+export type MutationList<TContext = any> = {
+  [key: string]: CustomMutationConfiguration<TContext>
 }
 
-export type CustomSubscriptionConfiguration = {
+export type CustomSubscriptionConfiguration<TContext = any> = {
   type: GraphQLObjectType | GraphQLList<GraphQLObjectType>
   description?: string
   args: EndpointArgs
   subscribe: GraphQLFieldResolver<TSource, TContext, TArgs>
 }
 
-export type SubscriptionList = {
-  [key: string]: CustomSubscriptionConfiguration
+export type SubscriptionList<TContext = any> = {
+  [key: string]: CustomSubscriptionConfiguration<TContext>
 }
 
 export type setWebhookDataType = (defaultData: any) => (f: Function) => void
 
-export type GlobalBeforeHook = (params: {
+export type GlobalBeforeHook<TContext = any> = (params: {
   args: TArgs
   context: TContext
   info: TInfo
 }) => any | Promise<any>
 
-export type QueryBeforeHook<M extends Model<any>> = (params: {
+export type QueryBeforeHook<M extends Model<any>, TContext = any> = (params: {
   findOptions: FindOptionsWithAttributesWhere<M>
   args: TArgs
   context: TContext
@@ -110,21 +108,24 @@ export type QueryBeforeHook<M extends Model<any>> = (params: {
   | FindOptionsWithAttributesWhere<M>
   | Promise<FindOptionsWithAttributesWhere<M>>
 
-export type QueryAfterHook<M extends Model<any>> = (params: {
+export type QueryAfterHook<M extends Model<any>, TContext = any> = (params: {
   result: M | M[]
   args: TArgs
   context: TContext
   info: TInfo
 }) => M | M[] | Promise<M | M[]>
 
-export type MutationBeforeHook<M extends Model<any>> = (params: {
+export type MutationBeforeHook<
+  M extends Model<any>,
+  TContext = any
+> = (params: {
   source: any
   args: TArgs
   context: TContext
   info: TInfo
 }) => any | Promise<any>
 
-export type MutationAfterHook<M extends Model<any>> = (params: {
+export type MutationAfterHook<M extends Model<any>, TContext = any> = (params: {
   newEntity: M
   source: any
   args: TArgs
@@ -133,7 +134,10 @@ export type MutationAfterHook<M extends Model<any>> = (params: {
   setWebhookData?: (callback: (defaultData: any) => any) => void
 }) => M | Promise<M>
 
-export type UpdateMutationAfterHook<M extends Model<any>> = (params: {
+export type UpdateMutationAfterHook<
+  M extends Model<any>,
+  TContext = any
+> = (params: {
   updatedEntity: M
   entitySnapshot: M
   source: any
@@ -142,7 +146,10 @@ export type UpdateMutationAfterHook<M extends Model<any>> = (params: {
   info: TInfo
 }) => M | Promise<M>
 
-export type DeleteMutationBeforeHook<M extends Model<any>> = (params: {
+export type DeleteMutationBeforeHook<
+  M extends Model<any>,
+  TContext = any
+> = (params: {
   where: Filterable<M>
   source: any
   args: TArgs
@@ -150,7 +157,10 @@ export type DeleteMutationBeforeHook<M extends Model<any>> = (params: {
   info: TInfo
 }) => Filterable<M> | Promise<Filterable<M>>
 
-export type DeleteMutationAfterHook<M extends Model<any>> = (params: {
+export type DeleteMutationAfterHook<
+  M extends Model<any>,
+  TContext = any
+> = (params: {
   deletedEntity: M
   source: any
   args: TArgs
@@ -158,80 +168,83 @@ export type DeleteMutationAfterHook<M extends Model<any>> = (params: {
   info: TInfo
 }) => M | Promise<M>
 
-export type SubscriptionFilterHook = (
+export type SubscriptionFilterHook<TContext = any> = (
   payload: any,
   args: TArgs,
   context: TContext,
   info: TInfo
 ) => boolean | Promise<boolean>
 
-export type GraphqlSchemaDeclarationType = {
-  [key: string]: ModelDeclarationType<any> | GraphQLFieldConfig<any, any, any>
+export type GraphqlSchemaDeclarationType<TContext = any> = {
+  [key: string]:
+    | ModelDeclarationType<any, TContext>
+    | GraphQLFieldConfig<any, any, any>
 }
 
-export type CreateFieldDeclarationType<M extends Model<any>> = {
+export type CreateFieldDeclarationType<M extends Model<any>, TContext = any> = {
   extraArg?: Record<string, { type: GraphQLInputType }>
-  before?: MutationBeforeHook<M>
-  after?: MutationAfterHook<M>
+  before?: MutationBeforeHook<M, TContext>
+  after?: MutationAfterHook<M, TContext>
   preventDuplicateOnAttributes?: string[]
-  subscriptionFilter?: FilterFn
+  subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
 
-export type UpdateFieldDeclarationType<M extends Model<any>> = {
+export type UpdateFieldDeclarationType<M extends Model<any>, TContext = any> = {
   extraArg?: Record<string, { type: GraphQLInputType }>
-  before?: MutationBeforeHook<M>
-  after?: UpdateMutationAfterHook<M>
-  subscriptionFilter?: FilterFn
+  before?: MutationBeforeHook<M, TContext>
+  after?: UpdateMutationAfterHook<M, TContext>
+  subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
 
-export type DeleteFieldDeclarationType<M extends Model<any>> = {
+export type DeleteFieldDeclarationType<M extends Model<any>, TContext = any> = {
   extraArg?: Record<string, { type: GraphQLInputType }>
-  before?: DeleteMutationBeforeHook<M>
-  after?: DeleteMutationAfterHook<M>
-  subscriptionFilter?: FilterFn
+  before?: DeleteMutationBeforeHook<M, TContext>
+  after?: DeleteMutationAfterHook<M, TContext>
+  subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
 
-export type ListDeclarationType<M extends Model<any>> = {
+export type ListDeclarationType<M extends Model<any>, TContext = any> = {
   removeUnusedAttributes?: boolean
   enforceMaxLimit?: number
-  before?: QueryBeforeHook<M>
-  after?: QueryAfterHook<M>
-  resolver?: Resolver
+  before?: QueryBeforeHook<M, TContext>
+  after?: QueryAfterHook<M, TContext>
+  resolver?: GraphQLFieldResolver<any, TContext>
   contextToOptions?: boolean
   extraArg?: Record<string, { type: GraphQLInputType }>
   disableOptimizationForLimitOffset?: boolean
+  subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
 
-export type ModelDeclarationType<M extends Model<any>> = {
+export type ModelDeclarationType<M extends Model<any>, TContext = any> = {
   model: ModelStatic<M>
   actions?: Action[]
   subscriptions?: Event[]
   webhooks?: WebhookType[]
-  before?: GlobalBeforeHook | GlobalBeforeHook[]
+  before?: GlobalBeforeHook<TContext> | GlobalBeforeHook<TContext>[]
   count?: {
     extraArg?: Record<string, { type: GraphQLInputType }>
-    before?: QueryBeforeHook<M>
-    after?: QueryAfterHook<M>
-    resolver?: Resolver
+    before?: QueryBeforeHook<M, TContext>
+    after?: QueryAfterHook<M, TContext>
+    resolver?: GraphQLFieldResolver<any, TContext>
   }
-  list?: ListDeclarationType<M>
+  list?: ListDeclarationType<M, TContext>
   create?:
-    | CreateFieldDeclarationType<M>
+    | CreateFieldDeclarationType<M, TContext>
     | GraphQLFieldConfig<TSource, TContext, TArgs>
   update?:
-    | UpdateFieldDeclarationType<M>
+    | UpdateFieldDeclarationType<M, TContext>
     | GraphQLFieldConfig<TSource, TContext, TArgs>
   delete?:
-    | DeleteFieldDeclarationType<M>
+    | DeleteFieldDeclarationType<M, TContext>
     | GraphQLFieldConfig<TSource, TContext, TArgs>
   excludeFields?: string[]
   excludeFromRoot?: boolean
   type?: GraphQLObjectType
-  resolve?: Resolver
+  resolve?: GraphQLFieldResolver<any, TContext>
   args?: Record<string, { type: GraphQLInputType }>
   contextToOptions?: boolean
-  additionalSubscriptions?: SubscriptionList
-  additionalMutations?: MutationList
+  additionalSubscriptions?: SubscriptionList<TContext>
+  additionalMutations?: MutationList<TContext>
 }
 
 export type SequelizeModels = { [key: string]: ModelStatic<any> } & {
@@ -242,8 +255,11 @@ export type GlobalPreCallback = (name: string) => Function | null
 
 export type Associations = { [key: string]: Association }
 
-export type GraphqlSequelizeResolverConfigType<M extends Model> = {
-  before?: QueryBeforeHook<M>
+export type GraphqlSequelizeResolverConfigType<
+  M extends Model,
+  TContext = any
+> = {
+  before?: QueryBeforeHook<M, TContext>
 }
 
 export interface GraphqlSequelizeResolverType {
@@ -252,13 +268,6 @@ export interface GraphqlSequelizeResolverType {
     | Promise<any>
   contextToOptions: any
 }
-
-export type Resolver = (
-  source: any,
-  args: any,
-  context: any,
-  info: any
-) => any | Promise<any>
 
 // This type is made to ease the developer experience when using a GSG Hook.
 // Having less configuration scenarios reduce the potential sources of bugs and improve readability.

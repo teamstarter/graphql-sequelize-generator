@@ -65,6 +65,14 @@ class Company extends Model<
   declare name: string | null
 }
 
+type TestContext = {
+  user: {
+    id: number
+    name: string
+  }
+  bootDate: number
+}
+
 graphqlSchemaDeclaration.user = {
   model: models.user,
   actions: ['list', 'create', 'delete', 'update', 'count'],
@@ -147,9 +155,9 @@ graphqlSchemaDeclaration.user = {
 
       return result
     },
-    subscriptionFilter: ({ payload, args, context }) => {
+    subscriptionFilter: (payload, args, context) => {
       // Exemple of subscription check
-      if (context.user.role !== 'admin') {
+      if (context.user.name !== 'admin') {
         return false
       }
       return true
@@ -227,7 +235,7 @@ graphqlSchemaDeclaration.user = {
       return deletedEntity
     },
   },
-} as ModelDeclarationType<User>
+} as ModelDeclarationType<User, TestContext>
 
 graphqlSchemaDeclaration.company = {
   model: models.company,
