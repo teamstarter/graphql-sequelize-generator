@@ -124,7 +124,7 @@ export default function generateMutationUpdate<M extends Model<any>>(
           const afterHandle = globalPreCallback('updateAfter')
           updatedEntity = await after({
             updatedEntity,
-            entitySnapshot: snapshotBeforeUpdate,
+            previousPropertiesSnapshot: snapshotBeforeUpdate,
             source,
             args,
             context,

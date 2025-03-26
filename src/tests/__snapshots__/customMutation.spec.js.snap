@@ -11,3 +11,40 @@ Object {
   "message": "Hello",
 }
 `;
+
+exports[`Test the custom mutations Check that you can call an additional mutation on a model 1`] = `Array []`;
+
+exports[`Test the custom mutations Check that you can call an additional mutation on a model: The anonymized log 1`] = `
+Object {
+  "id": 1,
+  "message": "Anonymized",
+}
+`;
+
+exports[`Test the custom mutations Check that you can use a completely custom create mutation 1`] = `
+Array [
+  "listGlobalBefore",
+  "customListBefore",
+  "listBefore",
+  "listAfter",
+]
+`;
+
+exports[`Test the custom mutations Check that you can use a completely custom create mutation: The created company with setup 1`] = `
+Object {
+  "departments": Array [
+    Object {
+      "id": 251,
+      "name": "Default Department",
+    },
+  ],
+  "id": 51,
+  "name": "New Company with Setup",
+  "users": Array [
+    Object {
+      "id": 25001,
+      "name": "Default User",
+    },
+  ],
+}
+`;

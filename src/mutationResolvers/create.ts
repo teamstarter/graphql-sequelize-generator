@@ -157,12 +157,12 @@ export default function generateMutationCreate<M extends Model<any>>(
           ? graphqlModelDeclaration.create.after
           : [graphqlModelDeclaration.create.after as CreateAfterHook<M>]
 
-        let updatedEntity = newEntity
-        const hookData = { data: updatedEntity.get({ plain: true }) }
+        let createdEntity = newEntity
+        const hookData = { data: createdEntity.get({ plain: true }) }
         for (const after of afterList) {
           const afterHandle = globalPreCallback('createAfter')
-          updatedEntity = await after({
-            newEntity: updatedEntity,
+          createdEntity = await after({
+            createdEntity,
             source,
             args,
             context,
@@ -176,7 +176,7 @@ export default function generateMutationCreate<M extends Model<any>>(
 
         if (pubSubInstance) {
           pubSubInstance.publish(`${modelName}Created`, {
-            [`${modelName}Created`]: updatedEntity.get(),
+            [`${modelName}Created`]: createdEntity.get(),
           })
         }
 
@@ -189,7 +189,7 @@ export default function generateMutationCreate<M extends Model<any>>(
           callWebhook
         )
 
-        return updatedEntity
+        return createdEntity
       }
 
       if (pubSubInstance) {

@@ -16,6 +16,7 @@ const {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLError,
+  GraphQLInputObjectType,
 } = require('graphql')
 const { PubSub } = require('graphql-subscriptions')
 const { defaultListArgs } = require('graphql-sequelize')
@@ -115,9 +116,6 @@ graphqlSchemaDeclaration.user = {
     enforceMaxLimit: 50,
     before: [
       ({ findOptions, args, context, info }) => {
-        if (typeof findOptions.where === 'undefined') {
-          findOptions.where = {}
-        }
         findOptions.where = {
           [Op.and]: [findOptions.where, { departmentId: [1] }],
         }
@@ -151,7 +149,14 @@ graphqlSchemaDeclaration.user = {
       return args.user
     },
     after: [
-      async ({ newEntity, source, args, context, info, setWebhookData }) => {
+      async ({
+        createdEntity,
+        source,
+        args,
+        context,
+        info,
+        setWebhookData,
+      }) => {
         // You can log what happened here
 
         setWebhookData((defaultData) => {
@@ -161,10 +166,16 @@ graphqlSchemaDeclaration.user = {
           }
         })
 
-        return newEntity
+        return createdEntity
       },
     ],
     preventDuplicateOnAttributes: ['type'],
+    subscriptionFilter: (rootValue, args, context, info) => {
+      if (args.user.name === 'Test 5 c 2') {
+        return false
+      }
+      return true
+    },
   },
   update: {
     before: [
@@ -175,7 +186,7 @@ graphqlSchemaDeclaration.user = {
     ],
     after: async ({
       updatedEntity,
-      entitySnapshot,
+      previousPropertiesSnapshot,
       source,
       args,
       context,
@@ -215,10 +226,6 @@ graphqlSchemaDeclaration.company = {
     removeUnusedAttributes: false,
     before: [
       ({ findOptions, args, context, info }) => {
-        if (typeof findOptions.where === 'undefined') {
-          findOptions.where = {}
-        }
-
         // This is an example of rights enforcement
         findOptions.where = {
           [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }],
@@ -227,7 +234,46 @@ graphqlSchemaDeclaration.company = {
       },
     ],
   },
-  // Do not add the update hooks. This enpoint is used to test the default behavior.
+  create: {
+    type: types.outputTypes.company,
+    description: 'Create a company with additional setup',
+    args: {
+      company: { type: types.inputTypes.company },
+      setupOptions: {
+        type: new GraphQLInputObjectType({
+          name: 'CompanySetupOptions',
+          fields: {
+            createDefaultDepartment: { type: GraphQLBoolean },
+            addDefaultUser: { type: GraphQLBoolean },
+          },
+        }),
+      },
+    },
+    resolve: async (source, args, context) => {
+      const { company, setupOptions } = args
+
+      // Create the company
+      const newCompany = await models.company.create(company)
+
+      // Handle additional setup if requested
+      if (setupOptions?.createDefaultDepartment) {
+        await models.department.create({
+          name: 'Default Department',
+          companyId: newCompany.id,
+        })
+      }
+
+      if (setupOptions?.addDefaultUser) {
+        await models.user.create({
+          name: 'Default User',
+          companyId: newCompany.id,
+          departmentId: 1,
+        })
+      }
+
+      return newCompany
+    },
+  },
 }
 
 graphqlSchemaDeclaration.department = {
@@ -313,6 +359,21 @@ const OddUser = new GraphQLObjectType({
 graphqlSchemaDeclaration.log = {
   model: models.log,
   actions: ['list', 'create'],
+  additionalMutations: {
+    anonymizeLog: {
+      type: types.outputTypes.log,
+      description: 'Just a random example to test the additional mutations.',
+      args: {
+        logId: { type: GraphQLString },
+      },
+      resolve: async (source, args, context) => {
+        return {
+          id: 1,
+          message: 'Anonymized',
+        }
+      },
+    },
+  },
 }
 
 // Testing the many to many relationships

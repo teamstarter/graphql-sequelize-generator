@@ -8,7 +8,7 @@ import {
   QueryBeforeHook,
 } from '../types/types'
 
-export default function countResolver<M extends Model<any>>(
+export default function countResolver<M extends Model<any>, TContext = any>(
   model: ModelStatic<M>,
   schemaDeclaration: ModelDeclarationType<M>,
   globalPreCallback: GlobalPreCallback
@@ -33,7 +33,7 @@ export default function countResolver<M extends Model<any>>(
       ? schemaDeclaration.count.before
       : listBefore
 
-  return async (source: any, args: any, context: any, info: any) => {
+  return async (source: any, args: any, context: TContext, info: any) => {
     if (schemaDeclaration.before) {
       const beforeList: GlobalBeforeHook[] = Array.isArray(
         schemaDeclaration.before
@@ -54,6 +54,14 @@ export default function countResolver<M extends Model<any>>(
       args,
       Object.keys(model.getAttributes())
     )
+
+    if (!findOptions.where) {
+      findOptions.where = {}
+    }
+
+    if (typeof findOptions.include === 'undefined') {
+      findOptions.include = []
+    }
 
     if (countBefore) {
       const beforeList: QueryBeforeHook<M>[] = Array.isArray(countBefore)

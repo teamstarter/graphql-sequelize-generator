@@ -20,7 +20,10 @@ import callModelWebhook from './callModelWebhook'
  * @param {*} models
  * @param {PubSub} pubSubInstance
  */
-export default function generateMutationDelete<M extends Model<any>>(
+export default function generateMutationDelete<
+  M extends Model<any>,
+  TContext = any
+>(
   modelName: string,
   graphqlModelDeclaration: ModelDeclarationType<M>,
   models: SequelizeModels,

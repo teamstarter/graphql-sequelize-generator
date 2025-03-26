@@ -2,6 +2,94 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.4.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.4.0...v9.4.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* **count:** Fix where and includes not initialized in the count hook like the list one. ([df10069](https://github.com/teamstarter/graphql-sequelize-generator/commit/df10069))
+
+
+
+## [9.4.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.3.0...v9.4.0) (2025-03-26)
+
+
+### Features
+
+* **hooks:** Harmonize hooks parametersnaming ([0fb5e05](https://github.com/teamstarter/graphql-sequelize-generator/commit/0fb5e05))
+
+
+
+## [9.3.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.2.0...v9.3.0) (2025-03-26)
+
+
+### Features
+
+* **hooks:** Make possible to type the context of the hooks. ([33f1859](https://github.com/teamstarter/graphql-sequelize-generator/commit/33f1859))
+
+
+
+## [9.2.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.1.0...v9.2.0) (2025-03-25)
+
+
+### Features
+
+* **hooks:** Initialize the includes and limit the way they work by default to make it easier to use in hooks. ([4996577](https://github.com/teamstarter/graphql-sequelize-generator/commit/4996577))
+
+
+
+## [9.1.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.0.3...v9.1.0) (2025-03-25)
+
+
+### Features
+
+* **list:** Improve the list resolver by initializing the where and typing it properly to avoid suggesting it could be a function while it's not possible through Graphql. ([9c6aaa2](https://github.com/teamstarter/graphql-sequelize-generator/commit/9c6aaa2))
+
+
+
+### [9.0.3](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.0.2...v9.0.3) (2025-03-24)
+
+
+### Bug Fixes
+
+* **subscription:** Fix regression. ([00ca8b6](https://github.com/teamstarter/graphql-sequelize-generator/commit/00ca8b6))
+
+
+
+### [9.0.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.0.1...v9.0.2) (2025-03-24)
+
+
+### Bug Fixes
+
+* **customHooks:** Fix create/update/delete complete overwrite. ([f6600f1](https://github.com/teamstarter/graphql-sequelize-generator/commit/f6600f1))
+
+
+
+### [9.0.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.0.0...v9.0.1) (2025-03-24)
+
+
+### Bug Fixes
+
+* **types:** Fix regression on declaration. ([d3b3545](https://github.com/teamstarter/graphql-sequelize-generator/commit/d3b3545))
+
+
+
+## [9.0.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.7.4...v9.0.0) (2025-03-24)
+
+
+### Features
+
+* **hooks:** Change global hook signature ([b15061b](https://github.com/teamstarter/graphql-sequelize-generator/commit/b15061b))
+* **hooks:** Change the signature of all the hooks to take an object instead of an array. ([bae8017](https://github.com/teamstarter/graphql-sequelize-generator/commit/bae8017))
+
+
+### BREAKING CHANGES
+
+* **hooks:** Change the signature of all the hooks to take an object instead of an array.
+* **hooks:** change global hook signature
+
+
+
 ### [8.7.4](https://github.com/teamstarter/graphql-sequelize-generator/compare/v8.7.3...v8.7.4) (2024-06-04)
 
 

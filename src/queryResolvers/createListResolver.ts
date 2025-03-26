@@ -1,13 +1,14 @@
 import { resolver } from 'graphql-sequelize'
 import { FindOptions, Model, ModelStatic, Op } from 'sequelize'
-import removeUnusedAttributes from '../removeUnusedAttributes'
+import removeUnusedAttributes from './../removeUnusedAttributes'
 import {
+  FindOptionsWithAttributesWhere,
   GlobalBeforeHook,
   ModelDeclarationType,
   QueryAfterHook,
   QueryBeforeHook,
   SequelizeModels,
-} from '../types/types'
+} from './../types/types'
 
 interface ModelInclude {
   model: ModelStatic<Model<any>>
@@ -22,9 +23,9 @@ interface ModelSort {
 function allowOrderOnAssociations<M extends Model<any>>(
   findOptions: FindOptions<M>,
   model: ModelStatic<M>
-) {
+): FindOptionsWithAttributesWhere<M> {
   if (typeof findOptions.order === 'undefined') {
-    return findOptions
+    return findOptions as FindOptionsWithAttributesWhere<M>
   }
   const processedOrder: any[] = []
 
@@ -129,7 +130,7 @@ function allowOrderOnAssociations<M extends Model<any>>(
     })
   }
   findOptions.order = processedOrder
-  return findOptions
+  return findOptions as FindOptionsWithAttributesWhere<M>
 }
 
 const argsAdvancedProcessing = <M extends Model<any>>(
@@ -140,7 +141,8 @@ const argsAdvancedProcessing = <M extends Model<any>>(
   model: ModelStatic<M>,
   models: SequelizeModels
 ) => {
-  findOptions = allowOrderOnAssociations(findOptions, model)
+  const findOptionsWithFlatWhere: FindOptionsWithAttributesWhere<M> =
+    allowOrderOnAssociations(findOptions, model)
 
   // When an association uses a scope, we have to add it to the where condition by default.
   if (
@@ -148,14 +150,14 @@ const argsAdvancedProcessing = <M extends Model<any>>(
     models[info.parentType.name] &&
     (models[info.parentType.name].associations[info.fieldName] as any).scope
   ) {
-    findOptions.where = {
+    findOptionsWithFlatWhere.where = {
       ...(findOptions.where ? findOptions.where : {}),
       ...(models[info.parentType.name].associations[info.fieldName] as any)
         .scope,
     }
   }
 
-  return findOptions
+  return findOptionsWithFlatWhere
 }
 
 async function trimAndOptimizeFindOptions<M extends Model<any>>({
@@ -288,14 +290,17 @@ async function trimAndOptimizeFindOptions<M extends Model<any>>({
   return trimedFindOptions
 }
 
-export default function createListResolver<M extends Model<any>>(
-  graphqlTypeDeclaration: ModelDeclarationType<M>,
+export default function createListResolver<
+  M extends Model<any>,
+  TContext = any
+>(
+  graphqlTypeDeclaration: ModelDeclarationType<M, TContext>,
   models: SequelizeModels,
   globalPreCallback: any,
   relation: ModelStatic<M> | null = null
 ) {
   if (graphqlTypeDeclaration?.list?.resolver) {
-    return async (source: any, args: any, context: any, info: any) => {
+    return async (source: any, args: any, context: TContext, info: any) => {
       const customResolverHandle = globalPreCallback('customListBefore')
       if (graphqlTypeDeclaration?.list?.resolver) {
         const customResult = await graphqlTypeDeclaration.list.resolver(
@@ -328,17 +333,26 @@ export default function createListResolver<M extends Model<any>>(
     before: async (
       findOptions: FindOptions<M>,
       args: any,
-      context: any,
+      context: TContext,
       info: any
     ) => {
-      let processedFindOptions: FindOptions<M> = argsAdvancedProcessing(
-        findOptions,
-        args,
-        context,
-        info,
-        graphqlTypeDeclaration.model,
-        models
-      )
+      if (!findOptions.where) {
+        findOptions.where = {}
+      }
+
+      if (typeof findOptions.include === 'undefined') {
+        findOptions.include = []
+      }
+
+      let processedFindOptions: FindOptionsWithAttributesWhere<M> =
+        argsAdvancedProcessing(
+          findOptions,
+          args,
+          context,
+          info,
+          graphqlTypeDeclaration.model,
+          models
+        )
 
       if (
         graphqlTypeDeclaration.list &&
@@ -356,11 +370,11 @@ export default function createListResolver<M extends Model<any>>(
 
       // Global hooks, cannot impact the findOptions
       if (graphqlTypeDeclaration.before) {
-        const beforeList: GlobalBeforeHook[] = Array.isArray(
+        const beforeList: GlobalBeforeHook<TContext>[] = Array.isArray(
           graphqlTypeDeclaration.before
         )
           ? graphqlTypeDeclaration.before
-          : [graphqlTypeDeclaration.before as GlobalBeforeHook]
+          : [graphqlTypeDeclaration.before as GlobalBeforeHook<TContext>]
 
         for (const before of beforeList) {
           const handle = globalPreCallback('listGlobalBefore')
@@ -379,7 +393,7 @@ export default function createListResolver<M extends Model<any>>(
 
         for (const before of beforeList) {
           const handle = globalPreCallback('listBefore')
-          const resultBefore = await before({
+          const resultBefore: FindOptionsWithAttributesWhere<M> = await before({
             findOptions: processedFindOptions,
             args,
             context,
@@ -405,7 +419,7 @@ export default function createListResolver<M extends Model<any>>(
         args,
       })
     },
-    after: async (result: M | M[], args: any, context: any, info: any) => {
+    after: async (result: M | M[], args: any, context: TContext, info: any) => {
       if (listAfter) {
         const afterList: QueryAfterHook<M>[] = Array.isArray(listAfter)
           ? listAfter
