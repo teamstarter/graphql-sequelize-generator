@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.4.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.4.0...v9.4.1) (2025-03-26)
+
+
+### Bug Fixes
+
+* **count:** Fix where and includes not initialized in the count hook like the list one. ([df10069](https://github.com/teamstarter/graphql-sequelize-generator/commit/df10069))
+
+
+
 ## [9.4.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.3.0...v9.4.0) (2025-03-26)
 
 
