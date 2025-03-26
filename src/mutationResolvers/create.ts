@@ -135,7 +135,7 @@ export default function generateMutationCreate(
         const hookData = { data: newEntity.get({ plain: true }) }
 
         const updatedEntity = await graphqlModelDeclaration.create.after({
-          newEntity,
+          createdEntity: newEntity,
           source,
           args,
           context,

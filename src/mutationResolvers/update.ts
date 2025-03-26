@@ -99,7 +99,7 @@ export default function generateMutationUpdate(
         const afterHandle = globalPreCallback('updateAfter')
         const updatedEntity = await graphqlModelDeclaration.update.after({
           updatedEntity: entity,
-          entitySnapshot: snapshotBeforeUpdate,
+          previousPropertiesSnapshot: snapshotBeforeUpdate,
           source,
           args,
           context,

@@ -171,7 +171,7 @@ graphqlSchemaDeclaration.user = {
       return args.user
     },
     after: async ({
-      newEntity,
+      createdEntity,
       source,
       args,
       context,
@@ -189,7 +189,7 @@ graphqlSchemaDeclaration.user = {
         })
       }
 
-      return newEntity
+      return createdEntity
     },
     preventDuplicateOnAttributes: ['type'],
     subscriptionFilter: (rootValue, args, context, info) => {
@@ -206,7 +206,7 @@ graphqlSchemaDeclaration.user = {
     },
     after: async ({
       updatedEntity,
-      entitySnapshot,
+      previousPropertiesSnapshot,
       source,
       args,
       context,

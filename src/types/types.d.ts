@@ -14,6 +14,7 @@ import {
   Filterable,
   FindOptions,
   Includeable,
+  InferAttributes,
   Model,
   ModelStatic,
   Sequelize,
@@ -126,7 +127,7 @@ export type MutationBeforeHook<
 }) => any | Promise<any>
 
 export type MutationAfterHook<M extends Model<any>, TContext = any> = (params: {
-  newEntity: M
+  createdEntity: M
   source: any
   args: TArgs
   context: TContext
@@ -139,7 +140,7 @@ export type UpdateMutationAfterHook<
   TContext = any
 > = (params: {
   updatedEntity: M
-  entitySnapshot: M
+  previousPropertiesSnapshot: Partial<InferAttributes<M>>
   source: any
   args: TArgs
   context: TContext
