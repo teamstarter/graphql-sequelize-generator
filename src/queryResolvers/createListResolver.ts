@@ -288,14 +288,17 @@ async function trimAndOptimizeFindOptions<M extends Model<any>>({
   return trimedFindOptions
 }
 
-export default function createListResolver<M extends Model<any>>(
-  graphqlTypeDeclaration: ModelDeclarationType<M>,
+export default function createListResolver<
+  M extends Model<any>,
+  TContext = any
+>(
+  graphqlTypeDeclaration: ModelDeclarationType<M, TContext>,
   models: SequelizeModels,
   globalPreCallback: any,
   relation: ModelStatic<M> | null = null
 ) {
   if (graphqlTypeDeclaration?.list?.resolver) {
-    return async (source: any, args: any, context: any, info: any) => {
+    return async (source: any, args: any, context: TContext, info: any) => {
       const customResolverHandle = globalPreCallback('customListBefore')
       if (graphqlTypeDeclaration?.list?.resolver) {
         const customResult = await graphqlTypeDeclaration.list.resolver(
@@ -328,7 +331,7 @@ export default function createListResolver<M extends Model<any>>(
     before: async (
       findOptions: FindOptions<M>,
       args: any,
-      context: any,
+      context: TContext,
       info: any
     ) => {
       if (!findOptions.where) {
@@ -370,7 +373,7 @@ export default function createListResolver<M extends Model<any>>(
 
       // Global hooks, cannot impact the findOptions
       if (graphqlTypeDeclaration.before) {
-        const beforeList: GlobalBeforeHook[] =
+        const beforeList: GlobalBeforeHook<TContext>[] =
           typeof graphqlTypeDeclaration.before.length !== 'undefined'
             ? (graphqlTypeDeclaration.before as GlobalBeforeHook[])
             : ([
@@ -418,7 +421,7 @@ export default function createListResolver<M extends Model<any>>(
         args,
       })
     },
-    after: async (result: M | M[], args: any, context: any, info: any) => {
+    after: async (result: M | M[], args: any, context: TContext, info: any) => {
       if (listAfter) {
         const handle = globalPreCallback('listAfter')
         const modifiedResult = await listAfter({

@@ -67,7 +67,7 @@ function getModelsFields(
                   ? schemaDeclaration.list.extraArg
                   : {}),
               },
-              resolve: generateCountResolver(
+              resolve: generateCountResolver<any, any>(
                 schemaDeclaration.model,
                 schemaDeclaration,
                 globalPreCallback
