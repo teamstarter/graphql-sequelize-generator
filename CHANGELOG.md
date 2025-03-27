@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.4.1...v9.5.0) (2025-03-27)
+
+
+### Features
+
+* **hooks:** Add an injectHooks function that can wrap the graphqlSchemaDeclaration and inject hooks proceduraly. ([b8c14a1](https://github.com/teamstarter/graphql-sequelize-generator/commit/b8c14a1))
+* **hooks:** Hooks can now be defined in array of functions in addition of simple functions. ([c51a4e7](https://github.com/teamstarter/graphql-sequelize-generator/commit/c51a4e7))
+* **hooks:** Makes all hooks chain value return. ([bfc7041](https://github.com/teamstarter/graphql-sequelize-generator/commit/bfc7041))
+
+
+
 ### [9.4.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.4.0...v9.4.1) (2025-03-26)
 
 
