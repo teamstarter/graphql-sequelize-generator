@@ -7,6 +7,7 @@ const {
   generateModelTypes,
   injectAssociations,
   resolver,
+  injectHooks,
 } = require('../../lib')
 
 const {
@@ -461,9 +462,110 @@ module.exports = (globalPreCallback, httpServer) => {
     path: '/graphql',
   })
 
+  const protectedModels = ['user', 'company']
+
   return {
     server: generateApolloServer({
-      graphqlSchemaDeclaration,
+      graphqlSchemaDeclaration: injectHooks({
+        graphqlSchemaDeclaration,
+        injectFunctions: {
+          listBefore: (models, hooks) => {
+            // Ensure the last hook enforce the rights
+            hooks.push(({ findOptions }) => {
+              if (protectedModels.includes(models.name)) {
+                findOptions.where = {
+                  [Op.and]: [findOptions.where, { id: 1 }],
+                }
+              }
+              return findOptions
+            })
+            return hooks
+          },
+          listAfter: (models, hooks) => {
+            hooks.push(({ result }) => {
+              if (Array.isArray(result)) {
+                result.forEach((item) => {
+                  if (item.name) {
+                    item.name = `[LIST] ${item.name}`
+                  }
+                })
+              }
+              return result
+            })
+            return hooks
+          },
+          createBefore: (models, hooks) => {
+            hooks.push(({ source, args, context, info }) => {
+              if (args.user && args.user.name) {
+                args.user.name = `[CREATE] ${args.user.name}`
+              }
+              return args.user
+            })
+            return hooks
+          },
+          createAfter: (models, hooks) => {
+            hooks.push(
+              ({
+                createdEntity,
+                source,
+                args,
+                context,
+                info,
+                setWebhookData,
+              }) => {
+                if (createdEntity.name) {
+                  createdEntity.name = `${createdEntity.name} [CREATED]`
+                }
+                return createdEntity
+              }
+            )
+            return hooks
+          },
+          updateBefore: (models, hooks) => {
+            hooks.push(({ source, args, context, info }) => {
+              if (args.user && args.user.name) {
+                args.user.name = `[UPDATE] ${args.user.name}`
+              }
+              return args.user
+            })
+            return hooks
+          },
+          updateAfter: (models, hooks) => {
+            hooks.push(
+              ({
+                updatedEntity,
+                previousPropertiesSnapshot,
+                source,
+                args,
+                context,
+                info,
+              }) => {
+                if (updatedEntity.name) {
+                  updatedEntity.name = `${updatedEntity.name} [UPDATED]`
+                }
+                return updatedEntity
+              }
+            )
+            return hooks
+          },
+          deleteBefore: (models, hooks) => {
+            hooks.push(({ where, source, args, context, info }) => {
+              // Add a timestamp to the where clause
+              console.log(`[DELETE] Will delete Entity ${where.id}.`)
+              return where
+            })
+            return hooks
+          },
+          deleteAfter: (models, hooks) => {
+            hooks.push(({ deletedEntity, source, args, context, info }) => {
+              // Log the deletion
+              console.log(`[DELETE] Entity ${deletedEntity.id} was deleted`)
+              return deletedEntity
+            })
+            return hooks
+          },
+        },
+      }),
       customMutations,
       types,
       models,

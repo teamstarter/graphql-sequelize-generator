@@ -25,6 +25,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql'
+import { injectHooks } from '../injectHooks'
 const { PubSub } = require('graphql-subscriptions')
 const { defaultListArgs } = require('graphql-sequelize')
 const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
@@ -486,9 +487,28 @@ module.exports = (globalPreCallback: any, httpServer: any) => {
     path: '/graphql',
   })
 
+  const protectedModels = ['user', 'company']
+
   return {
     server: generateApolloServer<{ user: any }>({
-      graphqlSchemaDeclaration,
+      graphqlSchemaDeclaration: injectHooks({
+        graphqlSchemaDeclaration,
+        injectFunctions: {
+          listBefore: (models, hooks) => {
+            // Ensure the last hook enforce the rights
+            hooks.push(({ findOptions }) => {
+              if (protectedModels.includes(models.name)) {
+                findOptions.where = {
+                  [Op.and]: [findOptions.where, { id: 1 }],
+                }
+              }
+              return findOptions
+            })
+
+            return hooks
+          },
+        },
+      }),
       customMutations,
       types,
       models,

@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test that it is possible to inject hooks for any action should inject hooks for create endpoint 1`] = `
+Object {
+  "id": 25001,
+  "name": "[CREATE] Test User [CREATED]",
+}
+`;
+
+exports[`Test that it is possible to inject hooks for any action should inject hooks for delete endpoint 1`] = `
+Array [
+  Object {
+    "id": 1,
+    "message": "The User id = 25001 was successfully deleted",
+  },
+]
+`;
+
+exports[`Test that it is possible to inject hooks for any action should inject hooks for update endpoint 1`] = `
+Object {
+  "id": 1,
+  "name": "[UPDATE] Updated User [UPDATED]",
+}
+`;
