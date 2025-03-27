@@ -25,6 +25,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql'
+import { injectHooks } from '../injectHooks'
 const { PubSub } = require('graphql-subscriptions')
 const { defaultListArgs } = require('graphql-sequelize')
 const { EXPECTED_OPTIONS_KEY } = require('dataloader-sequelize')
@@ -144,17 +145,19 @@ graphqlSchemaDeclaration.user = {
       findOptions.where = { ...findOptions.where, id: 1 }
       return findOptions
     },
-    after: ({ result, args, context, info }) => {
-      if (result && Object.hasOwnProperty.call(result, 'length')) {
-        for (const user of result as User[]) {
-          if (user.name === 'Test 5 c 2') {
-            user.name = `Mr ${user.name}`
+    after: [
+      ({ result, args, context, info }) => {
+        if (result && Object.hasOwnProperty.call(result, 'length')) {
+          for (const user of result as User[]) {
+            if (user.name === 'Test 5 c 2') {
+              user.name = `Mr ${user.name}`
+            }
           }
         }
-      }
 
-      return result
-    },
+        return result
+      },
+    ],
     subscriptionFilter: (payload, args, context) => {
       // Exemple of subscription check
       if (context.user.name !== 'admin') {
@@ -166,10 +169,12 @@ graphqlSchemaDeclaration.user = {
   // The followings hooks are just here to demo their signatures.
   // They are not required and can be omited if you don't need them.
   create: {
-    before: ({ source, args, context, info }) => {
-      // You can restrict the creation if needed
-      return args.user
-    },
+    before: [
+      ({ source, args, context, info }) => {
+        // You can restrict the creation if needed
+        return args.user
+      },
+    ],
     after: async ({
       createdEntity,
       source,
@@ -200,10 +205,12 @@ graphqlSchemaDeclaration.user = {
     },
   },
   update: {
-    before: ({ source, args, context, info }) => {
-      // You can restrict the creation if needed
-      return args.user
-    },
+    before: [
+      ({ source, args, context, info }) => {
+        // You can restrict the creation if needed
+        return args.user
+      },
+    ],
     after: async ({
       updatedEntity,
       previousPropertiesSnapshot,
@@ -218,10 +225,12 @@ graphqlSchemaDeclaration.user = {
   },
   delete: {
     extraArg: { log: { type: GraphQLBoolean } },
-    before: ({ where, source, args, context, info }) => {
-      // You can restrict the creation if needed
-      return where
-    },
+    before: [
+      ({ where, source, args, context, info }) => {
+        // You can restrict the creation if needed
+        return where
+      },
+    ],
     after: async ({ deletedEntity, source, args, context, info }) => {
       // You can log what happened here
       if (args.log) {
@@ -232,7 +241,7 @@ graphqlSchemaDeclaration.user = {
           updatedAt: date,
         })
       }
-      return deletedEntity
+      return
     },
   },
 } as ModelDeclarationType<User, TestContext>
@@ -478,9 +487,28 @@ module.exports = (globalPreCallback: any, httpServer: any) => {
     path: '/graphql',
   })
 
+  const protectedModels = ['user', 'company']
+
   return {
     server: generateApolloServer<{ user: any }>({
-      graphqlSchemaDeclaration,
+      graphqlSchemaDeclaration: injectHooks({
+        graphqlSchemaDeclaration,
+        injectFunctions: {
+          listBefore: (models, hooks) => {
+            // Ensure the last hook enforce the rights
+            hooks.push(({ findOptions }) => {
+              if (protectedModels.includes(models.name)) {
+                findOptions.where = {
+                  [Op.and]: [findOptions.where, { id: 1 }],
+                }
+              }
+              return findOptions
+            })
+
+            return hooks
+          },
+        },
+      }),
       customMutations,
       types,
       models,

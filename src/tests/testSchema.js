@@ -7,6 +7,7 @@ const {
   generateModelTypes,
   injectAssociations,
   resolver,
+  injectHooks,
 } = require('../../lib')
 
 const {
@@ -30,7 +31,7 @@ const models = require('./models')
 // From https://github.com/mickhansen/graphql-sequelize#options
 resolver.contextToOptions = { [EXPECTED_OPTIONS_KEY]: EXPECTED_OPTIONS_KEY }
 
-const graphqlSchemaDeclaration = {}
+let graphqlSchemaDeclaration = {}
 const types = generateModelTypes(models)
 const pubSubInstance = new PubSub()
 
@@ -74,47 +75,54 @@ graphqlSchemaDeclaration.user = {
     extraArg: {
       departmentId: { type: GraphQLInt },
     },
-    before: async ({ findOptions, source, args }) => {
-      // example of an extra argument usage
-      if (args.departmentId) {
-        if (!findOptions.include) {
-          findOptions.include = []
+    before: [
+      async ({ findOptions, source, args }) => {
+        // example of an extra argument usage
+        if (args.departmentId) {
+          if (!findOptions.include) {
+            findOptions.include = []
+          }
+
+          findOptions.include.push({
+            model: models.company,
+            include: [
+              {
+                model: models.department,
+                required: true,
+                where: {
+                  id: args.departmentId,
+                },
+              },
+            ],
+          })
         }
 
-        findOptions.include.push({
-          model: models.company,
-          include: [
-            {
-              model: models.department,
-              required: true,
-              where: {
-                id: args.departmentId,
-              },
-            },
-          ],
-        })
-      }
-
-      // while keeping the list logic after
-      // If you want to re-use the list before,
-      // can can either call it or duplicate the code.
-      // Or do not specify the extra arg in the count,
-      // and declare it in the list, they will both user it.
-      findOptions.where = {
-        [Op.and]: [findOptions.where, { departmentId: [1] }],
-      }
-      return findOptions
-    },
+        // while keeping the list logic after
+        // If you want to re-use the list before,
+        // can can either call it or duplicate the code.
+        // Or do not specify the extra arg in the count,
+        // and declare it in the list, they will both user it.
+        if (typeof findOptions.where === 'undefined') {
+          findOptions.where = {}
+        }
+        findOptions.where = {
+          [Op.and]: [findOptions.where, { departmentId: [1] }],
+        }
+        return findOptions
+      },
+    ],
   },
   list: {
     removeUnusedAttributes: false,
     enforceMaxLimit: 50,
-    before: ({ findOptions, args, context, info }) => {
-      findOptions.where = {
-        [Op.and]: [findOptions.where, { departmentId: [1] }],
-      }
-      return findOptions
-    },
+    before: [
+      ({ findOptions, args, context, info }) => {
+        findOptions.where = {
+          [Op.and]: [findOptions.where, { departmentId: [1] }],
+        }
+        return findOptions
+      },
+    ],
     after: ({ result, args, context, info }) => {
       if (result && Object.hasOwnProperty.call(result, 'length')) {
         for (const user of result) {
@@ -141,25 +149,27 @@ graphqlSchemaDeclaration.user = {
       // You can restrict the creation if needed
       return args.user
     },
-    after: async ({
-      createdEntity,
-      source,
-      args,
-      context,
-      info,
-      setWebhookData,
-    }) => {
-      // You can log what happened here
+    after: [
+      async ({
+        createdEntity,
+        source,
+        args,
+        context,
+        info,
+        setWebhookData,
+      }) => {
+        // You can log what happened here
 
-      setWebhookData((defaultData) => {
-        return {
-          ...defaultData,
-          gsg: 'This hook will be triggered ig gsg',
-        }
-      })
+        setWebhookData((defaultData) => {
+          return {
+            ...defaultData,
+            gsg: 'This hook will be triggered ig gsg',
+          }
+        })
 
-      return createdEntity
-    },
+        return createdEntity
+      },
+    ],
     preventDuplicateOnAttributes: ['type'],
     subscriptionFilter: (rootValue, args, context, info) => {
       if (args.user.name === 'Test 5 c 2') {
@@ -169,10 +179,12 @@ graphqlSchemaDeclaration.user = {
     },
   },
   update: {
-    before: ({ source, args, context, info }) => {
-      // You can restrict the creation if needed
-      return args.user
-    },
+    before: [
+      ({ source, args, context, info }) => {
+        // You can restrict the creation if needed
+        return args.user
+      },
+    ],
     after: async ({
       updatedEntity,
       previousPropertiesSnapshot,
@@ -213,13 +225,15 @@ graphqlSchemaDeclaration.company = {
   subscriptions: ['create', 'update'],
   list: {
     removeUnusedAttributes: false,
-    before: ({ findOptions, args, context, info }) => {
-      // This is an example of rights enforcement
-      findOptions.where = {
-        [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }],
-      }
-      return findOptions
-    },
+    before: [
+      ({ findOptions, args, context, info }) => {
+        // This is an example of rights enforcement
+        findOptions.where = {
+          [Op.and]: [findOptions.where, { id: [1, 3, 5, 7] }],
+        }
+        return findOptions
+      },
+    ],
   },
   create: {
     type: types.outputTypes.company,
@@ -438,7 +452,11 @@ graphqlSchemaDeclaration.userLocation = {
   },
 }
 
-module.exports = (globalPreCallback, httpServer) => {
+module.exports = (
+  globalPreCallback,
+  httpServer,
+  withGeneratedHooks = false
+) => {
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
     // This is the `httpServer` we created in a previous step.
@@ -447,6 +465,111 @@ module.exports = (globalPreCallback, httpServer) => {
     // serves expressMiddleware at a different path
     path: '/graphql',
   })
+
+  const protectedModels = ['user', 'company']
+
+  if (withGeneratedHooks) {
+    graphqlSchemaDeclaration = injectHooks({
+      graphqlSchemaDeclaration,
+      injectFunctions: {
+        listBefore: (models, hooks) => {
+          // Ensure the last hook enforce the rights
+          hooks.push(({ findOptions }) => {
+            if (protectedModels.includes(models.name)) {
+              findOptions.where = {
+                [Op.and]: [findOptions.where, { id: 1 }],
+              }
+            }
+            return findOptions
+          })
+          return hooks
+        },
+        listAfter: (models, hooks) => {
+          hooks.push(({ result }) => {
+            if (Array.isArray(result)) {
+              result.forEach((item) => {
+                if (item.name) {
+                  item.name = `[LIST] ${item.name}`
+                }
+              })
+            }
+            return result
+          })
+          return hooks
+        },
+        createBefore: (models, hooks) => {
+          hooks.push(({ source, args, context, info }) => {
+            if (args.user && args.user.name) {
+              args.user.name = `[CREATE] ${args.user.name}`
+            }
+            return args.user
+          })
+          return hooks
+        },
+        createAfter: (models, hooks) => {
+          hooks.push(
+            ({
+              createdEntity,
+              source,
+              args,
+              context,
+              info,
+              setWebhookData,
+            }) => {
+              if (createdEntity.name) {
+                createdEntity.name = `${createdEntity.name} [CREATED]`
+              }
+              return createdEntity
+            }
+          )
+          return hooks
+        },
+        updateBefore: (models, hooks) => {
+          hooks.push(({ source, args, context, info }) => {
+            if (args.user && args.user.name) {
+              args.user.name = `[UPDATE] ${args.user.name}`
+            }
+            return args.user
+          })
+          return hooks
+        },
+        updateAfter: (models, hooks) => {
+          hooks.push(
+            ({
+              updatedEntity,
+              previousPropertiesSnapshot,
+              source,
+              args,
+              context,
+              info,
+            }) => {
+              if (updatedEntity.name) {
+                updatedEntity.name = `${updatedEntity.name} [UPDATED]`
+              }
+              return updatedEntity
+            }
+          )
+          return hooks
+        },
+        deleteBefore: (models, hooks) => {
+          hooks.push(({ where, source, args, context, info }) => {
+            // Add a timestamp to the where clause
+            console.log(`[DELETE] Will delete Entity ${where.id}.`)
+            return where
+          })
+          return hooks
+        },
+        deleteAfter: (models, hooks) => {
+          hooks.push(({ deletedEntity, source, args, context, info }) => {
+            // Log the deletion
+            console.log(`[DELETE] Entity ${deletedEntity.id} was deleted`)
+            return deletedEntity
+          })
+          return hooks
+        },
+      },
+    })
+  }
 
   return {
     server: generateApolloServer({

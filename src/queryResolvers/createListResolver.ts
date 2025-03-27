@@ -5,6 +5,8 @@ import {
   FindOptionsWithAttributesWhere,
   GlobalBeforeHook,
   ModelDeclarationType,
+  QueryAfterHook,
+  QueryBeforeHook,
   SequelizeModels,
 } from './../types/types'
 
@@ -357,13 +359,8 @@ export default function createListResolver<
         graphqlTypeDeclaration.list.enforceMaxLimit
       ) {
         if (
-          // If the limit is not set, nullish or bigger than the max limit
-          // we enforce it.
           (!findOptions.limit ||
             findOptions.limit > graphqlTypeDeclaration.list.enforceMaxLimit) &&
-          // Except if the limit is not on the root query
-          // This is because the limit of sub-Object linked with BelongsToMany is currently not possible
-          // See associationsFields.js L46
           info.parentType &&
           info.parentType.name === 'Root_Query'
         ) {
@@ -373,12 +370,11 @@ export default function createListResolver<
 
       // Global hooks, cannot impact the findOptions
       if (graphqlTypeDeclaration.before) {
-        const beforeList: GlobalBeforeHook<TContext>[] =
-          typeof graphqlTypeDeclaration.before.length !== 'undefined'
-            ? (graphqlTypeDeclaration.before as GlobalBeforeHook[])
-            : ([
-                graphqlTypeDeclaration.before as GlobalBeforeHook,
-              ] as GlobalBeforeHook[])
+        const beforeList: GlobalBeforeHook<TContext>[] = Array.isArray(
+          graphqlTypeDeclaration.before
+        )
+          ? graphqlTypeDeclaration.before
+          : [graphqlTypeDeclaration.before as GlobalBeforeHook<TContext>]
 
         for (const before of beforeList) {
           const handle = globalPreCallback('listGlobalBefore')
@@ -391,25 +387,27 @@ export default function createListResolver<
 
       // before hook, can mutate the findOptions
       if (listBefore) {
-        const handle = globalPreCallback('listBefore')
-        const resultBefore: FindOptionsWithAttributesWhere<M> =
-          await listBefore({
+        const beforeList: QueryBeforeHook<M>[] = Array.isArray(listBefore)
+          ? listBefore
+          : [listBefore as QueryBeforeHook<M>]
+
+        for (const before of beforeList) {
+          const handle = globalPreCallback('listBefore')
+          const resultBefore: FindOptionsWithAttributesWhere<M> = await before({
             findOptions: processedFindOptions,
             args,
             context,
             info,
           })
-        if (!resultBefore) {
-          throw new Error(
-            'The before hook of the list endpoint must return a value.'
-          )
-        }
-
-        // The list overwrite the findOptions
-        processedFindOptions = resultBefore
-
-        if (handle) {
-          handle()
+          if (!resultBefore) {
+            throw new Error(
+              'The before hook of the list endpoint must return a value.'
+            )
+          }
+          processedFindOptions = resultBefore
+          if (handle) {
+            handle()
+          }
         }
       }
 
@@ -423,15 +421,22 @@ export default function createListResolver<
     },
     after: async (result: M | M[], args: any, context: TContext, info: any) => {
       if (listAfter) {
-        const handle = globalPreCallback('listAfter')
-        const modifiedResult = await listAfter({
-          result,
-          args,
-          context,
-          info,
-        })
-        if (handle) {
-          handle()
+        const afterList: QueryAfterHook<M>[] = Array.isArray(listAfter)
+          ? listAfter
+          : [listAfter as QueryAfterHook<M>]
+
+        let modifiedResult = result
+        for (const after of afterList) {
+          const handle = globalPreCallback('listAfter')
+          modifiedResult = await after({
+            result: modifiedResult,
+            args,
+            context,
+            info,
+          })
+          if (handle) {
+            handle()
+          }
         }
         return modifiedResult
       }

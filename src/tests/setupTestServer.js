@@ -9,7 +9,11 @@ const { json } = require('body-parser')
 const { migrateDatabase, seedDatabase } = require('./testDatabase.js')
 const models = require('./models/index.js')
 
-const createServer = async (options = {}, globalPreCallback = () => null) => {
+const createServer = async (
+  options = {},
+  globalPreCallback = () => null,
+  withGeneratedHooks = false
+) => {
   const app = express()
   options = {
     spdy: { plain: true },
@@ -17,7 +21,11 @@ const createServer = async (options = {}, globalPreCallback = () => null) => {
   }
   const httpServer = http.createServer(options, app)
 
-  const { server } = setupServer(globalPreCallback, httpServer)
+  const { server } = setupServer(
+    globalPreCallback,
+    httpServer,
+    withGeneratedHooks
+  )
   await server.start()
   app.use(
     '/graphql',

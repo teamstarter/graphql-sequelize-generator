@@ -13,6 +13,7 @@ import {
   Association,
   Filterable,
   FindOptions,
+  GroupedCountResultItem,
   Includeable,
   InferAttributes,
   Model,
@@ -116,6 +117,16 @@ export type QueryAfterHook<M extends Model<any>, TContext = any> = (params: {
   info: TInfo
 }) => M | M[] | Promise<M | M[]>
 
+export type CountAfterHook<M extends Model<any>, TContext = any> = (params: {
+  result: number | GroupedCountResultItem[]
+  args: TArgs
+  context: TContext
+  info: TInfo
+}) =>
+  | Promise<number | GroupedCountResultItem[]>
+  | number
+  | GroupedCountResultItem[]
+
 export type MutationBeforeHook<
   M extends Model<any>,
   TContext = any
@@ -176,39 +187,45 @@ export type SubscriptionFilterHook<TContext = any> = (
   info: TInfo
 ) => boolean | Promise<boolean>
 
+export type SubscriptionFilter = (params: {
+  payload: any
+  args: any
+  context: any
+}) => boolean
+
+export type CreateFieldDeclarationType<M extends Model<any>, TContext = any> = {
+  before?: CreateBeforeHook<M, TContext> | CreateBeforeHook<M, TContext>[]
+  after?: CreateAfterHook<M, TContext> | CreateAfterHook<M, TContext>[]
+  extraArg?: Record<string, { type: GraphQLInputType }>
+  subscriptionFilter?: SubscriptionFilterHook<TContext>
+  preventDuplicateOnAttributes?: string[]
+}
+
 export type GraphqlSchemaDeclarationType<TContext = any> = {
   [key: string]:
     | ModelDeclarationType<any, TContext>
     | GraphQLFieldConfig<any, any, any>
 }
 
-export type CreateFieldDeclarationType<M extends Model<any>, TContext = any> = {
-  extraArg?: Record<string, { type: GraphQLInputType }>
-  before?: MutationBeforeHook<M, TContext>
-  after?: MutationAfterHook<M, TContext>
-  preventDuplicateOnAttributes?: string[]
-  subscriptionFilter?: SubscriptionFilterHook<TContext>
-}
-
 export type UpdateFieldDeclarationType<M extends Model<any>, TContext = any> = {
+  before?: UpdateBeforeHook<M, TContext> | UpdateBeforeHook<M, TContext>[]
+  after?: UpdateAfterHook<M, TContext> | UpdateAfterHook<M, TContext>[]
   extraArg?: Record<string, { type: GraphQLInputType }>
-  before?: MutationBeforeHook<M, TContext>
-  after?: UpdateMutationAfterHook<M, TContext>
   subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
 
 export type DeleteFieldDeclarationType<M extends Model<any>, TContext = any> = {
+  before?: DeleteBeforeHook<M, TContext> | DeleteBeforeHook<M, TContext>[]
+  after?: DeleteAfterHook<M, TContext> | DeleteAfterHook<M, TContext>[]
   extraArg?: Record<string, { type: GraphQLInputType }>
-  before?: DeleteMutationBeforeHook<M, TContext>
-  after?: DeleteMutationAfterHook<M, TContext>
   subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
 
 export type ListDeclarationType<M extends Model<any>, TContext = any> = {
   removeUnusedAttributes?: boolean
   enforceMaxLimit?: number
-  before?: QueryBeforeHook<M, TContext>
-  after?: QueryAfterHook<M, TContext>
+  before?: QueryBeforeHook<M, TContext> | QueryBeforeHook<M, TContext>[]
+  after?: QueryAfterHook<M, TContext> | QueryAfterHook<M, TContext>[]
   resolver?: GraphQLFieldResolver<any, TContext>
   contextToOptions?: boolean
   extraArg?: Record<string, { type: GraphQLInputType }>
@@ -224,8 +241,8 @@ export type ModelDeclarationType<M extends Model<any>, TContext = any> = {
   before?: GlobalBeforeHook<TContext> | GlobalBeforeHook<TContext>[]
   count?: {
     extraArg?: Record<string, { type: GraphQLInputType }>
-    before?: QueryBeforeHook<M, TContext>
-    after?: QueryAfterHook<M, TContext>
+    before?: QueryBeforeHook<M, TContext> | QueryBeforeHook<M, TContext>[]
+    after?: CountAfterHook<M, TContext> | CountAfterHook<M, TContext>[]
     resolver?: GraphQLFieldResolver<any, TContext>
   }
   list?: ListDeclarationType<M, TContext>
@@ -269,6 +286,61 @@ export interface GraphqlSequelizeResolverType {
     | Promise<any>
   contextToOptions: any
 }
+
+export type Resolver = (
+  source: any,
+  args: any,
+  context: any,
+  info: any
+) => any | Promise<any>
+
+export type CreateBeforeHook<M extends Model<any>, TContext = any> = (params: {
+  source: any
+  args: any
+  context: TContext
+  info: any
+}) => Promise<any> | any
+
+export type CreateAfterHook<M extends Model<any>, TContext = any> = (params: {
+  createdEntity: M
+  source: any
+  args: any
+  context: TContext
+  info: any
+  setWebhookData: (callback: (defaultData: any) => any) => void
+}) => Promise<M> | M
+
+export type UpdateBeforeHook<M extends Model<any>, TContext = any> = (params: {
+  source: any
+  args: any
+  context: TContext
+  info: any
+}) => Promise<any> | any
+
+export type UpdateAfterHook<M extends Model<any>, TContext = any> = (params: {
+  updatedEntity: M
+  previousPropertiesSnapshot: Partial<InferAttributes<M>>
+  source: any
+  args: any
+  context: TContext
+  info: any
+}) => Promise<M> | M
+
+export type DeleteBeforeHook<M extends Model<any>, TContext = any> = (params: {
+  where: Filterable<M>
+  source: any
+  args: any
+  context: TContext
+  info: any
+}) => Promise<Filterable<M>> | Filterable<M>
+
+export type DeleteAfterHook<M extends Model<any>, TContext = any> = (params: {
+  deletedEntity: M
+  source: any
+  args: any
+  context: TContext
+  info: any
+}) => Promise<void> | void
 
 // This type is made to ease the developer experience when using a GSG Hook.
 // Having less configuration scenarios reduce the potential sources of bugs and improve readability.
