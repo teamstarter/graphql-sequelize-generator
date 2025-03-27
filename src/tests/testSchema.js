@@ -31,7 +31,7 @@ const models = require('./models')
 // From https://github.com/mickhansen/graphql-sequelize#options
 resolver.contextToOptions = { [EXPECTED_OPTIONS_KEY]: EXPECTED_OPTIONS_KEY }
 
-const graphqlSchemaDeclaration = {}
+let graphqlSchemaDeclaration = {}
 const types = generateModelTypes(models)
 const pubSubInstance = new PubSub()
 
@@ -452,7 +452,11 @@ graphqlSchemaDeclaration.userLocation = {
   },
 }
 
-module.exports = (globalPreCallback, httpServer) => {
+module.exports = (
+  globalPreCallback,
+  httpServer,
+  withGeneratedHooks = false
+) => {
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
     // This is the `httpServer` we created in a previous step.
@@ -464,108 +468,112 @@ module.exports = (globalPreCallback, httpServer) => {
 
   const protectedModels = ['user', 'company']
 
+  if (withGeneratedHooks) {
+    graphqlSchemaDeclaration = injectHooks({
+      graphqlSchemaDeclaration,
+      injectFunctions: {
+        listBefore: (models, hooks) => {
+          // Ensure the last hook enforce the rights
+          hooks.push(({ findOptions }) => {
+            if (protectedModels.includes(models.name)) {
+              findOptions.where = {
+                [Op.and]: [findOptions.where, { id: 1 }],
+              }
+            }
+            return findOptions
+          })
+          return hooks
+        },
+        listAfter: (models, hooks) => {
+          hooks.push(({ result }) => {
+            if (Array.isArray(result)) {
+              result.forEach((item) => {
+                if (item.name) {
+                  item.name = `[LIST] ${item.name}`
+                }
+              })
+            }
+            return result
+          })
+          return hooks
+        },
+        createBefore: (models, hooks) => {
+          hooks.push(({ source, args, context, info }) => {
+            if (args.user && args.user.name) {
+              args.user.name = `[CREATE] ${args.user.name}`
+            }
+            return args.user
+          })
+          return hooks
+        },
+        createAfter: (models, hooks) => {
+          hooks.push(
+            ({
+              createdEntity,
+              source,
+              args,
+              context,
+              info,
+              setWebhookData,
+            }) => {
+              if (createdEntity.name) {
+                createdEntity.name = `${createdEntity.name} [CREATED]`
+              }
+              return createdEntity
+            }
+          )
+          return hooks
+        },
+        updateBefore: (models, hooks) => {
+          hooks.push(({ source, args, context, info }) => {
+            if (args.user && args.user.name) {
+              args.user.name = `[UPDATE] ${args.user.name}`
+            }
+            return args.user
+          })
+          return hooks
+        },
+        updateAfter: (models, hooks) => {
+          hooks.push(
+            ({
+              updatedEntity,
+              previousPropertiesSnapshot,
+              source,
+              args,
+              context,
+              info,
+            }) => {
+              if (updatedEntity.name) {
+                updatedEntity.name = `${updatedEntity.name} [UPDATED]`
+              }
+              return updatedEntity
+            }
+          )
+          return hooks
+        },
+        deleteBefore: (models, hooks) => {
+          hooks.push(({ where, source, args, context, info }) => {
+            // Add a timestamp to the where clause
+            console.log(`[DELETE] Will delete Entity ${where.id}.`)
+            return where
+          })
+          return hooks
+        },
+        deleteAfter: (models, hooks) => {
+          hooks.push(({ deletedEntity, source, args, context, info }) => {
+            // Log the deletion
+            console.log(`[DELETE] Entity ${deletedEntity.id} was deleted`)
+            return deletedEntity
+          })
+          return hooks
+        },
+      },
+    })
+  }
+
   return {
     server: generateApolloServer({
-      graphqlSchemaDeclaration: injectHooks({
-        graphqlSchemaDeclaration,
-        injectFunctions: {
-          listBefore: (models, hooks) => {
-            // Ensure the last hook enforce the rights
-            hooks.push(({ findOptions }) => {
-              if (protectedModels.includes(models.name)) {
-                findOptions.where = {
-                  [Op.and]: [findOptions.where, { id: 1 }],
-                }
-              }
-              return findOptions
-            })
-            return hooks
-          },
-          listAfter: (models, hooks) => {
-            hooks.push(({ result }) => {
-              if (Array.isArray(result)) {
-                result.forEach((item) => {
-                  if (item.name) {
-                    item.name = `[LIST] ${item.name}`
-                  }
-                })
-              }
-              return result
-            })
-            return hooks
-          },
-          createBefore: (models, hooks) => {
-            hooks.push(({ source, args, context, info }) => {
-              if (args.user && args.user.name) {
-                args.user.name = `[CREATE] ${args.user.name}`
-              }
-              return args.user
-            })
-            return hooks
-          },
-          createAfter: (models, hooks) => {
-            hooks.push(
-              ({
-                createdEntity,
-                source,
-                args,
-                context,
-                info,
-                setWebhookData,
-              }) => {
-                if (createdEntity.name) {
-                  createdEntity.name = `${createdEntity.name} [CREATED]`
-                }
-                return createdEntity
-              }
-            )
-            return hooks
-          },
-          updateBefore: (models, hooks) => {
-            hooks.push(({ source, args, context, info }) => {
-              if (args.user && args.user.name) {
-                args.user.name = `[UPDATE] ${args.user.name}`
-              }
-              return args.user
-            })
-            return hooks
-          },
-          updateAfter: (models, hooks) => {
-            hooks.push(
-              ({
-                updatedEntity,
-                previousPropertiesSnapshot,
-                source,
-                args,
-                context,
-                info,
-              }) => {
-                if (updatedEntity.name) {
-                  updatedEntity.name = `${updatedEntity.name} [UPDATED]`
-                }
-                return updatedEntity
-              }
-            )
-            return hooks
-          },
-          deleteBefore: (models, hooks) => {
-            hooks.push(({ where, source, args, context, info }) => {
-              // Add a timestamp to the where clause
-              console.log(`[DELETE] Will delete Entity ${where.id}.`)
-              return where
-            })
-            return hooks
-          },
-          deleteAfter: (models, hooks) => {
-            hooks.push(({ deletedEntity, source, args, context, info }) => {
-              // Log the deletion
-              console.log(`[DELETE] Entity ${deletedEntity.id} was deleted`)
-              return deletedEntity
-            })
-            return hooks
-          },
-        },
-      }),
+      graphqlSchemaDeclaration,
       customMutations,
       types,
       models,

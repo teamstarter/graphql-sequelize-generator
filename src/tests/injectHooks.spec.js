@@ -13,7 +13,7 @@ describe('Test that it is possible to inject hooks for any action', () => {
   }
 
   beforeAll(async () => {
-    server = await createServer({}, globalPreCallback)
+    server = await createServer({}, globalPreCallback, true)
   })
 
   afterAll(() => closeServer(server))
