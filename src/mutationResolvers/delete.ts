@@ -81,16 +81,19 @@ export default function generateMutationDelete<
             context,
             info,
           })
+
+          // The return value of the before hook is used as the where for the next hook
           if (result) {
             where = result
           }
+
           if (beforeHandle) {
             beforeHandle()
           }
         }
       }
 
-      const entity = await models[modelName].findOne({
+      let entity = await models[modelName].findOne({
         where,
       } as FindOptions<M>)
 
@@ -122,7 +125,7 @@ export default function generateMutationDelete<
 
         for (const after of afterList) {
           const afterHandle = globalPreCallback('deleteAfter')
-          await after({
+          entity = await after({
             deletedEntity: entity,
             source,
             args,

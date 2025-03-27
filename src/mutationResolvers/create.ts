@@ -90,6 +90,9 @@ export default function generateMutationCreate<M extends Model<any>>(
             info,
           })
 
+          // The return value of the before hook is used as the attributes for the next hook
+          args[modelName] = attributes
+
           if (!attributes) {
             throw new Error(
               'The before hook must always return the create method first parameter.'

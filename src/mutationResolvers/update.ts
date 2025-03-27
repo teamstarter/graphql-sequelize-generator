@@ -85,6 +85,10 @@ export default function generateMutationUpdate<M extends Model<any>>(
             context,
             info,
           })
+
+          // The return value of the before hook is used as the attributes for the next hook
+          args[modelName] = data
+
           if (beforeHandle) {
             beforeHandle()
           }
