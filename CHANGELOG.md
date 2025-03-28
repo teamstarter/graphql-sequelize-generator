@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.5.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.5.1...v9.5.2) (2025-03-28)
+
+
+### Bug Fixes
+
+* **types:** Fix missing injectHooks signature in the exported types. ([d49b79f](https://github.com/teamstarter/graphql-sequelize-generator/commit/d49b79f))
+
+
+
 ### [9.5.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.5.0...v9.5.1) (2025-03-28)
 
 
