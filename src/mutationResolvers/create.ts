@@ -75,13 +75,13 @@ export default function generateMutationCreate<M extends Model<any>>(
         'before' in graphqlModelDeclaration.create &&
         graphqlModelDeclaration.create.before
       ) {
-        const beforeList: CreateBeforeHook<M>[] = Array.isArray(
+        const beforeCreate: CreateBeforeHook<M>[] = Array.isArray(
           graphqlModelDeclaration.create.before
         )
           ? graphqlModelDeclaration.create.before
           : [graphqlModelDeclaration.create.before as CreateBeforeHook<M>]
 
-        for (const before of beforeList) {
+        for (const before of beforeCreate) {
           const beforeHandle = globalPreCallback('createBefore')
           attributes = await before({
             source,

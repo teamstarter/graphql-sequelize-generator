@@ -452,6 +452,26 @@ graphqlSchemaDeclaration.userLocation = {
   },
 }
 
+graphqlSchemaDeclaration.session = {
+  model: models.session,
+  actions: ['list'],
+  list: {
+    resolver: async (source, args, context, info) => {
+      console.log('Custom resolver called')
+      const sessions = await models.session.findAll({
+        include: [
+          {
+            model: models.user,
+            as: 'user',
+          },
+        ],
+      })
+      console.log('Found sessions:', sessions.length)
+      return sessions
+    },
+  },
+}
+
 module.exports = (
   globalPreCallback,
   httpServer,

@@ -20,6 +20,7 @@ describe('Test that it is possible to inject hooks for any action', () => {
 
   beforeEach(async () => {
     trace = []
+    await deleteTables()
     await resetDb()
   })
 
@@ -46,7 +47,35 @@ describe('Test that it is possible to inject hooks for any action', () => {
     expect(users.length).toBe(0)
   })
 
+  it('should respect custom list resolver over injected hooks', async () => {
+    // Query the sessions with the custom resolver
+    const response = await request(server)
+      .get(
+        `/graphql?query=
+          query getSessions {
+            sessions: session {
+              id
+              lastActiveAt
+              user {
+                id
+                name
+              }
+            }
+          }
+          &operationName=getSessions`
+      )
+      .set('userId', 1)
+
+    expect(response.body.errors).toBeUndefined()
+    const sessions = response.body.data.sessions
+    // The custom resolver should return all sessions, including those for user 2
+    // even though the injected hooks would normally filter out user 2
+    expect(sessions.length).toBe(2)
+    expect(sessions.some((session) => session.user.id === 2)).toBe(true)
+  })
+
   it('should inject hooks for create endpoint', async () => {
+    console.log('Starting create user test')
     const response = await request(server)
       .post('/graphql')
       .send({
@@ -67,6 +96,7 @@ describe('Test that it is possible to inject hooks for any action', () => {
       .set('userId', 1)
     expect(response.body.errors).toBeUndefined()
     const createdUser = response.body.data.userCreate
+    console.log('Created user:', createdUser)
     expect(createdUser).toMatchSnapshot()
   })
 
