@@ -241,7 +241,7 @@ graphqlSchemaDeclaration.user = {
           updatedAt: date,
         })
       }
-      return
+      return deletedEntity
     },
   },
 } as ModelDeclarationType<User, TestContext>

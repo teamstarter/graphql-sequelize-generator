@@ -340,7 +340,7 @@ export type DeleteAfterHook<M extends Model<any>, TContext = any> = (params: {
   args: any
   context: TContext
   info: any
-}) => Promise<void> | void
+}) => Promise<M> | M
 
 // This type is made to ease the developer experience when using a GSG Hook.
 // Having less configuration scenarios reduce the potential sources of bugs and improve readability.
