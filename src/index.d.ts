@@ -11,6 +11,7 @@ import {
   GlobalPreCallback,
   GraphqlSchemaDeclarationType,
   InAndOutTypes,
+  InjectHooksOptions,
   ModelDeclarationType,
   MutationList,
   OutputTypes,
@@ -77,3 +78,7 @@ export function injectAssociations(
   globalPreCallback: GlobalPreCallback,
   proxyModelName: string | null
 ): GraphQLObjectType
+export function injectHooks({
+  graphqlSchemaDeclaration,
+  injectFunctions,
+}: InjectHooksOptions): GraphqlSchemaDeclarationType

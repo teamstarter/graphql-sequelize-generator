@@ -356,3 +356,41 @@ export type FindOptionsWithAttributesWhere<M extends Model<any>> =
     // without having to check if it's an array or not.
     include: Includeable[]
   }
+
+export type InjectHooksOptions = {
+  graphqlSchemaDeclaration: GraphqlSchemaDeclarationType<any>
+  injectFunctions: {
+    listBefore?: (
+      model: ModelStatic<any>,
+      hooks: QueryBeforeHook<any>[]
+    ) => QueryBeforeHook<any>[]
+    listAfter?: (
+      model: ModelStatic<any>,
+      hooks: QueryAfterHook<any>[]
+    ) => QueryAfterHook<any>[]
+    updateBefore?: (
+      model: ModelStatic<any>,
+      hooks: UpdateBeforeHook<any>[]
+    ) => UpdateBeforeHook<any>[]
+    updateAfter?: (
+      model: ModelStatic<any>,
+      hooks: UpdateAfterHook<any>[]
+    ) => UpdateAfterHook<any>[]
+    createBefore?: (
+      model: ModelStatic<any>,
+      hooks: CreateBeforeHook<any>[]
+    ) => CreateBeforeHook<any>[]
+    createAfter?: (
+      model: ModelStatic<any>,
+      hooks: CreateAfterHook<any>[]
+    ) => CreateAfterHook<any>[]
+    deleteBefore?: (
+      model: ModelStatic<any>,
+      hooks: DeleteBeforeHook<any>[]
+    ) => DeleteBeforeHook<any>[]
+    deleteAfter?: (
+      model: ModelStatic<any>,
+      hooks: DeleteAfterHook<any>[]
+    ) => DeleteAfterHook<any>[]
+  }
+}

@@ -1,4 +1,3 @@
-import { ModelStatic } from 'sequelize'
 import {
   CreateAfterHook,
   CreateBeforeHook,
@@ -7,6 +6,7 @@ import {
   DeleteBeforeHook,
   DeleteFieldDeclarationType,
   GraphqlSchemaDeclarationType,
+  InjectHooksOptions,
   QueryAfterHook,
   QueryBeforeHook,
   UpdateAfterHook,
@@ -19,43 +19,7 @@ import {
 export function injectHooks({
   graphqlSchemaDeclaration,
   injectFunctions,
-}: {
-  graphqlSchemaDeclaration: GraphqlSchemaDeclarationType<any>
-  injectFunctions: {
-    listBefore?: (
-      model: ModelStatic<any>,
-      hooks: QueryBeforeHook<any>[]
-    ) => QueryBeforeHook<any>[]
-    listAfter?: (
-      model: ModelStatic<any>,
-      hooks: QueryAfterHook<any>[]
-    ) => QueryAfterHook<any>[]
-    updateBefore?: (
-      model: ModelStatic<any>,
-      hooks: UpdateBeforeHook<any>[]
-    ) => UpdateBeforeHook<any>[]
-    updateAfter?: (
-      model: ModelStatic<any>,
-      hooks: UpdateAfterHook<any>[]
-    ) => UpdateAfterHook<any>[]
-    createBefore?: (
-      model: ModelStatic<any>,
-      hooks: CreateBeforeHook<any>[]
-    ) => CreateBeforeHook<any>[]
-    createAfter?: (
-      model: ModelStatic<any>,
-      hooks: CreateAfterHook<any>[]
-    ) => CreateAfterHook<any>[]
-    deleteBefore?: (
-      model: ModelStatic<any>,
-      hooks: DeleteBeforeHook<any>[]
-    ) => DeleteBeforeHook<any>[]
-    deleteAfter?: (
-      model: ModelStatic<any>,
-      hooks: DeleteAfterHook<any>[]
-    ) => DeleteAfterHook<any>[]
-  }
-}): GraphqlSchemaDeclarationType<any> {
+}: InjectHooksOptions): GraphqlSchemaDeclarationType<any> {
   for (const key in graphqlSchemaDeclaration) {
     const declaration = graphqlSchemaDeclaration[key]
 
