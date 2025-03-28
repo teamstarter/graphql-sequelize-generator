@@ -24,7 +24,7 @@ function injectListHooks<T extends Model<any, any>>(
   }
 
   // If the list is resolved by a custom function, we don't need to inject hooks
-  if (declaration.list.resolve) {
+  if (declaration?.list?.resolve) {
     return
   }
 
@@ -57,13 +57,13 @@ function injectUpdateHooks<T extends Model<any, any>>(
 ) {
   if (!declaration.actions?.includes('update')) return
 
-  if (!declaration.update || 'type' in declaration.update) {
-    declaration.update = {} as UpdateFieldDeclarationType<T>
+  // If the update is resolved by a custom function, we don't need to inject hooks
+  if (declaration?.update?.resolve) {
+    return
   }
 
-  // If the update is resolved by a custom function, we don't need to inject hooks
-  if (declaration.update.resolve) {
-    return
+  if (!declaration.update) {
+    declaration.update = {} as UpdateFieldDeclarationType<T>
   }
 
   const beforeUpdate: UpdateBeforeHook<T>[] = Array.isArray(
@@ -97,13 +97,13 @@ function injectCreateHooks<T extends Model<any, any>>(
 ) {
   if (!declaration.actions?.includes('create')) return
 
-  if (!declaration.create || 'type' in declaration.create) {
-    declaration.create = {} as CreateFieldDeclarationType<T>
+  // If the create is resolved by a custom function, we don't need to inject hooks
+  if (declaration?.create?.resolve) {
+    return
   }
 
-  // If the create is resolved by a custom function, we don't need to inject hooks
-  if (declaration.list.create) {
-    return
+  if (!declaration.create) {
+    declaration.create = {} as CreateFieldDeclarationType<T>
   }
 
   const beforeCreate: CreateBeforeHook<T>[] = Array.isArray(
@@ -137,13 +137,13 @@ function injectDeleteHooks<T extends Model<any, any>>(
 ) {
   if (!declaration.actions?.includes('delete')) return
 
-  if (!declaration.delete || 'type' in declaration.delete) {
-    declaration.delete = {} as DeleteFieldDeclarationType<T>
+  // If the delete is resolved by a custom function, we don't need to inject hooks
+  if (declaration?.delete?.resolve) {
+    return
   }
 
-  // If the delete is resolved by a custom function, we don't need to inject hooks
-  if (declaration.delete.resolve) {
-    return
+  if (!declaration.delete) {
+    declaration.delete = {} as DeleteFieldDeclarationType<T>
   }
 
   const beforeDelete: DeleteBeforeHook<T>[] = Array.isArray(
