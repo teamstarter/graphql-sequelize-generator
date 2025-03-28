@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.5.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.5.0...v9.5.1) (2025-03-28)
+
+
+### Bug Fixes
+
+* **hooks:** Fix delete hook return type to allow chaining ([89b79d7](https://github.com/teamstarter/graphql-sequelize-generator/commit/89b79d7))
+
+
+
 ## [9.5.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.4.1...v9.5.0) (2025-03-27)
 
 
