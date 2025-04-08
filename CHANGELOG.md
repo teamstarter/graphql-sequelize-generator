@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.6.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.5.4...v9.6.0) (2025-04-08)
+
+
+### Features
+
+* **hooks:** Rename all hooks to make each one use an unique attribute (for AI performances), and introduce beforeFetch hooks. ([3ccd51f](https://github.com/teamstarter/graphql-sequelize-generator/commit/3ccd51f))
+
+
+
 ### [9.5.4](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.5.3...v9.5.4) (2025-03-28)
 
 
