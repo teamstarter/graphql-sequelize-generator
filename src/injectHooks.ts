@@ -1,104 +1,165 @@
+import { GraphQLFieldConfig } from 'graphql'
 import { Model } from 'sequelize'
 import {
   CreateAfterHook,
   CreateBeforeHook,
   CreateFieldDeclarationType,
   DeleteAfterHook,
+  DeleteBeforeFetchHook,
   DeleteBeforeHook,
   DeleteFieldDeclarationType,
   GraphqlSchemaDeclarationType,
   InjectHooksOptions,
+  ModelDeclarationType,
   QueryAfterHook,
   QueryBeforeHook,
   UpdateAfterHook,
+  UpdateBeforeFetchHook,
   UpdateBeforeHook,
   UpdateFieldDeclarationType,
 } from './types/types'
 
 function injectListHooks<T extends Model<any, any>>(
-  declaration: any,
+  declaration:
+    | ModelDeclarationType<any, any>
+    | GraphQLFieldConfig<any, any, any>,
   injectFunctions: InjectHooksOptions['injectFunctions']
 ) {
+  // If the list is resolved by a custom function, we don't need to inject hooks
+  if (
+    'type' in declaration ||
+    (declaration?.list && 'resolve' in declaration?.list)
+  ) {
+    return
+  }
+
   if (!declaration.list) {
     declaration.list = {}
   }
 
-  // If the list is resolved by a custom function, we don't need to inject hooks
-  if (declaration?.list?.resolve) {
-    return
-  }
-
   const beforeList: QueryBeforeHook<T>[] = Array.isArray(
-    declaration.list.before
+    declaration.list.beforeList
   )
-    ? declaration.list.before
-    : declaration.list.before
-    ? [declaration.list.before as QueryBeforeHook<T>]
+    ? declaration.list.beforeList
+    : declaration.list.beforeList
+    ? [declaration.list.beforeList as QueryBeforeHook<T>]
     : []
 
-  declaration.list.before = injectFunctions.listBefore
+  declaration.list.beforeList = injectFunctions.listBefore
     ? injectFunctions.listBefore(declaration.model, beforeList)
     : beforeList
 
-  const afterList: QueryAfterHook<T>[] = Array.isArray(declaration.list.after)
-    ? declaration.list.after
-    : declaration.list.after
-    ? [declaration.list.after as QueryAfterHook<T>]
+  const afterList: QueryAfterHook<T>[] = Array.isArray(
+    declaration.list.afterList
+  )
+    ? declaration.list.afterList
+    : declaration.list.afterList
+    ? [declaration.list.afterList as QueryAfterHook<T>]
     : []
 
-  declaration.list.after = injectFunctions.listAfter
+  declaration.list.afterList = injectFunctions.listAfter
     ? injectFunctions.listAfter(declaration.model, afterList)
     : afterList
 }
 
 function injectUpdateHooks<T extends Model<any, any>>(
-  declaration: any,
+  declaration:
+    | ModelDeclarationType<any, any>
+    | GraphQLFieldConfig<any, any, any>,
   injectFunctions: InjectHooksOptions['injectFunctions']
 ) {
-  if (!declaration.actions?.includes('update')) return
+  if ('actions' in declaration && !declaration.actions?.includes('update'))
+    return
 
   // If the update is resolved by a custom function, we don't need to inject hooks
-  if (declaration?.update?.resolve) {
+  if (
+    'update' in declaration &&
+    declaration?.update &&
+    'resolve' in declaration?.update
+  ) {
+    return
+  }
+
+  if (
+    'type' in declaration ||
+    (declaration?.update && 'resolve' in declaration?.update)
+  ) {
+    return
+  }
+
+  if (
+    'update' in declaration &&
+    declaration?.update &&
+    'resolve' in declaration?.update
+  ) {
     return
   }
 
   if (!declaration.update) {
-    declaration.update = {} as UpdateFieldDeclarationType<T>
+    declaration.update = {}
   }
 
-  const beforeUpdate: UpdateBeforeHook<T>[] = Array.isArray(
-    declaration.update.before
+  declaration.update = declaration.update as UpdateFieldDeclarationType<T, any>
+
+  const beforeUpdateFetch: UpdateBeforeFetchHook<T>[] = Array.isArray(
+    declaration.update.beforeUpdateFetch
   )
-    ? declaration.update.before
-    : declaration.update.before
-    ? [declaration.update.before as UpdateBeforeHook<T>]
+    ? declaration.update.beforeUpdateFetch
+    : declaration.update.beforeUpdateFetch
+    ? [declaration.update.beforeUpdateFetch as UpdateBeforeFetchHook<T>]
     : []
 
-  declaration.update.before = injectFunctions.updateBefore
+  declaration.update.beforeUpdateFetch = injectFunctions.updateBeforeFetch
+    ? injectFunctions.updateBeforeFetch(declaration.model, beforeUpdateFetch)
+    : beforeUpdateFetch
+
+  const beforeUpdate: UpdateBeforeHook<T>[] = Array.isArray(
+    declaration.update.beforeUpdate
+  )
+    ? declaration.update.beforeUpdate
+    : declaration.update.beforeUpdate
+    ? [declaration.update.beforeUpdate as UpdateBeforeHook<T>]
+    : []
+
+  declaration.update.beforeUpdate = injectFunctions.updateBefore
     ? injectFunctions.updateBefore(declaration.model, beforeUpdate)
     : beforeUpdate
 
   const afterUpdate: UpdateAfterHook<T>[] = Array.isArray(
-    declaration.update.after
+    declaration.update.afterUpdate
   )
-    ? declaration.update.after
-    : declaration.update.after
-    ? [declaration.update.after as UpdateAfterHook<T>]
+    ? declaration.update.afterUpdate
+    : declaration.update.afterUpdate
+    ? [declaration.update.afterUpdate as UpdateAfterHook<T>]
     : []
 
-  declaration.update.after = injectFunctions.updateAfter
+  declaration.update.afterUpdate = injectFunctions.updateAfter
     ? injectFunctions.updateAfter(declaration.model, afterUpdate)
     : afterUpdate
 }
 
 function injectCreateHooks<T extends Model<any, any>>(
-  declaration: any,
+  declaration:
+    | ModelDeclarationType<any, any>
+    | GraphQLFieldConfig<any, any, any>,
   injectFunctions: InjectHooksOptions['injectFunctions']
 ) {
-  if (!declaration.actions?.includes('create')) return
+  if ('actions' in declaration && !declaration.actions?.includes('create'))
+    return
 
   // If the create is resolved by a custom function, we don't need to inject hooks
-  if (declaration?.create?.resolve) {
+  if (
+    'create' in declaration &&
+    declaration?.create &&
+    'resolve' in declaration?.create
+  ) {
+    return
+  }
+
+  if (
+    'type' in declaration ||
+    (declaration?.create && 'resolve' in declaration?.create)
+  ) {
     return
   }
 
@@ -106,39 +167,55 @@ function injectCreateHooks<T extends Model<any, any>>(
     declaration.create = {} as CreateFieldDeclarationType<T>
   }
 
+  declaration.create = declaration.create as CreateFieldDeclarationType<T>
+
   const beforeCreate: CreateBeforeHook<T>[] = Array.isArray(
-    declaration.create.before
+    declaration.create.beforeCreate
   )
-    ? declaration.create.before
-    : declaration.create.before
-    ? [declaration.create.before as CreateBeforeHook<T>]
+    ? declaration.create.beforeCreate
+    : declaration.create.beforeCreate
+    ? [declaration.create.beforeCreate as CreateBeforeHook<T>]
     : []
 
-  declaration.create.before = injectFunctions.createBefore
+  declaration.create.beforeCreate = injectFunctions.createBefore
     ? injectFunctions.createBefore(declaration.model, beforeCreate)
     : beforeCreate
 
   const afterCreate: CreateAfterHook<T>[] = Array.isArray(
-    declaration.create.after
+    declaration.create.afterCreate
   )
-    ? declaration.create.after
-    : declaration.create.after
-    ? [declaration.create.after as CreateAfterHook<T>]
+    ? declaration.create.afterCreate
+    : declaration.create.afterCreate
+    ? [declaration.create.afterCreate as CreateAfterHook<T>]
     : []
 
-  declaration.create.after = injectFunctions.createAfter
+  declaration.create.afterCreate = injectFunctions.createAfter
     ? injectFunctions.createAfter(declaration.model, afterCreate)
     : afterCreate
 }
 
 function injectDeleteHooks<T extends Model<any, any>>(
-  declaration: any,
+  declaration:
+    | ModelDeclarationType<any, any>
+    | GraphQLFieldConfig<any, any, any>,
   injectFunctions: InjectHooksOptions['injectFunctions']
 ) {
-  if (!declaration.actions?.includes('delete')) return
+  if ('actions' in declaration && !declaration.actions?.includes('delete'))
+    return
 
   // If the delete is resolved by a custom function, we don't need to inject hooks
-  if (declaration?.delete?.resolve) {
+  if (
+    'delete' in declaration &&
+    declaration?.delete &&
+    'resolve' in declaration?.delete
+  ) {
+    return
+  }
+
+  if (
+    'type' in declaration ||
+    (declaration?.delete && 'resolve' in declaration?.delete)
+  ) {
     return
   }
 
@@ -146,27 +223,41 @@ function injectDeleteHooks<T extends Model<any, any>>(
     declaration.delete = {} as DeleteFieldDeclarationType<T>
   }
 
+  declaration.delete = declaration.delete as DeleteFieldDeclarationType<T>
+
   const beforeDelete: DeleteBeforeHook<T>[] = Array.isArray(
-    declaration.delete.before
+    declaration.delete.beforeDelete
   )
-    ? declaration.delete.before
-    : declaration.delete.before
-    ? [declaration.delete.before as DeleteBeforeHook<T>]
+    ? declaration.delete.beforeDelete
+    : declaration.delete.beforeDelete
+    ? [declaration.delete.beforeDelete as DeleteBeforeHook<T>]
     : []
 
-  declaration.delete.before = injectFunctions.deleteBefore
+  declaration.delete.beforeDelete = injectFunctions.deleteBefore
     ? injectFunctions.deleteBefore(declaration.model, beforeDelete)
     : beforeDelete
 
-  const afterDelete: DeleteAfterHook<T>[] = Array.isArray(
-    declaration.delete.after
+  const beforeDeleteFetch: DeleteBeforeFetchHook<T>[] = Array.isArray(
+    declaration.delete.beforeDeleteFetch
   )
-    ? declaration.delete.after
-    : declaration.delete.after
-    ? [declaration.delete.after as DeleteAfterHook<T>]
+    ? declaration.delete.beforeDeleteFetch
+    : declaration.delete.beforeDeleteFetch
+    ? [declaration.delete.beforeDeleteFetch as DeleteBeforeFetchHook<T>]
     : []
 
-  declaration.delete.after = injectFunctions.deleteAfter
+  declaration.delete.beforeDeleteFetch = injectFunctions.deleteBeforeFetch
+    ? injectFunctions.deleteBeforeFetch(declaration.model, beforeDeleteFetch)
+    : beforeDeleteFetch
+
+  const afterDelete: DeleteAfterHook<T>[] = Array.isArray(
+    declaration.delete.afterDelete
+  )
+    ? declaration.delete.afterDelete
+    : declaration.delete.afterDelete
+    ? [declaration.delete.afterDelete as DeleteAfterHook<T>]
+    : []
+
+  declaration.delete.afterDelete = injectFunctions.deleteAfter
     ? injectFunctions.deleteAfter(declaration.model, afterDelete)
     : afterDelete
 }

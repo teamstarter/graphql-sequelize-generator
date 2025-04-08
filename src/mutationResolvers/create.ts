@@ -72,14 +72,14 @@ export default function generateMutationCreate<M extends Model<any>>(
 
       if (
         graphqlModelDeclaration.create &&
-        'before' in graphqlModelDeclaration.create &&
-        graphqlModelDeclaration.create.before
+        'beforeCreate' in graphqlModelDeclaration.create &&
+        graphqlModelDeclaration.create.beforeCreate
       ) {
         const beforeCreate: CreateBeforeHook<M>[] = Array.isArray(
-          graphqlModelDeclaration.create.before
+          graphqlModelDeclaration.create.beforeCreate
         )
-          ? graphqlModelDeclaration.create.before
-          : [graphqlModelDeclaration.create.before as CreateBeforeHook<M>]
+          ? graphqlModelDeclaration.create.beforeCreate
+          : [graphqlModelDeclaration.create.beforeCreate as CreateBeforeHook<M>]
 
         for (const before of beforeCreate) {
           const beforeHandle = globalPreCallback('createBefore')
@@ -151,14 +151,14 @@ export default function generateMutationCreate<M extends Model<any>>(
 
       if (
         graphqlModelDeclaration.create &&
-        'after' in graphqlModelDeclaration.create &&
-        graphqlModelDeclaration.create.after
+        'afterCreate' in graphqlModelDeclaration.create &&
+        graphqlModelDeclaration.create.afterCreate
       ) {
         const afterList: CreateAfterHook<M>[] = Array.isArray(
-          graphqlModelDeclaration.create.after
+          graphqlModelDeclaration.create.afterCreate
         )
-          ? graphqlModelDeclaration.create.after
-          : [graphqlModelDeclaration.create.after as CreateAfterHook<M>]
+          ? graphqlModelDeclaration.create.afterCreate
+          : [graphqlModelDeclaration.create.afterCreate as CreateAfterHook<M>]
 
         let createdEntity = newEntity
         const hookData = { data: createdEntity.get({ plain: true }) }

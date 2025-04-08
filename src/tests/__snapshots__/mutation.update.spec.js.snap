@@ -7,7 +7,7 @@ Array [
   "listAfter",
   "listBefore",
   "updateGlobalBefore",
-  "updateBefore",
+  "beforeUpdateFetch",
   "updateAfter",
   "listGlobalBefore",
   "listBefore",

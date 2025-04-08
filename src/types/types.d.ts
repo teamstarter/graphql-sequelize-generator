@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   GraphQLFieldConfig,
   GraphQLFieldResolver,
@@ -194,8 +195,8 @@ export type SubscriptionFilter = (params: {
 }) => boolean
 
 export type CreateFieldDeclarationType<M extends Model<any>, TContext = any> = {
-  before?: CreateBeforeHook<M, TContext> | CreateBeforeHook<M, TContext>[]
-  after?: CreateAfterHook<M, TContext> | CreateAfterHook<M, TContext>[]
+  beforeCreate?: CreateBeforeHook<M, TContext> | CreateBeforeHook<M, TContext>[]
+  afterCreate?: CreateAfterHook<M, TContext> | CreateAfterHook<M, TContext>[]
   extraArg?: Record<string, { type: GraphQLInputType }>
   subscriptionFilter?: SubscriptionFilterHook<TContext>
   preventDuplicateOnAttributes?: string[]
@@ -208,15 +209,21 @@ export type GraphqlSchemaDeclarationType<TContext = any> = {
 }
 
 export type UpdateFieldDeclarationType<M extends Model<any>, TContext = any> = {
-  before?: UpdateBeforeHook<M, TContext> | UpdateBeforeHook<M, TContext>[]
-  after?: UpdateAfterHook<M, TContext> | UpdateAfterHook<M, TContext>[]
+  beforeUpdateFetch?:
+    | UpdateBeforeFetchHook<M, TContext>
+    | UpdateBeforeFetchHook<M, TContext>[]
+  beforeUpdate?: UpdateBeforeHook<M, TContext> | UpdateBeforeHook<M, TContext>[]
+  afterUpdate?: UpdateAfterHook<M, TContext> | UpdateAfterHook<M, TContext>[]
   extraArg?: Record<string, { type: GraphQLInputType }>
   subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
 
 export type DeleteFieldDeclarationType<M extends Model<any>, TContext = any> = {
-  before?: DeleteBeforeHook<M, TContext> | DeleteBeforeHook<M, TContext>[]
-  after?: DeleteAfterHook<M, TContext> | DeleteAfterHook<M, TContext>[]
+  beforeDeleteFetch?:
+    | DeleteBeforeFetchHook<M, TContext>
+    | DeleteBeforeFetchHook<M, TContext>[]
+  beforeDelete?: DeleteBeforeHook<M, TContext> | DeleteBeforeHook<M, TContext>[]
+  afterDelete?: DeleteAfterHook<M, TContext> | DeleteAfterHook<M, TContext>[]
   extraArg?: Record<string, { type: GraphQLInputType }>
   subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
@@ -224,8 +231,8 @@ export type DeleteFieldDeclarationType<M extends Model<any>, TContext = any> = {
 export type ListDeclarationType<M extends Model<any>, TContext = any> = {
   removeUnusedAttributes?: boolean
   enforceMaxLimit?: number
-  before?: QueryBeforeHook<M, TContext> | QueryBeforeHook<M, TContext>[]
-  after?: QueryAfterHook<M, TContext> | QueryAfterHook<M, TContext>[]
+  beforeList?: QueryBeforeHook<M, TContext> | QueryBeforeHook<M, TContext>[]
+  afterList?: QueryAfterHook<M, TContext> | QueryAfterHook<M, TContext>[]
   resolver?: GraphQLFieldResolver<any, TContext>
   contextToOptions?: boolean
   extraArg?: Record<string, { type: GraphQLInputType }>
@@ -241,8 +248,8 @@ export type ModelDeclarationType<M extends Model<any>, TContext = any> = {
   before?: GlobalBeforeHook<TContext> | GlobalBeforeHook<TContext>[]
   count?: {
     extraArg?: Record<string, { type: GraphQLInputType }>
-    before?: QueryBeforeHook<M, TContext> | QueryBeforeHook<M, TContext>[]
-    after?: CountAfterHook<M, TContext> | CountAfterHook<M, TContext>[]
+    beforeList?: QueryBeforeHook<M, TContext> | QueryBeforeHook<M, TContext>[]
+    afterList?: CountAfterHook<M, TContext> | CountAfterHook<M, TContext>[]
     resolver?: GraphQLFieldResolver<any, TContext>
   }
   list?: ListDeclarationType<M, TContext>
@@ -310,12 +317,23 @@ export type CreateAfterHook<M extends Model<any>, TContext = any> = (params: {
   setWebhookData: (callback: (defaultData: any) => any) => void
 }) => Promise<M> | M
 
-export type UpdateBeforeHook<M extends Model<any>, TContext = any> = (params: {
+export type UpdateBeforeFetchHook<
+  M extends Model<any>,
+  TContext = any
+> = (params: {
   source: any
   args: any
   context: TContext
   info: any
-}) => Promise<any> | any
+}) => Promise<MinimumUpdateProperties<M>> | MinimumUpdateProperties<M>
+
+export type UpdateBeforeHook<M extends Model<any>, TContext = any> = (params: {
+  entity: M
+  source: any
+  args: any
+  context: TContext
+  info: any
+}) => Promise<MinimumUpdateProperties<M>> | MinimumUpdateProperties<M>
 
 export type UpdateAfterHook<M extends Model<any>, TContext = any> = (params: {
   updatedEntity: M
@@ -326,13 +344,31 @@ export type UpdateAfterHook<M extends Model<any>, TContext = any> = (params: {
   info: any
 }) => Promise<M> | M
 
-export type DeleteBeforeHook<M extends Model<any>, TContext = any> = (params: {
+export type MinimumUpdateProperties<M extends Model<any>> = Partial<
+  InferAttributes<M>
+> & {
+  id: string
+}
+
+export type DeleteBeforeFetchHook<
+  M extends Model<any>,
+  TContext = any
+> = (params: {
   where: Filterable<M>
   source: any
   args: any
   context: TContext
   info: any
 }) => Promise<Filterable<M>> | Filterable<M>
+
+export type DeleteBeforeHook<M extends Model<any>, TContext = any> = (params: {
+  entity: M
+  where: Filterable<M>
+  source: any
+  args: any
+  context: TContext
+  info: any
+}) => Promise<M> | M
 
 export type DeleteAfterHook<M extends Model<any>, TContext = any> = (params: {
   deletedEntity: M
@@ -372,6 +408,10 @@ export type InjectHooksOptions = {
       model: ModelStatic<any>,
       hooks: UpdateBeforeHook<any>[]
     ) => UpdateBeforeHook<any>[]
+    updateBeforeFetch?: (
+      model: ModelStatic<any>,
+      hooks: UpdateBeforeFetchHook<any>[]
+    ) => UpdateBeforeFetchHook<any>[]
     updateAfter?: (
       model: ModelStatic<any>,
       hooks: UpdateAfterHook<any>[]
@@ -388,6 +428,10 @@ export type InjectHooksOptions = {
       model: ModelStatic<any>,
       hooks: DeleteBeforeHook<any>[]
     ) => DeleteBeforeHook<any>[]
+    deleteBeforeFetch?: (
+      model: ModelStatic<any>,
+      hooks: DeleteBeforeFetchHook<any>[]
+    ) => DeleteBeforeFetchHook<any>[]
     deleteAfter?: (
       model: ModelStatic<any>,
       hooks: DeleteAfterHook<any>[]

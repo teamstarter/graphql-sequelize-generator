@@ -8,9 +8,11 @@ import { PubSub } from 'graphql-subscriptions'
 import { Model } from 'sequelize'
 import {
   GlobalBeforeHook,
+  MinimumUpdateProperties,
   ModelDeclarationType,
   SequelizeModels,
   UpdateAfterHook,
+  UpdateBeforeFetchHook,
   UpdateBeforeHook,
 } from '../types/types'
 import callModelWebhook from './callModelWebhook'
@@ -48,7 +50,7 @@ export default function generateMutationUpdate<M extends Model<any>>(
         : {}),
     },
     resolve: async (source: any, args: any, context: any, info: any) => {
-      let data = args[modelName]
+      let data: MinimumUpdateProperties<M> = args[modelName]
 
       if (graphqlModelDeclaration.before) {
         const beforeList: GlobalBeforeHook[] = Array.isArray(
@@ -68,17 +70,20 @@ export default function generateMutationUpdate<M extends Model<any>>(
 
       if (
         graphqlModelDeclaration.update &&
-        'before' in graphqlModelDeclaration.update &&
-        graphqlModelDeclaration.update.before
+        'beforeUpdateFetch' in graphqlModelDeclaration.update &&
+        graphqlModelDeclaration.update.beforeUpdateFetch
       ) {
-        const beforeList: UpdateBeforeHook<M>[] = Array.isArray(
-          graphqlModelDeclaration.update.before
+        const beforeList: UpdateBeforeFetchHook<M>[] = Array.isArray(
+          graphqlModelDeclaration.update.beforeUpdateFetch
         )
-          ? graphqlModelDeclaration.update.before
-          : [graphqlModelDeclaration.update.before as UpdateBeforeHook<M>]
+          ? graphqlModelDeclaration.update.beforeUpdateFetch
+          : [
+              graphqlModelDeclaration.update
+                .beforeUpdateFetch as UpdateBeforeFetchHook<M>,
+            ]
 
         for (const before of beforeList) {
-          const beforeHandle = globalPreCallback('updateBefore')
+          const beforeHandle = globalPreCallback('beforeUpdateFetch')
           data = await before({
             source,
             args,
@@ -101,14 +106,41 @@ export default function generateMutationUpdate<M extends Model<any>>(
         throw new Error(`${modelName} not found.`)
       }
 
+      if (
+        graphqlModelDeclaration.update &&
+        'beforeUpdate' in graphqlModelDeclaration.update &&
+        graphqlModelDeclaration.update.beforeUpdate
+      ) {
+        const beforeList: UpdateBeforeHook<M>[] = Array.isArray(
+          graphqlModelDeclaration.update.beforeUpdate
+        )
+          ? graphqlModelDeclaration.update.beforeUpdate
+          : [graphqlModelDeclaration.update.beforeUpdate as UpdateBeforeHook<M>]
+
+        for (const before of beforeList) {
+          const beforeHandle = globalPreCallback('beforeUpdate')
+          data = await before({
+            entity,
+            source,
+            args,
+            context,
+            info,
+          })
+
+          if (beforeHandle) {
+            beforeHandle()
+          }
+        }
+      }
+
       const snapshotBeforeUpdate = { ...entity.get({ plain: true }) }
       await entity.update(data)
       await entity.reload()
 
       if (
         graphqlModelDeclaration.update &&
-        'after' in graphqlModelDeclaration.update &&
-        graphqlModelDeclaration.update.after
+        'afterUpdate' in graphqlModelDeclaration.update &&
+        graphqlModelDeclaration.update.afterUpdate
       ) {
         const hookData = {
           data: {
@@ -118,10 +150,10 @@ export default function generateMutationUpdate<M extends Model<any>>(
         }
 
         const afterList: UpdateAfterHook<M>[] = Array.isArray(
-          graphqlModelDeclaration.update.after
+          graphqlModelDeclaration.update.afterUpdate
         )
-          ? graphqlModelDeclaration.update.after
-          : [graphqlModelDeclaration.update.after as UpdateAfterHook<M>]
+          ? graphqlModelDeclaration.update.afterUpdate
+          : [graphqlModelDeclaration.update.afterUpdate as UpdateAfterHook<M>]
 
         let updatedEntity = entity
         for (const after of afterList) {

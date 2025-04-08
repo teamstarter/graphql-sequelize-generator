@@ -318,12 +318,12 @@ export default function createListResolver<
   }
 
   const listBefore =
-    graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.before
-      ? graphqlTypeDeclaration.list.before
+    graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.beforeList
+      ? graphqlTypeDeclaration.list.beforeList
       : undefined
   const listAfter =
-    graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.after
-      ? graphqlTypeDeclaration.list.after
+    graphqlTypeDeclaration.list && graphqlTypeDeclaration.list.afterList
+      ? graphqlTypeDeclaration.list.afterList
       : undefined
 
   return resolver(relation || graphqlTypeDeclaration.model, {

@@ -23,14 +23,14 @@ export default function countResolver<M extends Model<any>, TContext = any>(
   }
 
   const listBefore =
-    schemaDeclaration.list && schemaDeclaration.list.before
-      ? schemaDeclaration.list.before
+    schemaDeclaration.list && schemaDeclaration.list.beforeList
+      ? schemaDeclaration.list.beforeList
       : undefined
 
   // Count uses the same before function as the list, except if specified otherwise
   const countBefore =
-    schemaDeclaration.count && schemaDeclaration.count.before
-      ? schemaDeclaration.count.before
+    schemaDeclaration.count && schemaDeclaration.count.beforeList
+      ? schemaDeclaration.count.beforeList
       : listBefore
 
   return async (source: any, args: any, context: TContext, info: any) => {
@@ -90,12 +90,12 @@ export default function countResolver<M extends Model<any>, TContext = any>(
 
     const count = await model.count(findOptions)
 
-    if (schemaDeclaration.count && schemaDeclaration.count.after) {
+    if (schemaDeclaration.count && schemaDeclaration.count.afterList) {
       const afterList: CountAfterHook<M>[] = Array.isArray(
-        schemaDeclaration.count.after
+        schemaDeclaration.count.afterList
       )
-        ? schemaDeclaration.count.after
-        : [schemaDeclaration.count.after as CountAfterHook<M>]
+        ? schemaDeclaration.count.afterList
+        : [schemaDeclaration.count.afterList as CountAfterHook<M>]
 
       let modifiedCount: number | GroupedCountResultItem[] = count
       for (const after of afterList) {

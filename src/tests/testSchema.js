@@ -75,7 +75,7 @@ graphqlSchemaDeclaration.user = {
     extraArg: {
       departmentId: { type: GraphQLInt },
     },
-    before: [
+    beforeList: [
       async ({ findOptions, source, args }) => {
         // example of an extra argument usage
         if (args.departmentId) {
@@ -115,7 +115,7 @@ graphqlSchemaDeclaration.user = {
   list: {
     removeUnusedAttributes: false,
     enforceMaxLimit: 50,
-    before: [
+    beforeList: [
       ({ findOptions, args, context, info }) => {
         findOptions.where = {
           [Op.and]: [findOptions.where, { departmentId: [1] }],
@@ -123,7 +123,7 @@ graphqlSchemaDeclaration.user = {
         return findOptions
       },
     ],
-    after: ({ result, args, context, info }) => {
+    afterList: ({ result, args, context, info }) => {
       if (result && Object.hasOwnProperty.call(result, 'length')) {
         for (const user of result) {
           if (user.name === 'Test 5 c 2') {
@@ -145,11 +145,11 @@ graphqlSchemaDeclaration.user = {
   // The followings hooks are just here to demo their signatures.
   // They are not required and can be omited if you don't need them.
   create: {
-    before: ({ source, args, context, info }) => {
+    beforeCreate: ({ source, args, context, info }) => {
       // You can restrict the creation if needed
       return args.user
     },
-    after: [
+    afterCreate: [
       async ({
         createdEntity,
         source,
@@ -179,13 +179,13 @@ graphqlSchemaDeclaration.user = {
     },
   },
   update: {
-    before: [
+    beforeUpdateFetch: [
       ({ source, args, context, info }) => {
         // You can restrict the creation if needed
         return args.user
       },
     ],
-    after: async ({
+    afterUpdate: async ({
       updatedEntity,
       previousPropertiesSnapshot,
       source,
@@ -200,11 +200,11 @@ graphqlSchemaDeclaration.user = {
   delete: {
     // Adding a new argument to the delete mutation
     extraArg: { log: { type: GraphQLBoolean } },
-    before: ({ where, source, args, context, info }) => {
+    beforeDeleteFetch: ({ where, source, args, context, info }) => {
       // You can restrict the creation if needed
       return where
     },
-    after: async ({ deletedEntity, source, args, context, info }) => {
+    afterDelete: async ({ deletedEntity, source, args, context, info }) => {
       // You can log what happened here, as the new log attribute will be propagated here
       if (args.log) {
         const date = Date.now()
@@ -225,7 +225,7 @@ graphqlSchemaDeclaration.company = {
   subscriptions: ['create', 'update'],
   list: {
     removeUnusedAttributes: false,
-    before: [
+    beforeList: [
       ({ findOptions, args, context, info }) => {
         // This is an example of rights enforcement
         findOptions.where = {
@@ -446,7 +446,7 @@ graphqlSchemaDeclaration.userLocation = {
   model: models.userLocation,
   actions: ['list'],
   list: {
-    before: async ({ findOptions }) => {
+    beforeList: async ({ findOptions }) => {
       return findOptions
     },
   },
@@ -544,7 +544,7 @@ module.exports = (
           )
           return hooks
         },
-        updateBefore: (models, hooks) => {
+        updateBeforeFetch: (models, hooks) => {
           hooks.push(({ source, args, context, info }) => {
             if (args.user && args.user.name) {
               args.user.name = `[UPDATE] ${args.user.name}`
@@ -571,7 +571,7 @@ module.exports = (
           )
           return hooks
         },
-        deleteBefore: (models, hooks) => {
+        deleteBeforeFetch: (models, hooks) => {
           hooks.push(({ where, source, args, context, info }) => {
             // Add a timestamp to the where clause
             console.log(`[DELETE] Will delete Entity ${where.id}.`)
