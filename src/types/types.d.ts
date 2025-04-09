@@ -72,15 +72,8 @@ export type CustomResolver<TContext = any> = (
   info: TInfo
 ) => Promise<any>
 
-export type CustomMutationConfiguration<TContext = any> = {
-  type: GraphQLObjectType | GraphQLList<GraphQLObjectType>
-  description?: string
-  args: EndpointArgs
-  resolve: CustomResolver<TContext>
-}
-
 export type MutationList<TContext = any> = {
-  [key: string]: CustomMutationConfiguration<TContext>
+  [key: string]: GraphQLFieldConfig<TSource, TContext, TArgs>
 }
 
 export type CustomSubscriptionConfiguration<TContext = any> = {
