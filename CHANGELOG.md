@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.6.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.6.0...v9.6.1) (2025-04-09)
+
+
+### Bug Fixes
+
+* **mutations:** Replace the custom type by the official GraphQL type for custom mutations. ([d7471cf](https://github.com/teamstarter/graphql-sequelize-generator/commit/d7471cf))
+
+
+
 ## [9.6.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.5.4...v9.6.0) (2025-04-08)
 
 
