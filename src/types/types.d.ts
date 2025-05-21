@@ -340,7 +340,7 @@ export type UpdateAfterHook<M extends Model<any>, TContext = any> = (params: {
 export type MinimumUpdateProperties<M extends Model<any>> = Partial<
   InferAttributes<M>
 > & {
-  id: string
+  id: string | number
 }
 
 export type DeleteBeforeFetchHook<
