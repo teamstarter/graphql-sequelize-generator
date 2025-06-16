@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.6.3](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.6.2...v9.6.3) (2025-06-16)
+
+
+### Bug Fixes
+
+* **hooks:** Fix hooks mutating the schema declaration and causing issues when sharing the same definitions across different endpoints. ([f4b1716](https://github.com/teamstarter/graphql-sequelize-generator/commit/f4b1716))
+
+
+
 ### [9.6.2](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.6.1...v9.6.2) (2025-05-21)
 
 
