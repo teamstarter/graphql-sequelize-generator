@@ -233,9 +233,13 @@ export type ListDeclarationType<M extends Model<any>, TContext = any> = {
   subscriptionFilter?: SubscriptionFilterHook<TContext>
 }
 
+export type McpAction = 'list' | 'create' | 'delete' | 'update' | 'count'
+export type McpActionList = Array<McpAction>
+
 export type ModelDeclarationType<M extends Model<any>, TContext = any> = {
   model: ModelStatic<M>
   actions?: Action[]
+  mcpActions?: McpAction[]
   subscriptions?: Event[]
   webhooks?: WebhookType[]
   before?: GlobalBeforeHook<TContext> | GlobalBeforeHook<TContext>[]

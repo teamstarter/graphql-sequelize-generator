@@ -1,6 +1,7 @@
 import { resolver as sourceResolver } from 'graphql-sequelize'
 import injectAssociations from './associations/inject'
 import generateApolloServer from './generateApolloServer'
+import generateMcpServer from './generateMcpServer'
 import generateModelTypes from './generateTypes/modelTypes'
 import { injectHooks } from './injectHooks'
 import generateCount from './queryResolvers/count'
@@ -14,6 +15,7 @@ export {
   // Functions to help generating a schema
   generateApolloServer,
   generateCount,
+  generateMcpServer,
   generateModelTypes,
   generateSchema,
   injectAssociations,

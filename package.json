@@ -59,7 +59,7 @@
     "test-watch": "DEBUG=* PORT=8282 jest -i -u --watch",
     "lint-check": "eslint src",
     "start": "rm -f ./src/tests/data/main.db && DEBUG=gsg TS_NODE_PROJECT=./tsconfig.json node  --require ts-node/register --require tsconfig-paths/register ./src/tests/testServer.js",
-    "build": "rm -rf ./lib/* && tsc --lib es2019,dom --esModuleInterop --downlevelIteration --outDir ./lib ./src/index.ts ./src/scripts/*.ts ./src/gsg.ts",
+    "build": "rm -rf ./lib/* && tsc --lib es2019,dom --esModuleInterop --downlevelIteration --skipLibCheck --outDir ./lib ./src/index.ts ./src/scripts/*.ts ./src/gsg.ts",
     "release": "yarn build && standard-version",
     "gsg": "node ./lib/gsg.js"
   },
@@ -72,6 +72,7 @@
   "dependencies": {
     "@apollo/server": "^4.1.1",
     "@graphql-tools/schema": "^9.0.10",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "@types/debug": "^4.1.5",
     "@types/express": "^4.17.14",
     "@types/express-serve-static-core": "^4.17.31",
@@ -86,7 +87,13 @@
   },
   "jest": {
     "verbose": true,
-    "testURL": "http://localhost/"
+    "testURL": "http://localhost/",
+    "moduleNameMapper": {
+      "^@modelcontextprotocol/sdk/server/mcp\\.js$": "@modelcontextprotocol/sdk/dist/cjs/server/mcp.js",
+      "^@modelcontextprotocol/sdk/server/stdio\\.js$": "@modelcontextprotocol/sdk/dist/cjs/server/stdio.js",
+      "^@modelcontextprotocol/sdk/client/index\\.js$": "@modelcontextprotocol/sdk/dist/cjs/client/index.js",
+      "^@modelcontextprotocol/sdk/inMemory\\.js$": "@modelcontextprotocol/sdk/dist/cjs/inMemory.js"
+    }
   },
   "resolutions": {
     "@types/serve-static": "1.13.9"
