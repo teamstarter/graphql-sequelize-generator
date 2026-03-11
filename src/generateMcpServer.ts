@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import {
+  GlobalBeforeHook,
   GraphqlSchemaDeclarationType,
   ModelDeclarationType,
   SequelizeModels,
@@ -11,6 +12,18 @@ type McpServerOptions = {
     name: string
     version: string
   }
+  /**
+   * A function that returns the context object available to all before/after hooks.
+   * Called once per tool invocation with the MCP extra metadata.
+   * This mirrors GraphQL's context function.
+   *
+   * Example:
+   *   context: (extra) => ({
+   *     user: getUserFromSession(extra.sessionId),
+   *     bootDate: Date.now(),
+   *   })
+   */
+  context?: (extra: any) => any | Promise<any>
 }
 
 /**
@@ -76,10 +89,34 @@ function buildZodShapeFromModel(
 }
 
 /**
+ * Runs the global before hooks from the model declaration.
+ */
+async function runGlobalBeforeHooks(
+  modelDeclaration: ModelDeclarationType<any>,
+  args: any,
+  context: any
+) {
+  if (!modelDeclaration.before) return
+
+  const beforeList: GlobalBeforeHook[] = Array.isArray(
+    modelDeclaration.before
+  )
+    ? modelDeclaration.before
+    : [modelDeclaration.before as GlobalBeforeHook]
+
+  for (const before of beforeList) {
+    await before({ args, context, info: {} })
+  }
+}
+
+/**
  * Generates an McpServer from graphqlSchemaDeclaration and Sequelize models.
  *
  * Only models that have `mcpActions` defined will have MCP tools generated.
  * This is not enabled by default - you must explicitly set `mcpActions` on each model.
+ *
+ * The `context` option works like GraphQL's context: it receives the MCP extra
+ * metadata (sessionId, etc.) and returns a context object passed to all hooks.
  */
 export default function generateMcpServer(
   graphqlSchemaDeclaration: GraphqlSchemaDeclarationType,
@@ -90,6 +127,7 @@ export default function generateMcpServer(
     name: 'gsg-mcp-server',
     version: '1.0.0',
   }
+  const contextFn = options.context || (() => ({}))
 
   const mcpServer = new McpServer(serverInfo)
 
@@ -110,23 +148,44 @@ export default function generateMcpServer(
     const excludeFields = modelDeclaration.excludeFields || []
 
     if (mcpActions.includes('list')) {
-      registerListTool(mcpServer, modelName, model, excludeFields)
+      registerListTool(
+        mcpServer,
+        modelName,
+        model,
+        excludeFields,
+        modelDeclaration,
+        contextFn
+      )
     }
 
     if (mcpActions.includes('count')) {
-      registerCountTool(mcpServer, modelName, model)
+      registerCountTool(mcpServer, modelName, model, modelDeclaration, contextFn)
     }
 
     if (mcpActions.includes('create')) {
-      registerCreateTool(mcpServer, modelName, model, excludeFields)
+      registerCreateTool(
+        mcpServer,
+        modelName,
+        model,
+        excludeFields,
+        modelDeclaration,
+        contextFn
+      )
     }
 
     if (mcpActions.includes('update')) {
-      registerUpdateTool(mcpServer, modelName, model, excludeFields)
+      registerUpdateTool(
+        mcpServer,
+        modelName,
+        model,
+        excludeFields,
+        modelDeclaration,
+        contextFn
+      )
     }
 
     if (mcpActions.includes('delete')) {
-      registerDeleteTool(mcpServer, modelName, model)
+      registerDeleteTool(mcpServer, modelName, model, modelDeclaration, contextFn)
     }
   }
 
@@ -137,7 +196,9 @@ function registerListTool(
   mcpServer: McpServer,
   modelName: string,
   model: any,
-  excludeFields: string[]
+  excludeFields: string[],
+  modelDeclaration: ModelDeclarationType<any>,
+  contextFn: (extra: any) => any
 ) {
   mcpServer.tool(
     `${modelName}_list`,
@@ -147,7 +208,10 @@ function registerListTool(
       offset: z.number().optional(),
       order: z.string().optional(),
     },
-    async (args) => {
+    async (args, extra) => {
+      const context = await contextFn(extra)
+      await runGlobalBeforeHooks(modelDeclaration, args, context)
+
       const findOptions: any = {}
 
       if (args.limit !== undefined) findOptions.limit = args.limit
@@ -163,14 +227,62 @@ function registerListTool(
         )
       }
 
-      const results = await model.findAll(findOptions)
+      // Run list before hooks
+      if (
+        modelDeclaration.list &&
+        'before' in modelDeclaration.list &&
+        modelDeclaration.list.before
+      ) {
+        const beforeList = Array.isArray(modelDeclaration.list.before)
+          ? modelDeclaration.list.before
+          : [modelDeclaration.list.before]
+
+        for (const before of beforeList) {
+          const result = await (before as Function)({
+            findOptions,
+            args,
+            context,
+            info: {},
+          })
+          if (result) {
+            Object.assign(findOptions, result)
+          }
+        }
+      }
+
+      let results = await model.findAll(findOptions)
+
+      // Run list after hooks
+      if (
+        modelDeclaration.list &&
+        'after' in modelDeclaration.list &&
+        modelDeclaration.list.after
+      ) {
+        const afterList = Array.isArray(modelDeclaration.list.after)
+          ? modelDeclaration.list.after
+          : [modelDeclaration.list.after]
+
+        for (const after of afterList) {
+          const result = await (after as Function)({
+            result: results,
+            args,
+            context,
+            info: {},
+          })
+          if (result) {
+            results = result
+          }
+        }
+      }
 
       return {
         content: [
           {
             type: 'text' as const,
             text: JSON.stringify(
-              results.map((r: any) => r.get({ plain: true })),
+              results.map((r: any) =>
+                typeof r.get === 'function' ? r.get({ plain: true }) : r
+              ),
               null,
               2
             ),
@@ -184,27 +296,60 @@ function registerListTool(
 function registerCountTool(
   mcpServer: McpServer,
   modelName: string,
-  model: any
+  model: any,
+  modelDeclaration: ModelDeclarationType<any>,
+  contextFn: (extra: any) => any
 ) {
-  mcpServer.tool(`${modelName}_count`, `Count ${modelName} records`, async () => {
-    const count = await model.count()
+  mcpServer.tool(
+    `${modelName}_count`,
+    `Count ${modelName} records`,
+    async (extra) => {
+      const context = await contextFn(extra)
+      await runGlobalBeforeHooks(modelDeclaration, {}, context)
 
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: JSON.stringify({ count }),
-        },
-      ],
+      const findOptions: any = {}
+
+      // Run count before hooks
+      const countDecl = modelDeclaration.count
+      if (countDecl && 'before' in countDecl && countDecl.before) {
+        const beforeList = Array.isArray(countDecl.before)
+          ? countDecl.before
+          : [countDecl.before]
+
+        for (const before of beforeList) {
+          const result = await (before as Function)({
+            findOptions,
+            args: {},
+            context,
+            info: {},
+          })
+          if (result) {
+            Object.assign(findOptions, result)
+          }
+        }
+      }
+
+      const count = await model.count(findOptions)
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ count }),
+          },
+        ],
+      }
     }
-  })
+  )
 }
 
 function registerCreateTool(
   mcpServer: McpServer,
   modelName: string,
   model: any,
-  excludeFields: string[]
+  excludeFields: string[],
+  modelDeclaration: ModelDeclarationType<any>,
+  contextFn: (extra: any) => any
 ) {
   const shape = buildZodShapeFromModel(model, {
     forInput: true,
@@ -215,8 +360,74 @@ function registerCreateTool(
     `${modelName}_create`,
     `Create a new ${modelName}`,
     shape,
-    async (args: any) => {
-      const entity = await model.create(args)
+    async (args: any, extra) => {
+      const context = await contextFn(extra)
+      await runGlobalBeforeHooks(modelDeclaration, args, context)
+
+      let attributes = { ...args }
+
+      // Run create before hooks
+      if (
+        modelDeclaration.create &&
+        'before' in modelDeclaration.create &&
+        modelDeclaration.create.before
+      ) {
+        const beforeList = Array.isArray(modelDeclaration.create.before)
+          ? modelDeclaration.create.before
+          : [modelDeclaration.create.before]
+
+        for (const before of beforeList) {
+          const result = await (before as Function)({
+            source: null,
+            args: { [modelName]: attributes, ...args },
+            context,
+            info: {},
+          })
+          if (result) {
+            attributes = result
+          }
+        }
+      }
+
+      const entity = await model.create(attributes)
+
+      // Run create after hooks
+      if (
+        modelDeclaration.create &&
+        'after' in modelDeclaration.create &&
+        modelDeclaration.create.after
+      ) {
+        const afterList = Array.isArray(modelDeclaration.create.after)
+          ? modelDeclaration.create.after
+          : [modelDeclaration.create.after]
+
+        let createdEntity = entity
+        for (const after of afterList) {
+          const result = await (after as Function)({
+            createdEntity,
+            source: null,
+            args: { [modelName]: attributes, ...args },
+            context,
+            info: {},
+          })
+          if (result) {
+            createdEntity = result
+          }
+        }
+
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify(
+                createdEntity.get({ plain: true }),
+                null,
+                2
+              ),
+            },
+          ],
+        }
+      }
 
       return {
         content: [
@@ -234,7 +445,9 @@ function registerUpdateTool(
   mcpServer: McpServer,
   modelName: string,
   model: any,
-  excludeFields: string[]
+  excludeFields: string[],
+  modelDeclaration: ModelDeclarationType<any>,
+  contextFn: (extra: any) => any
 ) {
   const shape = buildZodShapeFromModel(model, {
     forInput: true,
@@ -247,7 +460,10 @@ function registerUpdateTool(
     `${modelName}_update`,
     `Update an existing ${modelName}`,
     shape,
-    async (args: any) => {
+    async (args: any, extra) => {
+      const context = await contextFn(extra)
+      await runGlobalBeforeHooks(modelDeclaration, args, context)
+
       const entity = await model.findOne({ where: { id: args.id } })
 
       if (!entity) {
@@ -263,8 +479,73 @@ function registerUpdateTool(
       }
 
       const { id, ...updateData } = args
-      await entity.update(updateData)
+      let attributes = updateData
+
+      // Run update before hooks
+      if (
+        modelDeclaration.update &&
+        'before' in modelDeclaration.update &&
+        modelDeclaration.update.before
+      ) {
+        const beforeList = Array.isArray(modelDeclaration.update.before)
+          ? modelDeclaration.update.before
+          : [modelDeclaration.update.before]
+
+        for (const before of beforeList) {
+          const result = await (before as Function)({
+            source: null,
+            args: { [modelName]: attributes, id, ...args },
+            context,
+            info: {},
+          })
+          if (result) {
+            attributes = result
+          }
+        }
+      }
+
+      const previousPropertiesSnapshot = { ...entity.get({ plain: true }) }
+      await entity.update(attributes)
       await entity.reload()
+
+      // Run update after hooks
+      if (
+        modelDeclaration.update &&
+        'after' in modelDeclaration.update &&
+        modelDeclaration.update.after
+      ) {
+        const afterList = Array.isArray(modelDeclaration.update.after)
+          ? modelDeclaration.update.after
+          : [modelDeclaration.update.after]
+
+        let updatedEntity = entity
+        for (const after of afterList) {
+          const result = await (after as Function)({
+            updatedEntity,
+            previousPropertiesSnapshot,
+            source: null,
+            args: { [modelName]: attributes, id, ...args },
+            context,
+            info: {},
+          })
+          if (result) {
+            updatedEntity = result
+          }
+        }
+
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify(
+                updatedEntity.get({ plain: true }),
+                null,
+                2
+              ),
+            },
+          ],
+        }
+      }
 
       return {
         content: [
@@ -281,7 +562,9 @@ function registerUpdateTool(
 function registerDeleteTool(
   mcpServer: McpServer,
   modelName: string,
-  model: any
+  model: any,
+  modelDeclaration: ModelDeclarationType<any>,
+  contextFn: (extra: any) => any
 ) {
   mcpServer.tool(
     `${modelName}_delete`,
@@ -289,8 +572,37 @@ function registerDeleteTool(
     {
       id: z.number(),
     },
-    async (args) => {
-      const entity = await model.findOne({ where: { id: args.id } })
+    async (args, extra) => {
+      const context = await contextFn(extra)
+      await runGlobalBeforeHooks(modelDeclaration, args, context)
+
+      let where: any = { id: args.id }
+
+      // Run delete before hooks
+      if (
+        modelDeclaration.delete &&
+        'before' in modelDeclaration.delete &&
+        modelDeclaration.delete.before
+      ) {
+        const beforeList = Array.isArray(modelDeclaration.delete.before)
+          ? modelDeclaration.delete.before
+          : [modelDeclaration.delete.before]
+
+        for (const before of beforeList) {
+          const result = await (before as Function)({
+            where,
+            source: null,
+            args,
+            context,
+            info: {},
+          })
+          if (result) {
+            where = result
+          }
+        }
+      }
+
+      const entity = await model.findOne({ where })
 
       if (!entity) {
         return {
@@ -304,7 +616,29 @@ function registerDeleteTool(
         }
       }
 
+      const snapshotBeforeDelete = { ...entity.get({ plain: true }) }
       await entity.destroy()
+
+      // Run delete after hooks
+      if (
+        modelDeclaration.delete &&
+        'after' in modelDeclaration.delete &&
+        modelDeclaration.delete.after
+      ) {
+        const afterList = Array.isArray(modelDeclaration.delete.after)
+          ? modelDeclaration.delete.after
+          : [modelDeclaration.delete.after]
+
+        for (const after of afterList) {
+          await (after as Function)({
+            deletedEntity: entity,
+            source: null,
+            args,
+            context,
+            info: {},
+          })
+        }
+      }
 
       return {
         content: [
