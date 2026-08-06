@@ -26,6 +26,29 @@ import {
 export type Action = 'list' | 'create' | 'delete' | 'update' | 'count'
 export type ActionList = Array<Action>
 
+/**
+ * A named, restricted view of an endpoint declaration.
+ *
+ * A declaration may serve several audiences — an internal one, a
+ * machine-to-machine one — and `filterDeclarationByProfile` builds one schema
+ * per audience from the single declaration. An endpoint that declares no
+ * profile is absent from every profile's schema, so a newly added endpoint is
+ * private until somebody says otherwise.
+ *
+ * `actions` must be a subset of the endpoint's own `actions`.
+ *
+ * NOTE: omitting `list` from `actions` does NOT hide the root list query —
+ * presence in the declaration is what exposes it. Use `excludeFromRoot` to keep
+ * a model available for association traversal without a root query, or omit the
+ * profile entirely to remove the endpoint.
+ */
+export type ProfileDeclarationType = {
+  actions?: Action[]
+  excludeFromRoot?: boolean
+}
+
+export type ProfileMap = Record<string, ProfileDeclarationType>
+
 export type Event = 'create' | 'delete' | 'update'
 export type EventList = Array<Event>
 export type WebhookType = 'create' | 'update' | 'delete'
@@ -73,7 +96,9 @@ export type CustomResolver<TContext = any> = (
 ) => Promise<any>
 
 export type MutationList<TContext = any> = {
-  [key: string]: GraphQLFieldConfig<TSource, TContext, TArgs>
+  [key: string]: GraphQLFieldConfig<TSource, TContext, TArgs> & {
+    profiles?: ProfileMap
+  }
 }
 
 export type CustomSubscriptionConfiguration<TContext = any> = {
@@ -198,7 +223,7 @@ export type CreateFieldDeclarationType<M extends Model<any>, TContext = any> = {
 export type GraphqlSchemaDeclarationType<TContext = any> = {
   [key: string]:
     | ModelDeclarationType<any, TContext>
-    | GraphQLFieldConfig<any, any, any>
+    | (GraphQLFieldConfig<any, any, any> & { profiles?: ProfileMap })
 }
 
 export type UpdateFieldDeclarationType<M extends Model<any>, TContext = any> = {
@@ -257,6 +282,7 @@ export type ModelDeclarationType<M extends Model<any>, TContext = any> = {
     | GraphQLFieldConfig<TSource, TContext, TArgs>
   excludeFields?: string[]
   excludeFromRoot?: boolean
+  profiles?: ProfileMap
   type?: GraphQLObjectType
   resolve?: GraphQLFieldResolver<any, TContext>
   args?: Record<string, { type: GraphQLInputType }>
