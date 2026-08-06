@@ -9,10 +9,20 @@ const { json } = require('body-parser')
 const { migrateDatabase, seedDatabase } = require('./testDatabase.js')
 const models = require('./models/index.js')
 
+/**
+ * `profile` builds the schema for one audience rather than the full one.
+ *
+ * Only ONE server per test file may be built with a profile: `types` is
+ * module-level in testSchema.js and `injectAssociations` mutates it in place,
+ * so a second build in the same module instance would reuse the first build's
+ * associations and prune nothing. Jest gives each test file its own module
+ * registry, which is what keeps this safe.
+ */
 const createServer = async (
   options = {},
   globalPreCallback = () => null,
-  withGeneratedHooks = false
+  withGeneratedHooks = false,
+  profile = null
 ) => {
   const app = express()
   options = {
@@ -24,7 +34,8 @@ const createServer = async (
   const { server } = setupServer(
     globalPreCallback,
     httpServer,
-    withGeneratedHooks
+    withGeneratedHooks,
+    profile
   )
   await server.start()
   app.use(
