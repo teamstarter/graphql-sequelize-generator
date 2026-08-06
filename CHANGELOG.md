@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [9.7.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.7.0...v9.7.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* **associations:** apply excludeFields to every declared model ([36225c1](https://github.com/teamstarter/graphql-sequelize-generator/commit/36225c1))
+
+
+
 ## [9.7.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.6.3...v9.7.0) (2026-08-06)
 
 
