@@ -3,6 +3,7 @@
 // so that the API is easier to understand
 
 const {
+  filterDeclarationByProfile,
   generateApolloServer,
   generateModelTypes,
   injectAssociations,
@@ -35,9 +36,31 @@ let graphqlSchemaDeclaration = {}
 const types = generateModelTypes(models)
 const pubSubInstance = new PubSub()
 
+// PROFILES
+//
+// A declaration can serve several audiences at once. The endpoints below carry
+// a `profiles` key describing what each audience gets, and
+// `filterDeclarationByProfile` builds one schema per audience from this single
+// declaration.
+//
+// Not every endpoint needs one. An endpoint with no `profiles` key — this one,
+// `tag`, `session`, `location` — is simply absent from every profile's schema,
+// which is what makes a newly added endpoint private by default.
+//
+// The two profiles used as examples here:
+//   'read-only'  — queries only, no Mutation type at all
+//   'read-write' — queries plus a narrow set of mutations
+//
+// NOTE: a server built for a profile must not share its `types` with another
+// build. `injectAssociations` mutates `outputTypes[name]._fields` in place and
+// guards on `associationsInjected`, so a second build against the same module
+// instance silently reuses the first build's associations and prunes nothing.
+// `profileServer.spec.js` therefore builds exactly one server per test file.
 graphqlSchemaDeclaration.companyType = {
   model: models.companyType,
   actions: ['list', 'create'],
+  // No profiles, on purpose: this is what proves `company.type` is pruned from
+  // the profile schemas rather than merely absent from their root.
 }
 
 graphqlSchemaDeclaration.user = {
@@ -45,6 +68,14 @@ graphqlSchemaDeclaration.user = {
   actions: ['list', 'create', 'delete', 'update', 'count'],
   subscriptions: ['create', 'update'],
   webhooks: ['create', 'update', 'delete'],
+  profiles: {
+    'read-only': { actions: ['list', 'count'] },
+    // `webhooks` is an event flag, so the profile names a subset of the
+    // endpoint's own. Naming one the endpoint does not declare throws at build
+    // time. Nothing is inherited: the profile names no `subscriptions`, so this
+    // audience gets none.
+    'read-write': { actions: ['list', 'count', 'update'], webhooks: ['update'] },
+  },
   before: [
     ({ args, context, info }) => {
       // Global before hook only have args, context and info.
@@ -223,6 +254,13 @@ graphqlSchemaDeclaration.company = {
   model: models.company,
   actions: ['list', 'create', 'update'],
   subscriptions: ['create', 'update'],
+  profiles: {
+    'read-only': { actions: ['list'] },
+    'read-write': {
+      actions: ['list', 'create', 'update'],
+      subscriptions: ['update'],
+    },
+  },
   list: {
     removeUnusedAttributes: false,
     beforeList: [
@@ -280,6 +318,14 @@ graphqlSchemaDeclaration.company = {
 graphqlSchemaDeclaration.department = {
   model: models.department,
   actions: ['list', 'create'],
+  // `excludeFromRoot` in a profile keeps the model reachable through an
+  // association — `company { departments { … } }` — while removing its root
+  // query. Useful when an audience should see a nested entity but not be able
+  // to enumerate every row of it.
+  profiles: {
+    'read-only': { actions: ['list'], excludeFromRoot: true },
+    'read-write': { actions: ['list'], excludeFromRoot: true },
+  },
   excludeFields: ['company', 'updatedAt'],
   list: {
     resolver: async (source, args, context, info) => {
@@ -360,10 +406,21 @@ const OddUser = new GraphQLObjectType({
 graphqlSchemaDeclaration.log = {
   model: models.log,
   actions: ['list', 'create'],
+  profiles: {
+    // Read for one audience, read plus one custom mutation for the other.
+    'read-only': { actions: ['list'] },
+    'read-write': { actions: ['list'] },
+  },
   additionalMutations: {
     anonymizeLog: {
       type: types.outputTypes.log,
       description: 'Just a random example to test the additional mutations.',
+      // `additionalMutations` is a map of named entries, so each entry declares
+      // its own exposure right here rather than being listed on the parent
+      // profile. Absent from 'read-only', so that audience keeps no Mutation
+      // type at all — the emptied map is removed rather than left as `{}`,
+      // which would build an invalid empty Root_Mutations.
+      profiles: { 'read-write': {} },
       args: {
         logId: { type: GraphQLString },
       },
@@ -383,17 +440,35 @@ graphqlSchemaDeclaration.tag = {
   actions: ['list'],
 }
 
-graphqlSchemaDeclaration.oddUser = {
-  type: new GraphQLList(
+/**
+ * Built from the declaration that is actually being served, NOT at module load.
+ *
+ * `injectAssociations` walks the whole association graph and marks each output
+ * type `associationsInjected`. Calling it here at module level with the full
+ * declaration would inject every association into `types.outputTypes` before
+ * any profile filtering happened, and the later build would skip them as
+ * already-injected — so a profile schema would keep associations it should
+ * have pruned. Any custom endpoint that calls injectAssociations must be built
+ * after the declaration is filtered.
+ */
+const buildOddUserType = declaration =>
+  new GraphQLList(
     injectAssociations(
       OddUser,
-      graphqlSchemaDeclaration,
+      declaration,
       types.outputTypes,
       models,
       () => null,
       'user'
     )
-  ),
+  )
+
+graphqlSchemaDeclaration.oddUser = {
+  // A custom endpoint is a plain GraphQLFieldConfig — no model, no actions —
+  // so its profile entry is empty: it is either in the audience's schema or it
+  // is not.
+  profiles: { 'read-only': {}, 'read-write': {} },
+  // `type` is assigned in the setup function below, from the served declaration.
   args: {
     ...defaultListArgs(),
   },
@@ -414,6 +489,11 @@ graphqlSchemaDeclaration.oddUser = {
 // ex: Trigger a process
 const customMutations = {}
 customMutations.logThat = {
+  // Top-level custom mutations declare their exposure the same way endpoints
+  // do. The customMutations map is filtered through the very same
+  // `filterDeclarationByProfile` call, which is why its signature accepts a
+  // MutationList as well as a schema declaration.
+  profiles: { 'read-write': {} },
   type: new GraphQLObjectType({
     name: 'logThat',
     fields: {
@@ -475,7 +555,8 @@ graphqlSchemaDeclaration.session = {
 module.exports = (
   globalPreCallback,
   httpServer,
-  withGeneratedHooks = false
+  withGeneratedHooks = false,
+  profile = null
 ) => {
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
@@ -591,10 +672,31 @@ module.exports = (
     })
   }
 
+  // Build for one audience instead of the full schema.
+  //
+  // customMutations is passed only when something survives the filter: it is
+  // spread as `!!customMutations` by generateSchema, so an empty `{}` would
+  // build an invalid empty Root_Mutations and GraphQL would reject the schema.
+  let declaration = graphqlSchemaDeclaration
+  let mutations = customMutations
+
+  if (profile) {
+    declaration = filterDeclarationByProfile(graphqlSchemaDeclaration, profile)
+
+    const filteredMutations = filterDeclarationByProfile(customMutations, profile)
+    mutations = Object.keys(filteredMutations).length ? filteredMutations : null
+  }
+
+  // Custom endpoints that call injectAssociations are built HERE, from the
+  // served declaration — never at module load. See buildOddUserType.
+  if (declaration.oddUser) {
+    declaration.oddUser.type = buildOddUserType(declaration)
+  }
+
   return {
     server: generateApolloServer({
-      graphqlSchemaDeclaration,
-      customMutations,
+      graphqlSchemaDeclaration: declaration,
+      ...(mutations ? { customMutations: mutations } : {}),
       types,
       models,
       globalPreCallback,

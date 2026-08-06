@@ -1,5 +1,6 @@
 import { resolver as sourceResolver } from 'graphql-sequelize'
 import injectAssociations from './associations/inject'
+import { filterDeclarationByProfile } from './filterDeclarationByProfile'
 import generateApolloServer from './generateApolloServer'
 import generateModelTypes from './generateTypes/modelTypes'
 import { injectHooks } from './injectHooks'
@@ -12,6 +13,7 @@ const resolver: GraphqlSequelizeResolverType = sourceResolver
 
 export {
   // Functions to help generating a schema
+  filterDeclarationByProfile,
   generateApolloServer,
   generateCount,
   generateModelTypes,
