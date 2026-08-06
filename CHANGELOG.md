@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.7.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.6.3...v9.7.0) (2026-08-06)
+
+
+### Features
+
+* **profiles:** add filterDeclarationByProfile to build audience-specific schemas ([69d0402](https://github.com/teamstarter/graphql-sequelize-generator/commit/69d0402))
+* **profiles:** filter additionalMutations, subscriptions and webhooks per profile ([c787756](https://github.com/teamstarter/graphql-sequelize-generator/commit/c787756))
+
+
+### Tests
+
+* **profiles:** exercise every profile use case through the test schema and a real server ([0e5b5b0](https://github.com/teamstarter/graphql-sequelize-generator/commit/0e5b5b0))
+* **profiles:** prove profile schemas prune associations and mutations ([f23274b](https://github.com/teamstarter/graphql-sequelize-generator/commit/f23274b))
+
+
+
 ### [9.6.3](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.6.2...v9.6.3) (2025-06-16)
 
 
