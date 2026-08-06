@@ -1,20 +1,79 @@
 import {
   Action,
+  Event,
   GraphqlSchemaDeclarationType,
   MutationList,
+  SubscriptionList,
+  WebhookType,
 } from './types/types'
 
 /**
- * Keys describing write surface or live connections. A profile is a restricted
- * view, and there is no vocabulary yet for restricting these individually, so
- * they are dropped wholesale rather than half-filtered.
+ * Keep the entries of a named map that declare the profile, stripping the
+ * `profiles` key from each survivor.
+ *
+ * Returns `undefined` rather than `{}` when nothing survives: `generateSchema`
+ * reads a present `additionalMutations` as proof that mutations exist, so an
+ * empty one would build an invalid empty `Root_Mutations` type.
  */
-const DROPPED_IN_PROFILES = [
-  'additionalMutations',
-  'additionalSubscriptions',
-  'subscriptions',
-  'webhooks',
-]
+function filterNamedEntries<T extends MutationList | SubscriptionList>(
+  entries: T | undefined,
+  profileName: string
+): T | undefined {
+  if (!entries) {
+    return undefined
+  }
+
+  const kept: any = {}
+
+  for (const key of Object.keys(entries)) {
+    const entry = (entries as any)[key]
+
+    if (!entry || !entry.profiles || !entry.profiles[profileName]) {
+      continue
+    }
+
+    const { profiles, ...rest } = entry
+    kept[key] = rest
+  }
+
+  return Object.keys(kept).length > 0 ? (kept as T) : undefined
+}
+
+/**
+ * A profile may only narrow. Asking for something the endpoint does not itself
+ * declare is a typo or a stale profile, and failing at build time is cheaper
+ * than shipping an endpoint nobody reviewed.
+ */
+function assertSubset(
+  kind: string,
+  endpointKey: string,
+  profileName: string,
+  requested: string[],
+  declared: string[]
+) {
+  const undeclared = requested.filter(value => !declared.includes(value))
+
+  if (undeclared.length === 0) {
+    return
+  }
+
+  throw new Error(
+    `Profile "${profileName}" of endpoint "${endpointKey}" declares ` +
+      `${kind} [${undeclared.join(', ')}] that the endpoint itself does not ` +
+      `declare [${declared.join(', ')}]. Either add them to the endpoint's ` +
+      `${kind} or remove them from the profile.`
+  )
+}
+
+/** Set the key when the profile asked for something, remove it otherwise. */
+function setOrDelete(entry: any, key: string, value: any) {
+  if (value === undefined || (Array.isArray(value) && value.length === 0)) {
+    delete entry[key]
+    return
+  }
+
+  entry[key] = value
+}
 
 /**
  * Build the declaration for one named profile.
@@ -23,6 +82,11 @@ const DROPPED_IN_PROFILES = [
  * from the type graph: `injectAssociations` skips associations whose target
  * model is absent from the declaration, so a dropped endpoint is unreachable
  * through nesting too, not merely absent from the root.
+ *
+ * Everything is opt-in. `actions`, `subscriptions` and `webhooks` are taken
+ * from the profile and default to none; `additionalMutations` and
+ * `additionalSubscriptions` keep only the entries carrying the profile in their
+ * own `profiles` key.
  *
  * Accepts a customMutations map as well as a schema declaration: those entries
  * carry no `model` and take the custom-endpoint branch.
@@ -54,30 +118,49 @@ export function filterDeclarationByProfile<
       continue
     }
 
-    const declaredActions: Action[] = declaration.actions || []
     const profileActions: Action[] = profile.actions || []
+    const profileSubscriptions: Event[] = profile.subscriptions || []
+    const profileWebhooks: WebhookType[] = profile.webhooks || []
 
-    const undeclared = profileActions.filter(
-      (action: Action) => !declaredActions.includes(action)
+    assertSubset(
+      'actions',
+      key,
+      profileName,
+      profileActions,
+      declaration.actions || []
     )
-
-    if (undeclared.length > 0) {
-      throw new Error(
-        `Profile "${profileName}" of endpoint "${key}" declares action(s) ` +
-          `[${undeclared.join(', ')}] that the endpoint itself does not ` +
-          `declare [${declaredActions.join(', ')}]. Either add them to the ` +
-          `endpoint's actions or remove them from the profile.`
-      )
-    }
+    assertSubset(
+      'subscriptions',
+      key,
+      profileName,
+      profileSubscriptions,
+      declaration.subscriptions || []
+    )
+    assertSubset(
+      'webhooks',
+      key,
+      profileName,
+      profileWebhooks,
+      declaration.webhooks || []
+    )
 
     const entry: any = { ...rest, actions: profileActions }
 
+    setOrDelete(entry, 'subscriptions', profileSubscriptions)
+    setOrDelete(entry, 'webhooks', profileWebhooks)
+    setOrDelete(
+      entry,
+      'additionalMutations',
+      filterNamedEntries(declaration.additionalMutations, profileName)
+    )
+    setOrDelete(
+      entry,
+      'additionalSubscriptions',
+      filterNamedEntries(declaration.additionalSubscriptions, profileName)
+    )
+
     if (profile.excludeFromRoot !== undefined) {
       entry.excludeFromRoot = profile.excludeFromRoot
-    }
-
-    for (const dropped of DROPPED_IN_PROFILES) {
-      delete entry[dropped]
     }
 
     filtered[key] = entry

@@ -35,7 +35,16 @@ export type ActionList = Array<Action>
  * profile is absent from every profile's schema, so a newly added endpoint is
  * private until somebody says otherwise.
  *
- * `actions` must be a subset of the endpoint's own `actions`.
+ * Everything is opt-in. `actions`, `subscriptions` and `webhooks` each default
+ * to none, and each must be a subset of what the endpoint itself declares.
+ *
+ * The two nested maps — `additionalMutations` and `additionalSubscriptions` —
+ * are NOT named here. Their entries carry their own `profiles` key, so a custom
+ * mutation declares its own exposure where it is defined, exactly as an
+ * endpoint does. Anything they hold that does not declare the profile is
+ * dropped, and an emptied map is removed entirely rather than left as `{}`
+ * (`generateSchema` treats a present-but-empty `additionalMutations` as proof
+ * that mutations exist, which would build an invalid empty `Root_Mutations`).
  *
  * NOTE: omitting `list` from `actions` does NOT hide the root list query —
  * presence in the declaration is what exposes it. Use `excludeFromRoot` to keep
@@ -44,6 +53,8 @@ export type ActionList = Array<Action>
  */
 export type ProfileDeclarationType = {
   actions?: Action[]
+  subscriptions?: Event[]
+  webhooks?: WebhookType[]
   excludeFromRoot?: boolean
 }
 
@@ -106,6 +117,7 @@ export type CustomSubscriptionConfiguration<TContext = any> = {
   description?: string
   args: EndpointArgs
   subscribe: GraphQLFieldResolver<TSource, TContext, TArgs>
+  profiles?: ProfileMap
 }
 
 export type SubscriptionList<TContext = any> = {

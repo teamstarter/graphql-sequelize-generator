@@ -1,4 +1,5 @@
 const {
+  GraphQLInt,
   GraphQLSchema,
   graphqlSync,
   getIntrospectionQuery,
@@ -17,6 +18,20 @@ const declarationWithProfiles = () => ({
   company: {
     model: models.company,
     actions: ['list', 'create', 'update', 'delete', 'count'],
+    additionalMutations: {
+      companyArchive: {
+        type: GraphQLInt,
+        resolve: () => 1,
+        // Declares its own exposure, so it reaches the read-write schema and
+        // not the read-only one.
+        profiles: { 'read-write': {} },
+      },
+      companyPurge: {
+        type: GraphQLInt,
+        resolve: () => 1,
+        // No profile: must never reach any profile schema.
+      },
+    },
     profiles: {
       'read-only': { actions: ['list', 'count'] },
       'read-write': { actions: ['list', 'count', 'update'] },
@@ -88,7 +103,21 @@ describe('A schema built from a profile', () => {
   it('exposes only the profile mutations for a read-write profile', () => {
     const schema = schemaForProfile('read-write')
 
-    expect(fieldNames(schema.getMutationType())).toEqual(['companyUpdate'])
+    // companyArchive declares the profile and is present; companyPurge
+    // declares none and is absent; companyCreate/companyDelete are absent
+    // because the profile's actions do not name them.
+    expect(fieldNames(schema.getMutationType())).toEqual([
+      'companyArchive',
+      'companyUpdate',
+    ])
+  })
+
+  it('keeps a read-only profile free of mutations even when the endpoint has additionalMutations', () => {
+    // The endpoint declares two additionalMutations. Neither names the
+    // read-only profile, so the map is emptied — and must be removed rather
+    // than left as {}, or generateSchema would build an empty Root_Mutations
+    // and GraphQL would reject the schema outright.
+    expect(schemaForProfile('read-only').getMutationType()).toBeUndefined()
   })
 
   it('is introspectable', () => {
