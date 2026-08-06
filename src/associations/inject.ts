@@ -31,10 +31,16 @@ export default function injectAssociations(
   // @ts-ignore
   outputTypes[modelName].associationsInjected = true
 
+  // NOTE: no early return when a model has no associations.
+  //
+  // This function does two things — add association fields, and rebuild the
+  // base fields with `excludeFields` applied. Returning early on "no
+  // associations" skipped the second one too, so `excludeFields` was silently
+  // ignored for every association-less model, on any schema. Since that option
+  // is what hides columns like a password hash, ignoring it fails open.
+  //
+  // The loop below is a no-op when there are none, so nothing else changes.
   const associations: any = models[modelName].associations
-  if (Object.keys(associations).length === 0) {
-    return modelGraphQLType
-  }
 
   const associationsFields: any = {}
   for (const associationName in associations) {
@@ -90,7 +96,8 @@ export default function injectAssociations(
   // The model Types must already be generated.
   const defaultFields = modelGraphQLType.getFields()
   // This is a hack as typscript cannot check it properly when in the if statement.
-  const excludedFields = modelDefinition.excludeFields || []
+  const excludedFields =
+    (modelDefinition && modelDefinition.excludeFields) || []
 
   // The default fields needs to be filtered as attributeFields will
   // not contain the fields that are not defined in the models files.
