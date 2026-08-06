@@ -127,3 +127,67 @@ describe('A schema built from a profile', () => {
     expect(result.errors).toBeUndefined()
   })
 })
+
+/**
+ * `excludeFields` is applied by injectAssociations, and only two things call
+ * it: queryResolvers/list for models with a root query, and associations/field
+ * for models something points at. A model that is neither — declared with
+ * excludeFromRoot and nobody's association target — used to keep every raw
+ * column, and showed it wherever its type was referenced some other way.
+ *
+ * `log` has no inbound association in the test models, which is what makes it
+ * the right subject here.
+ */
+describe('A declared model that nothing else reaches', () => {
+  const declarationWithAnOrphanType = () => {
+    const types = generateModelTypes(models)
+
+    return {
+      types,
+      declaration: {
+        company: {
+          model: models.company,
+          actions: ['list', 'update'],
+          additionalMutations: {
+            companyTouch: {
+              // The only route to the log type: not a root query, not an
+              // association.
+              type: types.outputTypes.log,
+              resolve: () => null,
+            },
+          },
+        },
+        log: {
+          model: models.log,
+          actions: [],
+          excludeFromRoot: true,
+          excludeFields: ['message'],
+        },
+      },
+    }
+  }
+
+  const logFields = () => {
+    const { types, declaration } = declarationWithAnOrphanType()
+
+    const schema = new GraphQLSchema(
+      generateSchema({
+        graphqlSchemaDeclaration: declaration,
+        types,
+        models,
+      })
+    )
+
+    return Object.keys(schema.getType('log').getFields())
+  }
+
+  it('still applies its excludeFields', () => {
+    expect(logFields()).not.toContain('message')
+  })
+
+  it('keeps its other fields', () => {
+    // The control: proves the assertion above is about `message` being
+    // excluded, not about the type being empty or missing.
+    expect(logFields()).toContain('id')
+  })
+})
