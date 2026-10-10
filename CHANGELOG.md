@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [9.8.0](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.7.1...v9.8.0) (2026-10-10)
+
+
+### Bug Fixes
+
+* **delete:** fire the delete webhook once when afterDelete is declared ([dc0e948](https://github.com/teamstarter/graphql-sequelize-generator/commit/dc0e948))
+
+
+### Features
+
+* **mutations:** run create, update and delete in a transaction when the declaration opts in ([7658846](https://github.com/teamstarter/graphql-sequelize-generator/commit/7658846))
+
+
+### Tests
+
+* **mutations:** prove transactional mutations roll back hook writes and defer pubSub and webhooks ([63dc686](https://github.com/teamstarter/graphql-sequelize-generator/commit/63dc686))
+
+
+
 ### [9.7.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.7.0...v9.7.1) (2026-08-06)
 
 
