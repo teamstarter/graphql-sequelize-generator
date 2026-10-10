@@ -14,6 +14,7 @@ import {
 } from '../types/types'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
+import runMutation, { validateTransactionDeclaration } from './runMutation'
 
 /**
  * Generates a create mutation operation
@@ -35,6 +36,8 @@ export default function generateMutationCreate<M extends Model<any>>(
   pubSubInstance: PubSub | null = null,
   callWebhook: Function
 ): GraphQLFieldConfig<any, any, { [key: string]: any }> {
+  validateTransactionDeclaration(modelName, graphqlModelDeclaration, 'create')
+
   return {
     type: outputType,
     description: `Create a ${modelName}`,
@@ -51,166 +54,191 @@ export default function generateMutationCreate<M extends Model<any>>(
       args: any,
       context: any,
       info: any
-    ): Promise<M | undefined> => {
-      let attributes = args[modelName]
+    ): Promise<M | undefined> =>
+      // When the declaration is transactional, everything below — the hooks,
+      // the duplicate lookup and the insert — runs inside one transaction.
+      // pubSub and the webhook run in `afterCommit`, once the row is durable.
+      runMutation<M, M | undefined>(
+        model,
+        graphqlModelDeclaration,
+        'create',
+        async (transaction) => {
+          let attributes = args[modelName]
 
-      if (graphqlModelDeclaration.before) {
-        const beforeList: GlobalBeforeHook[] = Array.isArray(
-          graphqlModelDeclaration.before
-        )
-          ? graphqlModelDeclaration.before
-          : [graphqlModelDeclaration.before as GlobalBeforeHook]
-
-        for (const before of beforeList) {
-          const handle = globalPreCallback('createGlobalBefore')
-          await before({ args, context, info })
-          if (handle) {
-            handle()
-          }
-        }
-      }
-
-      if (
-        graphqlModelDeclaration.create &&
-        'beforeCreate' in graphqlModelDeclaration.create &&
-        graphqlModelDeclaration.create.beforeCreate
-      ) {
-        const beforeCreate: CreateBeforeHook<M>[] = Array.isArray(
-          graphqlModelDeclaration.create.beforeCreate
-        )
-          ? graphqlModelDeclaration.create.beforeCreate
-          : [graphqlModelDeclaration.create.beforeCreate as CreateBeforeHook<M>]
-
-        for (const before of beforeCreate) {
-          const beforeHandle = globalPreCallback('createBefore')
-          attributes = await before({
-            source,
-            args,
-            context,
-            info,
-          })
-
-          // The return value of the before hook is used as the attributes for the next hook
-          args[modelName] = attributes
-
-          if (!attributes) {
-            throw new Error(
-              'The before hook must always return the create method first parameter.'
+          if (graphqlModelDeclaration.before) {
+            const beforeList: GlobalBeforeHook[] = Array.isArray(
+              graphqlModelDeclaration.before
             )
+              ? graphqlModelDeclaration.before
+              : [graphqlModelDeclaration.before as GlobalBeforeHook]
+
+            for (const before of beforeList) {
+              const handle = globalPreCallback('createGlobalBefore')
+              await before({ args, context, info, transaction })
+              if (handle) {
+                handle()
+              }
+            }
           }
 
-          if (beforeHandle) {
-            beforeHandle()
-          }
-        }
-      }
+          if (
+            graphqlModelDeclaration.create &&
+            'beforeCreate' in graphqlModelDeclaration.create &&
+            graphqlModelDeclaration.create.beforeCreate
+          ) {
+            const beforeCreate: CreateBeforeHook<M>[] = Array.isArray(
+              graphqlModelDeclaration.create.beforeCreate
+            )
+              ? graphqlModelDeclaration.create.beforeCreate
+              : [
+                  graphqlModelDeclaration.create
+                    .beforeCreate as CreateBeforeHook<M>,
+                ]
 
-      if (
-        graphqlModelDeclaration.create &&
-        'preventDuplicateOnAttributes' in graphqlModelDeclaration.create &&
-        graphqlModelDeclaration.create.preventDuplicateOnAttributes
-      ) {
-        const preventDuplicateAttributes =
-          graphqlModelDeclaration.create.preventDuplicateOnAttributes
-        const filters = Object.keys(attributes).reduce(
-          (acc: any, key: string) => {
-            if (preventDuplicateAttributes.includes(key)) {
-              acc[key] = attributes[key] ? attributes[key] : null
+            for (const before of beforeCreate) {
+              const beforeHandle = globalPreCallback('createBefore')
+              attributes = await before({
+                source,
+                args,
+                context,
+                info,
+                transaction,
+              })
+
+              // The return value of the before hook is used as the attributes for the next hook
+              args[modelName] = attributes
+
+              if (!attributes) {
+                throw new Error(
+                  'The before hook must always return the create method first parameter.'
+                )
+              }
+
+              if (beforeHandle) {
+                beforeHandle()
+              }
+            }
+          }
+
+          if (
+            graphqlModelDeclaration.create &&
+            'preventDuplicateOnAttributes' in graphqlModelDeclaration.create &&
+            graphqlModelDeclaration.create.preventDuplicateOnAttributes
+          ) {
+            const preventDuplicateAttributes =
+              graphqlModelDeclaration.create.preventDuplicateOnAttributes
+            const filters = Object.keys(attributes).reduce(
+              (acc: any, key: string) => {
+                if (preventDuplicateAttributes.includes(key)) {
+                  acc[key] = attributes[key] ? attributes[key] : null
+                }
+
+                return acc
+              },
+              {}
+            )
+
+            let entityDuplicate: M | null = null
+            if (Object.keys(filters).length) {
+              entityDuplicate = await model.findOne({
+                where: filters,
+                transaction,
+              })
             }
 
-            return acc
-          },
-          {}
-        )
+            if (entityDuplicate) {
+              return { result: entityDuplicate }
+            }
+          }
 
-        let entityDuplicate: M | null = null
-        if (Object.keys(filters).length) {
-          entityDuplicate = await model.findOne({
-            where: filters,
-          })
-        }
+          let newEntity: M | undefined = undefined
+          try {
+            newEntity = await model.create(attributes, { transaction })
+          } catch (error) {
+            if (error instanceof Error) {
+              throw error
+            }
+            throw new Error('Unknown error occurred while creating entity')
+          }
 
-        if (entityDuplicate) {
-          return entityDuplicate
-        }
-      }
+          if (!newEntity) {
+            return { result: undefined }
+          }
 
-      let newEntity: M | undefined = undefined
-      try {
-        newEntity = await model.create(attributes)
-      } catch (error) {
-        if (error instanceof Error) {
-          throw error
-        }
-        throw new Error('Unknown error occurred while creating entity')
-      }
+          if (
+            graphqlModelDeclaration.create &&
+            'afterCreate' in graphqlModelDeclaration.create &&
+            graphqlModelDeclaration.create.afterCreate
+          ) {
+            const afterList: CreateAfterHook<M>[] = Array.isArray(
+              graphqlModelDeclaration.create.afterCreate
+            )
+              ? graphqlModelDeclaration.create.afterCreate
+              : [
+                  graphqlModelDeclaration.create
+                    .afterCreate as CreateAfterHook<M>,
+                ]
 
-      if (!newEntity) {
-        return undefined
-      }
+            let createdEntity = newEntity
+            const hookData = { data: createdEntity.get({ plain: true }) }
+            for (const after of afterList) {
+              const afterHandle = globalPreCallback('createAfter')
+              createdEntity = await after({
+                createdEntity,
+                source,
+                args,
+                context,
+                info,
+                setWebhookData: setWebhookData(hookData),
+                transaction,
+              })
+              if (afterHandle) {
+                afterHandle()
+              }
+            }
 
-      if (
-        graphqlModelDeclaration.create &&
-        'afterCreate' in graphqlModelDeclaration.create &&
-        graphqlModelDeclaration.create.afterCreate
-      ) {
-        const afterList: CreateAfterHook<M>[] = Array.isArray(
-          graphqlModelDeclaration.create.afterCreate
-        )
-          ? graphqlModelDeclaration.create.afterCreate
-          : [graphqlModelDeclaration.create.afterCreate as CreateAfterHook<M>]
+            return {
+              result: createdEntity,
+              afterCommit: async () => {
+                if (pubSubInstance) {
+                  pubSubInstance.publish(`${modelName}Created`, {
+                    [`${modelName}Created`]: createdEntity.get(),
+                  })
+                }
 
-        let createdEntity = newEntity
-        const hookData = { data: createdEntity.get({ plain: true }) }
-        for (const after of afterList) {
-          const afterHandle = globalPreCallback('createAfter')
-          createdEntity = await after({
-            createdEntity,
-            source,
-            args,
-            context,
-            info,
-            setWebhookData: setWebhookData(hookData),
-          })
-          if (afterHandle) {
-            afterHandle()
+                await callModelWebhook(
+                  modelName,
+                  graphqlModelDeclaration.webhooks,
+                  'create',
+                  context,
+                  hookData.data,
+                  callWebhook
+                )
+              },
+            }
+          }
+
+          const createdEntity = newEntity
+          return {
+            result: createdEntity,
+            afterCommit: async () => {
+              if (pubSubInstance) {
+                pubSubInstance.publish(`${modelName}Created`, {
+                  [`${modelName}Created`]: createdEntity.get(),
+                })
+              }
+
+              await callModelWebhook(
+                modelName,
+                graphqlModelDeclaration.webhooks,
+                'create',
+                context,
+                { ...createdEntity.get({ plain: true }) },
+                callWebhook
+              )
+            },
           }
         }
-
-        if (pubSubInstance) {
-          pubSubInstance.publish(`${modelName}Created`, {
-            [`${modelName}Created`]: createdEntity.get(),
-          })
-        }
-
-        await callModelWebhook(
-          modelName,
-          graphqlModelDeclaration.webhooks,
-          'create',
-          context,
-          hookData.data,
-          callWebhook
-        )
-
-        return createdEntity
-      }
-
-      if (pubSubInstance) {
-        pubSubInstance.publish(`${modelName}Created`, {
-          [`${modelName}Created`]: newEntity.get(),
-        })
-      }
-
-      await callModelWebhook(
-        modelName,
-        graphqlModelDeclaration.webhooks,
-        'create',
-        context,
-        { ...newEntity.get({ plain: true }) },
-        callWebhook
-      )
-
-      return newEntity
-    },
+      ),
   }
 }

@@ -1,6 +1,7 @@
 const request = require('supertest')
 const { deleteTables } = require('./testDatabase.js')
 const { createServer, closeServer, resetDb } = require('./setupTestServer')
+const models = require('./models')
 
 /**
  * Starting the tests
@@ -122,5 +123,15 @@ describe('Test the create mutation', () => {
     expect(responseCompanyUpdate.body.data.company).toMatchSnapshot(
       'Updated company'
     )
+
+    // `company` is declared `transactional: true` in testSchema.js: its
+    // beforeUpdate and afterUpdate hooks each wrote a log row with the
+    // transaction GSG handed them, committed together with the update.
+    const logs = await models.log.findAll({ order: [['id', 'ASC']] })
+    expect(logs.map((log) => log.message)).toEqual([
+      'Company 5 is being renamed',
+      'Company 5 renamed updated name',
+    ])
+    expect(trace).toEqual(['beforeUpdate', 'updateAfter'])
   })
 })

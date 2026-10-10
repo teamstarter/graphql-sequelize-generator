@@ -20,6 +20,8 @@ import {
   Model,
   ModelStatic,
   Sequelize,
+  Transaction,
+  TransactionOptions,
   WhereAttributeHash,
 } from 'sequelize/types'
 
@@ -130,6 +132,11 @@ export type GlobalBeforeHook<TContext = any> = (params: {
   args: TArgs
   context: TContext
   info: TInfo
+  /**
+   * The transaction the mutation runs in, `undefined` when the declaration is
+   * not transactional. Queries (list, count) never open one.
+   */
+  transaction?: Transaction
 }) => any | Promise<any>
 
 export type QueryBeforeHook<M extends Model<any>, TContext = any> = (params: {
@@ -166,6 +173,8 @@ export type MutationBeforeHook<
   args: TArgs
   context: TContext
   info: TInfo
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => any | Promise<any>
 
 export type MutationAfterHook<M extends Model<any>, TContext = any> = (params: {
@@ -174,6 +183,8 @@ export type MutationAfterHook<M extends Model<any>, TContext = any> = (params: {
   args: TArgs
   context: TContext
   info: TInfo
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
   setWebhookData?: (callback: (defaultData: any) => any) => void
 }) => M | Promise<M>
 
@@ -187,6 +198,8 @@ export type UpdateMutationAfterHook<
   args: TArgs
   context: TContext
   info: TInfo
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => M | Promise<M>
 
 export type DeleteMutationBeforeHook<
@@ -198,6 +211,8 @@ export type DeleteMutationBeforeHook<
   args: TArgs
   context: TContext
   info: TInfo
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => Filterable<M> | Promise<Filterable<M>>
 
 export type DeleteMutationAfterHook<
@@ -209,6 +224,8 @@ export type DeleteMutationAfterHook<
   args: TArgs
   context: TContext
   info: TInfo
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => M | Promise<M>
 
 export type SubscriptionFilterHook<TContext = any> = (
@@ -230,6 +247,10 @@ export type CreateFieldDeclarationType<M extends Model<any>, TContext = any> = {
   extraArg?: Record<string, { type: GraphQLInputType }>
   subscriptionFilter?: SubscriptionFilterHook<TContext>
   preventDuplicateOnAttributes?: string[]
+  /** Run the mutation inside one transaction. Overrides the declaration-level `transactional`. */
+  transactional?: boolean
+  /** Handed to `sequelize.transaction(...)`, e.g. an isolation level. Overrides the declaration-level one. */
+  transactionOptions?: TransactionOptions
 }
 
 export type GraphqlSchemaDeclarationType<TContext = any> = {
@@ -246,6 +267,10 @@ export type UpdateFieldDeclarationType<M extends Model<any>, TContext = any> = {
   afterUpdate?: UpdateAfterHook<M, TContext> | UpdateAfterHook<M, TContext>[]
   extraArg?: Record<string, { type: GraphQLInputType }>
   subscriptionFilter?: SubscriptionFilterHook<TContext>
+  /** Run the mutation inside one transaction. Overrides the declaration-level `transactional`. */
+  transactional?: boolean
+  /** Handed to `sequelize.transaction(...)`, e.g. an isolation level. Overrides the declaration-level one. */
+  transactionOptions?: TransactionOptions
 }
 
 export type DeleteFieldDeclarationType<M extends Model<any>, TContext = any> = {
@@ -256,6 +281,10 @@ export type DeleteFieldDeclarationType<M extends Model<any>, TContext = any> = {
   afterDelete?: DeleteAfterHook<M, TContext> | DeleteAfterHook<M, TContext>[]
   extraArg?: Record<string, { type: GraphQLInputType }>
   subscriptionFilter?: SubscriptionFilterHook<TContext>
+  /** Run the mutation inside one transaction. Overrides the declaration-level `transactional`. */
+  transactional?: boolean
+  /** Handed to `sequelize.transaction(...)`, e.g. an isolation level. Overrides the declaration-level one. */
+  transactionOptions?: TransactionOptions
 }
 
 export type ListDeclarationType<M extends Model<any>, TContext = any> = {
@@ -276,6 +305,18 @@ export type ModelDeclarationType<M extends Model<any>, TContext = any> = {
   subscriptions?: Event[]
   webhooks?: WebhookType[]
   before?: GlobalBeforeHook<TContext> | GlobalBeforeHook<TContext>[]
+  /**
+   * Run create, update and delete inside one transaction each: the fetch, the
+   * before hooks, the write, the reload and the after hooks share it, and
+   * pubSub and webhooks fire only after the commit. Defaults to `false`:
+   * existing hooks were written without a transaction and a query that does
+   * not pass it, inside one, reads through another connection. Can be
+   * overridden per action with `create.transactional`, `update.transactional`
+   * and `delete.transactional`.
+   */
+  transactional?: boolean
+  /** Handed to `sequelize.transaction(...)`, e.g. `{ isolationLevel }`. */
+  transactionOptions?: TransactionOptions
   count?: {
     extraArg?: Record<string, { type: GraphQLInputType }>
     beforeList?: QueryBeforeHook<M, TContext> | QueryBeforeHook<M, TContext>[]
@@ -337,6 +378,8 @@ export type CreateBeforeHook<M extends Model<any>, TContext = any> = (params: {
   args: any
   context: TContext
   info: any
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => Promise<any> | any
 
 export type CreateAfterHook<M extends Model<any>, TContext = any> = (params: {
@@ -345,6 +388,8 @@ export type CreateAfterHook<M extends Model<any>, TContext = any> = (params: {
   args: any
   context: TContext
   info: any
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
   setWebhookData: (callback: (defaultData: any) => any) => void
 }) => Promise<M> | M
 
@@ -356,6 +401,8 @@ export type UpdateBeforeFetchHook<
   args: any
   context: TContext
   info: any
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => Promise<MinimumUpdateProperties<M>> | MinimumUpdateProperties<M>
 
 export type UpdateBeforeHook<M extends Model<any>, TContext = any> = (params: {
@@ -364,6 +411,8 @@ export type UpdateBeforeHook<M extends Model<any>, TContext = any> = (params: {
   args: any
   context: TContext
   info: any
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => Promise<MinimumUpdateProperties<M>> | MinimumUpdateProperties<M>
 
 export type UpdateAfterHook<M extends Model<any>, TContext = any> = (params: {
@@ -373,6 +422,8 @@ export type UpdateAfterHook<M extends Model<any>, TContext = any> = (params: {
   args: any
   context: TContext
   info: any
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => Promise<M> | M
 
 export type MinimumUpdateProperties<M extends Model<any>> = Partial<
@@ -390,6 +441,8 @@ export type DeleteBeforeFetchHook<
   args: any
   context: TContext
   info: any
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => Promise<Filterable<M>> | Filterable<M>
 
 export type DeleteBeforeHook<M extends Model<any>, TContext = any> = (params: {
@@ -399,6 +452,8 @@ export type DeleteBeforeHook<M extends Model<any>, TContext = any> = (params: {
   args: any
   context: TContext
   info: any
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => Promise<M> | M
 
 export type DeleteAfterHook<M extends Model<any>, TContext = any> = (params: {
@@ -407,6 +462,8 @@ export type DeleteAfterHook<M extends Model<any>, TContext = any> = (params: {
   args: any
   context: TContext
   info: any
+  /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
+  transaction?: Transaction
 }) => Promise<M> | M
 
 // This type is made to ease the developer experience when using a GSG Hook.

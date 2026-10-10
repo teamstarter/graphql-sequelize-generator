@@ -23,6 +23,7 @@ The tools provided by this library will allow you to:
 - Counts for each model can also be generated.
 - Subscriptions auto-generated for mutations.
 - Webhooks fired on mutations.
+- Run a mutation and its hooks in **one transaction**, opt-in per declaration.
 - Serve several **audience-specific schemas** from one declaration (profiles).
 - Add custom fields/resolvers on auto-generated types.
 - Easy integration with [dataloader-sequelize](https://github.com/mickhansen/dataloader-sequelize)
@@ -75,6 +76,7 @@ use.
 | Association-only model | `excludeFromRoot: true` | Reachable by nesting, no root query |
 | Cross-cutting hooks | `injectHooks({ graphqlSchemaDeclaration, injectFunctions })` | Inject the same hook into every endpoint — see `injectHooks.spec.js` |
 | Audience-specific schemas | `profiles` | See below |
+| Transactional mutations | `transactional: true`, `transactionOptions` | Per declaration, overridable per action — see Transactions below |
 
 ---
 
@@ -141,6 +143,204 @@ nesting.
 
 Examples: `src/tests/profileSchema.spec.js` (schema shape) and
 `src/tests/profileServer.spec.js` (served over HTTP).
+
+---
+
+## Transactions
+
+By default a generated mutation opens **no transaction**. The fetch, the hooks
+and the write each run on their own, so a hook that writes another row is not
+atomic with the row GSG writes: if the second write fails, the first stays.
+
+### Enabling it
+
+Set `transactional: true` on the declaration, and pass the `transaction` every
+hook now receives to every query the hook runs. That is the whole API.
+
+```javascript
+graphqlSchemaDeclaration.notificationBatch = {
+  model: models.notificationBatch,
+  actions: ['create', 'update', 'delete'],
+  transactional: true,
+  update: {
+    beforeUpdate: async ({ entity, args, transaction }) => {
+      // Atomic with the update GSG is about to run: if either fails, neither
+      // is kept.
+      await models.notification.update(
+        { status: 'cancelled' },
+        { where: { batchId: entity.id }, transaction }
+      )
+      return args.notificationBatch
+    },
+  },
+}
+```
+
+The flag can be set or overridden per action, and `transactionOptions` is
+handed to `sequelize.transaction(...)` as is (an isolation level, typically):
+
+```javascript
+const { Transaction } = require('sequelize')
+
+graphqlSchemaDeclaration.notificationBatch = {
+  model: models.notificationBatch,
+  actions: ['create', 'update', 'delete'],
+  transactional: true,
+  transactionOptions: {
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  },
+  delete: {
+    // Per-action override: delete keeps today's behaviour.
+    transactional: false,
+  },
+}
+```
+
+A setting that cannot mean what it says throws **at schema build time**, not
+at the first mutation: `transactional` that is not a boolean, or
+`transactionOptions` on a declaration or an action that is not transactional.
+
+### What a transactional mutation does
+
+The resolver opens one transaction on `model.sequelize` and runs everything
+in it, in this order:
+
+1. the global `before` hooks;
+2. `beforeUpdateFetch` / `beforeDeleteFetch` (update, delete);
+3. the fetch of the entity (update, delete) or the `preventDuplicateOnAttributes`
+   lookup (create);
+4. `beforeCreate` / `beforeUpdate` / `beforeDelete`;
+5. the write: `model.create`, `entity.update` + `entity.reload`, or
+   `entity.destroy`;
+6. `afterCreate` / `afterUpdate` / `afterDelete`.
+
+Then it commits, and **only after the commit** publishes to `pubSubInstance`
+and calls the webhook: a subscriber or a webhook never sees a row that then
+rolls back. Any throw, from a hook or from Sequelize, rolls the transaction
+back and is rethrown as is — the mutation returns the error, nothing is kept.
+
+Hook call order and return values are the same as without a transaction: a
+before hook still returns the attributes, the where or the entity for the
+next step, and an after hook still returns the entity.
+
+### The `transaction` hook parameter
+
+Every mutation hook receives `transaction` in its params object: the open
+Sequelize `Transaction` when the mutation is transactional, `undefined`
+otherwise. Pass it to every query the hook runs — directly
+(`{ transaction }`) or through the services the hook calls.
+
+| Hook | Params |
+|---|---|
+| `before` (global) | `{ args, context, info, transaction }` — the queries (list, count) never pass one |
+| `create.beforeCreate` | `{ source, args, context, info, transaction }` |
+| `create.afterCreate` | `{ createdEntity, source, args, context, info, setWebhookData, transaction }` |
+| `update.beforeUpdateFetch` | `{ source, args, context, info, transaction }` |
+| `update.beforeUpdate` | `{ entity, source, args, context, info, transaction }` |
+| `update.afterUpdate` | `{ updatedEntity, previousPropertiesSnapshot, source, args, context, info, transaction }` |
+| `delete.beforeDeleteFetch` | `{ where, source, args, context, info, transaction }` |
+| `delete.beforeDelete` | `{ entity, where, source, args, context, info, transaction }` |
+| `delete.afterDelete` | `{ deletedEntity, source, args, context, info, transaction }` |
+
+A hook written for a non-transactional declaration keeps working unchanged:
+it simply receives `transaction: undefined`.
+
+### Converting an existing declaration
+
+`transactional` is opt-in because switching it on is only safe once every
+hook on the declaration is transaction-aware. For one declaration:
+
+1. **List every query the hooks run**, directly or through a service: every
+   `models.x.findOne/findAll/create/update/destroy/count`, every
+   `entity.save/update/destroy`, every `sequelize.query`, and every service
+   call that does any of those. Include the global `before` hooks and any hook
+   added through `injectHooks`.
+2. **Pass the transaction to each one**: `{ transaction }` on the query
+   options, or the transaction as an argument of the service. A service that
+   opens its own transaction must instead accept a parent one and use it
+   (with Sequelize, `sequelize.transaction({ transaction }, …)` opens a
+   savepoint inside it; a helper that opens an independent transaction and
+   retries must not be used inside the hook — see *No retries* below).
+3. **Remove the workarounds** the hooks used to get atomicity without GSG:
+   a hook that opened its own transaction, did the whole write in it, and
+   returned `{ id }` so that GSG's own `entity.update` changed nothing; a
+   `beforeDelete` that destroyed the row itself. Let GSG do the write.
+4. **Move irreversible side effects** out of the hooks, or make them safe to
+   lose. Inside a transactional mutation the after hooks run *before* the
+   commit, so an email or an external API call made there has happened even
+   if the commit then fails. Prefer a subscription or a webhook for them —
+   GSG fires those after the commit — or keep them idempotent.
+5. Set `transactional: true` and run the declaration's tests. A hook that
+   still queries without the transaction will not fail loudly: it will read
+   the row as it was before the update, or hang on a row the transaction
+   locked (see *Cautions*). A test that updates the entity in a hook and
+   reads it back in a later hook catches most of it.
+
+Before, the workaround — a hook opening its own transaction and short-circuiting GSG's write:
+
+```javascript
+update: {
+  beforeUpdate: async ({ entity, args }) => {
+    await models.sequelize.transaction(async (transaction) => {
+      await models.notification.update(
+        { status: 'cancelled' },
+        { where: { batchId: entity.id }, transaction }
+      )
+      await entity.update({ status: 'cancelled' }, { transaction })
+    })
+    // Returning only the id so that GSG's entity.update changes nothing.
+    return { id: entity.id }
+  },
+}
+```
+
+After — GSG owns the transaction and the write:
+
+```javascript
+transactional: true,
+update: {
+  beforeUpdate: async ({ entity, args, transaction }) => {
+    await models.notification.update(
+      { status: 'cancelled' },
+      { where: { batchId: entity.id }, transaction }
+    )
+    return args.notificationBatch
+  },
+},
+```
+
+### Cautions
+
+**Opt-in is deliberate — do not flip it on a declaration whose hooks were
+not converted.** Inside an open transaction, a query that does not pass
+`transaction` goes through another connection: it sees the row as it was
+before the update, or blocks on a row the transaction has locked until the
+transaction ends — and the transaction is waiting on that very hook. Convert
+the hooks first (above), then set the flag.
+
+**Irreversible side effects run before the commit.** Emails, pushes, calls
+to third parties made from a hook of a transactional mutation have happened
+when the commit fails. Prefer subscriptions and webhooks, which GSG only
+fires after the commit.
+
+**No retries.** GSG never re-runs a transaction: a helper that re-runs a
+callback on serialization failures would re-run every hook, and hooks send
+emails and call APIs. Inside a transactional hook, call your service with the
+`transaction` GSG gives you so that it joins the mutation's transaction — do
+not wrap it in a helper that opens its own, which would commit separately and
+defeat the point. When a serialization failure has to be retried, it is the
+whole mutation that must be re-run, which only the caller can decide.
+
+**Custom resolvers are not covered.** `transactional` only applies to the
+mutations GSG generates. An action declared with its own `resolve`
+(`create: { resolve }`) runs whatever that function does, hooks and
+transaction included.
+
+Working example: the `company` declaration in `src/tests/testSchema.js`
+(transactional update with two hooks writing a second table). The behaviour
+is pinned by `src/tests/mutation.transactional.spec.js`: the rollback, the
+shared transaction, and that pubSub and the webhook wait for the commit. Both
+files live in the repository, not in the npm package.
 
 ---
 
