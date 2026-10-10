@@ -152,8 +152,6 @@ export default function generateMutationDelete<
         'afterDelete' in graphqlModelDeclaration.delete &&
         graphqlModelDeclaration.delete.afterDelete
       ) {
-        const hookData = { data: { ...snapshotBeforeDelete } }
-
         const afterList: DeleteAfterHook<M, TContext>[] = Array.isArray(
           graphqlModelDeclaration.delete.afterDelete
         )
@@ -178,15 +176,6 @@ export default function generateMutationDelete<
             afterHandle()
           }
         }
-
-        await callModelWebhook(
-          modelName,
-          graphqlModelDeclaration.webhooks,
-          'delete',
-          context,
-          hookData.data,
-          callWebhook
-        )
       }
 
       await callModelWebhook(
