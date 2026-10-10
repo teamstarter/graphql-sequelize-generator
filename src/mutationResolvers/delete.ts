@@ -10,7 +10,7 @@ import {
   SequelizeModels,
 } from '../types/types'
 import callModelWebhook from './callModelWebhook'
-import runMutation from './runMutation'
+import runMutation, { validateTransactionDeclaration } from './runMutation'
 
 /**
  * Generates a delete mutation operation
@@ -33,6 +33,8 @@ export default function generateMutationDelete<
   pubSubInstance: PubSub | null = null,
   callWebhook: Function
 ): GraphQLFieldConfig<any, any, { [key: string]: any }> {
+  validateTransactionDeclaration(modelName, graphqlModelDeclaration, 'delete')
+
   return {
     type: GraphQLInt,
     description: `Delete a ${modelName}`,

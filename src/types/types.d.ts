@@ -174,7 +174,7 @@ export type MutationBeforeHook<
   context: TContext
   info: TInfo
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => any | Promise<any>
 
 export type MutationAfterHook<M extends Model<any>, TContext = any> = (params: {
@@ -184,7 +184,7 @@ export type MutationAfterHook<M extends Model<any>, TContext = any> = (params: {
   context: TContext
   info: TInfo
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
   setWebhookData?: (callback: (defaultData: any) => any) => void
 }) => M | Promise<M>
 
@@ -199,7 +199,7 @@ export type UpdateMutationAfterHook<
   context: TContext
   info: TInfo
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => M | Promise<M>
 
 export type DeleteMutationBeforeHook<
@@ -212,7 +212,7 @@ export type DeleteMutationBeforeHook<
   context: TContext
   info: TInfo
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => Filterable<M> | Promise<Filterable<M>>
 
 export type DeleteMutationAfterHook<
@@ -225,7 +225,7 @@ export type DeleteMutationAfterHook<
   context: TContext
   info: TInfo
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => M | Promise<M>
 
 export type SubscriptionFilterHook<TContext = any> = (
@@ -379,7 +379,7 @@ export type CreateBeforeHook<M extends Model<any>, TContext = any> = (params: {
   context: TContext
   info: any
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => Promise<any> | any
 
 export type CreateAfterHook<M extends Model<any>, TContext = any> = (params: {
@@ -389,7 +389,7 @@ export type CreateAfterHook<M extends Model<any>, TContext = any> = (params: {
   context: TContext
   info: any
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
   setWebhookData: (callback: (defaultData: any) => any) => void
 }) => Promise<M> | M
 
@@ -402,7 +402,7 @@ export type UpdateBeforeFetchHook<
   context: TContext
   info: any
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => Promise<MinimumUpdateProperties<M>> | MinimumUpdateProperties<M>
 
 export type UpdateBeforeHook<M extends Model<any>, TContext = any> = (params: {
@@ -412,7 +412,7 @@ export type UpdateBeforeHook<M extends Model<any>, TContext = any> = (params: {
   context: TContext
   info: any
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => Promise<MinimumUpdateProperties<M>> | MinimumUpdateProperties<M>
 
 export type UpdateAfterHook<M extends Model<any>, TContext = any> = (params: {
@@ -423,7 +423,7 @@ export type UpdateAfterHook<M extends Model<any>, TContext = any> = (params: {
   context: TContext
   info: any
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => Promise<M> | M
 
 export type MinimumUpdateProperties<M extends Model<any>> = Partial<
@@ -442,7 +442,7 @@ export type DeleteBeforeFetchHook<
   context: TContext
   info: any
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => Promise<Filterable<M>> | Filterable<M>
 
 export type DeleteBeforeHook<M extends Model<any>, TContext = any> = (params: {
@@ -453,7 +453,7 @@ export type DeleteBeforeHook<M extends Model<any>, TContext = any> = (params: {
   context: TContext
   info: any
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => Promise<M> | M
 
 export type DeleteAfterHook<M extends Model<any>, TContext = any> = (params: {
@@ -463,7 +463,7 @@ export type DeleteAfterHook<M extends Model<any>, TContext = any> = (params: {
   context: TContext
   info: any
   /** The transaction the mutation runs in, `undefined` when the declaration is not transactional. */
-  transaction: Transaction | undefined
+  transaction?: Transaction
 }) => Promise<M> | M
 
 // This type is made to ease the developer experience when using a GSG Hook.

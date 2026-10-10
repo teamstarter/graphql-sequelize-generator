@@ -53,6 +53,63 @@ export function getTransactionOptions<M extends Model<any>>(
 }
 
 /**
+ * Rejects, at schema build time, a declaration whose transaction settings
+ * cannot mean what their author intended. Called once per generated action.
+ *
+ * - `transactional` must be a boolean when present (a string 'true' would be
+ *   silently falsy and the hooks would never get a transaction).
+ * - `transactionOptions` without `transactional: true` is never read: either
+ *   the flag is missing or the options are on the wrong level.
+ */
+export function validateTransactionDeclaration<M extends Model<any>>(
+  modelName: string,
+  graphqlModelDeclaration: ModelDeclarationType<M>,
+  action: MutationAction
+): void {
+  const actionDeclaration: any = graphqlModelDeclaration[action] || {}
+  const where = (key: string, level: 'declaration' | 'action') =>
+    level === 'action' ? `${modelName}.${action}.${key}` : `${modelName}.${key}`
+
+  for (const [value, level] of [
+    [graphqlModelDeclaration.transactional, 'declaration'],
+    [actionDeclaration.transactional, 'action'],
+  ] as [unknown, 'declaration' | 'action'][]) {
+    if (typeof value !== 'undefined' && typeof value !== 'boolean') {
+      throw new Error(
+        `${where(
+          'transactional',
+          level
+        )} must be a boolean, got ${JSON.stringify(value)}.`
+      )
+    }
+  }
+
+  if (
+    actionDeclaration.transactionOptions &&
+    !isTransactional(graphqlModelDeclaration, action)
+  ) {
+    throw new Error(
+      `${where(
+        'transactionOptions',
+        'action'
+      )} is set but the ${action} mutation is not transactional: add \`transactional: true\` next to it.`
+    )
+  }
+
+  const anyActionTransactional = (
+    ['create', 'update', 'delete'] as MutationAction[]
+  ).some((a) => isTransactional(graphqlModelDeclaration, a))
+  if (graphqlModelDeclaration.transactionOptions && !anyActionTransactional) {
+    throw new Error(
+      `${where(
+        'transactionOptions',
+        'declaration'
+      )} is set but no mutation of ${modelName} is transactional: add \`transactional: true\` to the declaration or to one of its actions.`
+    )
+  }
+}
+
+/**
  * Runs the body of a generated mutation, inside one transaction when the
  * declaration asks for it and bare otherwise.
  *

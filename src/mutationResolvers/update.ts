@@ -16,7 +16,7 @@ import {
   UpdateBeforeHook,
 } from '../types/types'
 import callModelWebhook from './callModelWebhook'
-import runMutation from './runMutation'
+import runMutation, { validateTransactionDeclaration } from './runMutation'
 
 /**
  * Generates a update mutation operation
@@ -39,6 +39,8 @@ export default function generateMutationUpdate<M extends Model<any>>(
   pubSubInstance: PubSub | null = null,
   callWebhook: Function
 ): GraphQLFieldConfig<any, any, { [key: string]: any }> {
+  validateTransactionDeclaration(modelName, graphqlModelDeclaration, 'update')
+
   return {
     type: outputType,
     description: `Update a ${modelName}`,

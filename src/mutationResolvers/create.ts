@@ -14,7 +14,7 @@ import {
 } from '../types/types'
 import setWebhookData from '../webhook/setWebhookData'
 import callModelWebhook from './callModelWebhook'
-import runMutation from './runMutation'
+import runMutation, { validateTransactionDeclaration } from './runMutation'
 
 /**
  * Generates a create mutation operation
@@ -36,6 +36,8 @@ export default function generateMutationCreate<M extends Model<any>>(
   pubSubInstance: PubSub | null = null,
   callWebhook: Function
 ): GraphQLFieldConfig<any, any, { [key: string]: any }> {
+  validateTransactionDeclaration(modelName, graphqlModelDeclaration, 'create')
+
   return {
     type: outputType,
     description: `Create a ${modelName}`,

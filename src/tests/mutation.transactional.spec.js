@@ -7,7 +7,11 @@ const { expressMiddleware } = require('@apollo/server/express4')
 const { PubSub } = require('graphql-subscriptions')
 const { Transaction } = require('sequelize')
 
-const { generateApolloServer, generateModelTypes } = require('../../lib')
+const {
+  generateApolloServer,
+  generateModelTypes,
+  generateSchema,
+} = require('../../lib')
 const models = require('./models')
 const {
   deleteTables,
@@ -755,5 +759,67 @@ describe('Per-action override of transactional', () => {
     for (const call of harness.received) {
       expect(call.transaction).toBeUndefined()
     }
+  })
+})
+
+describe('Transaction settings are validated at schema build time', () => {
+  // One `types` object per schema, as always.
+  const build = (user) =>
+    generateSchema({
+      graphqlSchemaDeclaration: { user },
+      types: generateModelTypes(models),
+      models,
+      globalPreCallback: () => null,
+      pubSubInstance: null,
+      callWebhook: () => null,
+    })
+
+  const base = { model: models.user, actions: ['create', 'update', 'delete'] }
+
+  it('accepts a boolean flag and options next to it', () => {
+    expect(() =>
+      build({ ...base, transactional: true, transactionOptions: {} })
+    ).not.toThrow()
+    expect(() =>
+      build({
+        ...base,
+        transactionOptions: {},
+        update: { transactional: true },
+      })
+    ).not.toThrow()
+    expect(() =>
+      build({
+        ...base,
+        update: { transactional: true, transactionOptions: {} },
+      })
+    ).not.toThrow()
+  })
+
+  it('rejects a non-boolean transactional', () => {
+    expect(() => build({ ...base, transactional: 'true' })).toThrow(
+      'user.transactional must be a boolean, got "true".'
+    )
+    expect(() => build({ ...base, delete: { transactional: 1 } })).toThrow(
+      'user.delete.transactional must be a boolean, got 1.'
+    )
+  })
+
+  it('rejects transactionOptions that nothing would read', () => {
+    expect(() => build({ ...base, transactionOptions: {} })).toThrow(
+      'user.transactionOptions is set but no mutation of user is transactional'
+    )
+    expect(() =>
+      build({ ...base, update: { transactionOptions: {} } })
+    ).toThrow(
+      'user.update.transactionOptions is set but the update mutation is not transactional'
+    )
+    // Declaration-level true, action-level false: the action's own options are dead.
+    expect(() =>
+      build({
+        ...base,
+        transactional: true,
+        delete: { transactional: false, transactionOptions: {} },
+      })
+    ).toThrow('user.delete.transactionOptions is set')
   })
 })

@@ -20,6 +20,12 @@ All notable changes to this project will be documented in this file. See [standa
 * **mutations:** prove transactional mutations roll back hook writes and defer pubSub and webhooks ([63dc686](https://github.com/teamstarter/graphql-sequelize-generator/commit/63dc686))
 
 
+### Notes
+
+* Opt-in per declaration with `transactional: true` (overridable per action); every mutation hook now receives `transaction`. The default is unchanged. Invalid settings (`transactional` not a boolean, `transactionOptions` without `transactional`) throw at schema build time. See the README section « Transactions » for the API, the conversion checklist and the cautions.
+* Delete: the `<model>Deleted` subscription is now published after the `afterDelete` hooks (after the commit when transactional), with the same payload.
+
+
 
 ### [9.7.1](https://github.com/teamstarter/graphql-sequelize-generator/compare/v9.7.0...v9.7.1) (2026-08-06)
 
