@@ -10,6 +10,7 @@ import {
   SequelizeModels,
 } from '../types/types'
 import callModelWebhook from './callModelWebhook'
+import runMutation from './runMutation'
 
 /**
  * Generates a delete mutation operation
@@ -43,151 +44,168 @@ export default function generateMutationDelete<
         ? graphqlModelDeclaration.delete.extraArg
         : {}),
     },
-    resolve: async (source, args, context, info) => {
-      let where: Filterable<M> = { id: args.id } as Filterable<M>
-
-      if (graphqlModelDeclaration.before) {
-        const beforeList: GlobalBeforeHook[] = Array.isArray(
-          graphqlModelDeclaration.before
-        )
-          ? graphqlModelDeclaration.before
-          : [graphqlModelDeclaration.before as GlobalBeforeHook]
-
-        for (const before of beforeList) {
-          const handle = globalPreCallback('deleteGlobalBefore')
-          await before({ args, context, info })
-          if (handle) {
-            handle()
-          }
-        }
-      }
-
-      if (
-        graphqlModelDeclaration.delete &&
-        'beforeDeleteFetch' in graphqlModelDeclaration.delete &&
-        graphqlModelDeclaration.delete.beforeDeleteFetch
-      ) {
-        const beforeList: DeleteBeforeFetchHook<M>[] = Array.isArray(
-          graphqlModelDeclaration.delete.beforeDeleteFetch
-        )
-          ? graphqlModelDeclaration.delete.beforeDeleteFetch
-          : [
-              graphqlModelDeclaration.delete
-                .beforeDeleteFetch as DeleteBeforeFetchHook<M>,
-            ]
-
-        for (const before of beforeList) {
-          const beforeHandle = globalPreCallback('beforeDeleteFetch')
-          const result = await before({
-            where,
-            source,
-            args,
-            context,
-            info,
-          })
-
-          // The return value of the before hook is used as the where for the next hook
-          if (result) {
-            where = result
-          }
-
-          if (beforeHandle) {
-            beforeHandle()
-          }
-        }
-      }
-
-      let entity = await models[modelName].findOne({
-        where,
-      } as FindOptions<M>)
-
-      if (!entity) {
-        throw new Error(`${modelName} not found.`)
-      }
-
-      if (
-        graphqlModelDeclaration.delete &&
-        'beforeDelete' in graphqlModelDeclaration.delete &&
-        graphqlModelDeclaration.delete.beforeDelete
-      ) {
-        const beforeList: DeleteBeforeHook<M, TContext>[] = Array.isArray(
-          graphqlModelDeclaration.delete.beforeDelete
-        )
-          ? graphqlModelDeclaration.delete.beforeDelete
-          : [
-              graphqlModelDeclaration.delete.beforeDelete as DeleteBeforeHook<
-                M,
-                TContext
-              >,
-            ]
-
-        for (const before of beforeList) {
-          const beforeHandle = globalPreCallback('beforeDelete')
-          entity = await before({
-            entity,
-            where,
-            source,
-            args,
-            context,
-            info,
-          })
-
-          if (beforeHandle) {
-            beforeHandle()
-          }
-        }
-      }
-
-      const snapshotBeforeDelete = { ...entity.get({ plain: true }) }
-      await entity.destroy()
-
-      if (pubSubInstance) {
-        pubSubInstance.publish(`${modelName}Deleted`, {
-          [`${modelName}Deleted`]: entity.get(),
-        })
-      }
-
-      if (
-        graphqlModelDeclaration.delete &&
-        'afterDelete' in graphqlModelDeclaration.delete &&
-        graphqlModelDeclaration.delete.afterDelete
-      ) {
-        const afterList: DeleteAfterHook<M, TContext>[] = Array.isArray(
-          graphqlModelDeclaration.delete.afterDelete
-        )
-          ? graphqlModelDeclaration.delete.afterDelete
-          : [
-              graphqlModelDeclaration.delete.afterDelete as DeleteAfterHook<
-                M,
-                TContext
-              >,
-            ]
-
-        for (const after of afterList) {
-          const afterHandle = globalPreCallback('afterDelete')
-          entity = await after({
-            deletedEntity: entity,
-            source,
-            args,
-            context,
-            info,
-          })
-          if (afterHandle) {
-            afterHandle()
-          }
-        }
-      }
-
-      await callModelWebhook(
-        modelName,
-        graphqlModelDeclaration.webhooks,
+    resolve: async (source, args, context, info) =>
+      // When the declaration is transactional, everything below — the hooks,
+      // the fetch and the destroy — runs inside one transaction. pubSub and
+      // the webhook run in `afterCommit`, once the row is really gone.
+      runMutation<M, number>(
+        models[modelName],
+        graphqlModelDeclaration,
         'delete',
-        context,
-        { ...snapshotBeforeDelete },
-        callWebhook
-      )
+        async (transaction) => {
+          let where: Filterable<M> = { id: args.id } as Filterable<M>
 
-      return 1
-    },
+          if (graphqlModelDeclaration.before) {
+            const beforeList: GlobalBeforeHook[] = Array.isArray(
+              graphqlModelDeclaration.before
+            )
+              ? graphqlModelDeclaration.before
+              : [graphqlModelDeclaration.before as GlobalBeforeHook]
+
+            for (const before of beforeList) {
+              const handle = globalPreCallback('deleteGlobalBefore')
+              await before({ args, context, info, transaction })
+              if (handle) {
+                handle()
+              }
+            }
+          }
+
+          if (
+            graphqlModelDeclaration.delete &&
+            'beforeDeleteFetch' in graphqlModelDeclaration.delete &&
+            graphqlModelDeclaration.delete.beforeDeleteFetch
+          ) {
+            const beforeList: DeleteBeforeFetchHook<M>[] = Array.isArray(
+              graphqlModelDeclaration.delete.beforeDeleteFetch
+            )
+              ? graphqlModelDeclaration.delete.beforeDeleteFetch
+              : [
+                  graphqlModelDeclaration.delete
+                    .beforeDeleteFetch as DeleteBeforeFetchHook<M>,
+                ]
+
+            for (const before of beforeList) {
+              const beforeHandle = globalPreCallback('beforeDeleteFetch')
+              const result = await before({
+                where,
+                source,
+                args,
+                context,
+                info,
+                transaction,
+              })
+
+              // The return value of the before hook is used as the where for the next hook
+              if (result) {
+                where = result
+              }
+
+              if (beforeHandle) {
+                beforeHandle()
+              }
+            }
+          }
+
+          let entity = await models[modelName].findOne({
+            where,
+            transaction,
+          } as FindOptions<M>)
+
+          if (!entity) {
+            throw new Error(`${modelName} not found.`)
+          }
+
+          if (
+            graphqlModelDeclaration.delete &&
+            'beforeDelete' in graphqlModelDeclaration.delete &&
+            graphqlModelDeclaration.delete.beforeDelete
+          ) {
+            const beforeList: DeleteBeforeHook<M, TContext>[] = Array.isArray(
+              graphqlModelDeclaration.delete.beforeDelete
+            )
+              ? graphqlModelDeclaration.delete.beforeDelete
+              : [
+                  graphqlModelDeclaration.delete
+                    .beforeDelete as DeleteBeforeHook<M, TContext>,
+                ]
+
+            for (const before of beforeList) {
+              const beforeHandle = globalPreCallback('beforeDelete')
+              entity = await before({
+                entity,
+                where,
+                source,
+                args,
+                context,
+                info,
+                transaction,
+              })
+
+              if (beforeHandle) {
+                beforeHandle()
+              }
+            }
+          }
+
+          const snapshotBeforeDelete = { ...entity.get({ plain: true }) }
+          await entity.destroy({ transaction })
+          // The subscription payload is the entity as it was destroyed, before
+          // the afterDelete hooks get a chance to replace it.
+          const deletedPayload = entity.get()
+
+          if (
+            graphqlModelDeclaration.delete &&
+            'afterDelete' in graphqlModelDeclaration.delete &&
+            graphqlModelDeclaration.delete.afterDelete
+          ) {
+            const afterList: DeleteAfterHook<M, TContext>[] = Array.isArray(
+              graphqlModelDeclaration.delete.afterDelete
+            )
+              ? graphqlModelDeclaration.delete.afterDelete
+              : [
+                  graphqlModelDeclaration.delete.afterDelete as DeleteAfterHook<
+                    M,
+                    TContext
+                  >,
+                ]
+
+            for (const after of afterList) {
+              const afterHandle = globalPreCallback('afterDelete')
+              entity = await after({
+                deletedEntity: entity,
+                source,
+                args,
+                context,
+                info,
+                transaction,
+              })
+              if (afterHandle) {
+                afterHandle()
+              }
+            }
+          }
+
+          return {
+            result: 1,
+            afterCommit: async () => {
+              if (pubSubInstance) {
+                pubSubInstance.publish(`${modelName}Deleted`, {
+                  [`${modelName}Deleted`]: deletedPayload,
+                })
+              }
+
+              await callModelWebhook(
+                modelName,
+                graphqlModelDeclaration.webhooks,
+                'delete',
+                context,
+                { ...snapshotBeforeDelete },
+                callWebhook
+              )
+            },
+          }
+        }
+      ),
   }
 }
