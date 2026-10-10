@@ -284,6 +284,46 @@ graphqlSchemaDeclaration.company = {
       subscriptions: ['update'],
     },
   },
+  // TRANSACTIONS
+  //
+  // Opt-in per declaration (default false). The generated update below runs
+  // in ONE transaction with its hooks: the fetch, beforeUpdate, the write,
+  // the reload and afterUpdate share it, and the `companyUpdated`
+  // subscription is only published after the commit. Every hook receives
+  // `transaction` and must pass it to every query it runs.
+  //
+  // It does not cover `create` here, which has its own `resolve` below: a
+  // custom resolver runs whatever it does, transaction included.
+  // See the README section « Transactions ».
+  transactional: true,
+  update: {
+    beforeUpdate: async ({
+      entity,
+      source,
+      args,
+      context,
+      info,
+      transaction,
+    }) => {
+      // A second-table write atomic with the update GSG is about to run:
+      // if the update fails, this row is rolled back with it.
+      await models.log.create(
+        { message: `Company ${entity.id} is being renamed` },
+        { transaction }
+      )
+      return args.company
+    },
+    afterUpdate: async ({ updatedEntity, transaction }) => {
+      // Still inside the transaction: a query here must pass it too.
+      await models.log.create(
+        {
+          message: `Company ${updatedEntity.id} renamed ${updatedEntity.name}`,
+        },
+        { transaction }
+      )
+      return updatedEntity
+    },
+  },
   list: {
     removeUnusedAttributes: false,
     beforeList: [

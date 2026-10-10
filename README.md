@@ -336,9 +336,11 @@ mutations GSG generates. An action declared with its own `resolve`
 (`create: { resolve }`) runs whatever that function does, hooks and
 transaction included.
 
-The behaviour is pinned by `src/tests/mutation.transactional.spec.js` in the
-repository (not shipped in the npm package): the rollback, the shared
-transaction, and that pubSub and the webhook wait for the commit.
+Working example: the `company` declaration in `src/tests/testSchema.js`
+(transactional update with two hooks writing a second table). The behaviour
+is pinned by `src/tests/mutation.transactional.spec.js`: the rollback, the
+shared transaction, and that pubSub and the webhook wait for the commit. Both
+files live in the repository, not in the npm package.
 
 ---
 
