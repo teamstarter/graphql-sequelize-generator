@@ -77,8 +77,9 @@ graphqlSchemaDeclaration.user = {
     'read-write': { actions: ['list', 'count', 'update'], webhooks: ['update'] },
   },
   before: [
-    ({ args, context, info }) => {
-      // Global before hook only have args, context and info.
+    ({ args, context, info, transaction }) => {
+      // Global before hook only have args, context, info and, for the
+      // mutations of a transactional declaration, the transaction.
       // You can use many functions or just one.
 
       // Use it if you need to do something before each enpoint
@@ -176,8 +177,10 @@ graphqlSchemaDeclaration.user = {
   // The followings hooks are just here to demo their signatures.
   // They are not required and can be omited if you don't need them.
   create: {
-    beforeCreate: ({ source, args, context, info }) => {
-      // You can restrict the creation if needed
+    beforeCreate: ({ source, args, context, info, transaction }) => {
+      // You can restrict the creation if needed.
+      // `transaction` is the mutation's transaction when the declaration is
+      // `transactional: true`, `undefined` otherwise: pass it to every query.
       return args.user
     },
     afterCreate: [
@@ -188,6 +191,7 @@ graphqlSchemaDeclaration.user = {
         context,
         info,
         setWebhookData,
+        transaction,
       }) => {
         // You can log what happened here
 
@@ -211,7 +215,7 @@ graphqlSchemaDeclaration.user = {
   },
   update: {
     beforeUpdateFetch: [
-      ({ source, args, context, info }) => {
+      ({ source, args, context, info, transaction }) => {
         // You can restrict the creation if needed
         return args.user
       },
@@ -223,6 +227,7 @@ graphqlSchemaDeclaration.user = {
       args,
       context,
       info,
+      transaction,
     }) => {
       // You can log what happened here
       return updatedEntity
@@ -231,19 +236,37 @@ graphqlSchemaDeclaration.user = {
   delete: {
     // Adding a new argument to the delete mutation
     extraArg: { log: { type: GraphQLBoolean } },
-    beforeDeleteFetch: ({ where, source, args, context, info }) => {
+    beforeDeleteFetch: ({
+      where,
+      source,
+      args,
+      context,
+      info,
+      transaction,
+    }) => {
       // You can restrict the creation if needed
       return where
     },
-    afterDelete: async ({ deletedEntity, source, args, context, info }) => {
+    afterDelete: async ({
+      deletedEntity,
+      source,
+      args,
+      context,
+      info,
+      transaction,
+    }) => {
       // You can log what happened here, as the new log attribute will be propagated here
       if (args.log) {
         const date = Date.now()
-        await models.log.create({
-          message: `The User id = ${args.id} was successfully deleted`,
-          createdAt: date,
-          updatedAt: date,
-        })
+        await models.log.create(
+          {
+            message: `The User id = ${args.id} was successfully deleted`,
+            createdAt: date,
+            updatedAt: date,
+          },
+          // Joins the mutation's transaction when there is one.
+          { transaction }
+        )
       }
       return deletedEntity
     },
